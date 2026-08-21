@@ -1,0 +1,718 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// AUTH & USERS
+// -----------------------------------------------------------------------------
+
+model User {
+  id                 String    @id @default(uuid())
+  registrationNumber String    @unique
+  email              String?   @unique
+  passwordHash       String
+  status             String    @default("ACTIVE") // ACTIVE, SUSPENDED, BANNED
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  profile                 Profile?
+  refreshTokens           RefreshToken[]
+  roles                   UserRole[]
+  groupMemberships        GroupMember[]
+  festRegistrations       FestRegistration[]
+  tickets                 Ticket[]
+  eventRegistrations      EventRegistration[]
+  organizedEvents         EventOrganizer[]
+  attendances             Attendance[]
+  expenses                Expense[]
+  conversationMemberships ConversationMember[]
+  messages                Message[]
+  messageReactions        MessageReaction[]
+  notifications           Notification[]
+  notificationPrefs       NotificationPreference[]
+  deviceTokens            DeviceToken[]
+  userXp                  UserXp?
+  userBadges              UserBadge[]
+  userStreaks             UserStreak[]
+  feedbacks               Feedback[]
+  auditLogs               AuditLog[]
+  eventWins               EventWinner[]
+  recordedWinners         EventWinner[]  @relation("WinnerRecorder")
+  formSubmissions         EventFormSubmission[]
+  workflowActions         WorkflowAction[]
+
+  @@index([registrationNumber])
+  @@index([email])
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  tokenHash String   @unique
+  familyId  String
+  expiresAt DateTime
+  isRevoked Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Profile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  firstName String
+  lastName  String
+  avatarUrl String?
+  bio       String?
+  phone     String?
+  collegeId String?
+  branchId  String?
+  batchId   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  college College? @relation(fields: [collegeId], references: [id])
+  branch  Branch?  @relation(fields: [branchId], references: [id])
+  batch   Batch?   @relation(fields: [batchId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// RBAC
+// -----------------------------------------------------------------------------
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  permissions RolePermission[]
+  users       UserRole[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  action      String   @unique // e.g., 'event:create'
+  description String?
+  createdAt   DateTime @default(now())
+
+  roles RolePermission[]
+}
+
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+}
+
+model UserRole {
+  userId String
+  roleId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+}
+
+// -----------------------------------------------------------------------------
+// ORGANIZATIONS
+// -----------------------------------------------------------------------------
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  domain    String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  colleges College[]
+}
+
+model College {
+  id             String   @id @default(uuid())
+  organizationId String
+  name           String
+  code           String   @unique
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branches     Branch[]
+  profiles     Profile[]
+}
+
+model Branch {
+  id        String   @id @default(uuid())
+  collegeId String
+  name      String
+  code      String
+  createdAt DateTime @default(now())
+
+  college  College   @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  profiles Profile[]
+
+  @@unique([collegeId, code])
+}
+
+model Batch {
+  id        String   @id @default(uuid())
+  year      Int
+  name      String
+  createdAt DateTime @default(now())
+
+  profiles Profile[]
+}
+
+model RegistrationNumberFormat {
+  id        String   @id @default(uuid())
+  regex     String
+  formatMap Json // maps regex capture groups to college/branch/batch
+  createdAt DateTime @default(now())
+}
+
+// -----------------------------------------------------------------------------
+// GROUPS
+// -----------------------------------------------------------------------------
+
+model Group {
+  id             String   @id @default(uuid())
+  name           String
+  type           String // SYSTEM, CUSTOM, EVENT
+  autoAssignRule Json? // Rule for SYSTEM groups
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  members GroupMember[]
+}
+
+model GroupMember {
+  groupId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// FEST
+// -----------------------------------------------------------------------------
+
+model Fest {
+  id         String   @id @default(uuid())
+  name       String
+  year       Int
+  startDate  DateTime
+  endDate    DateTime
+  isActive   Boolean  @default(false)
+  guidelines String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  registrations FestRegistration[]
+  events        Event[]
+  tickets       Ticket[]
+}
+
+model FestRegistration {
+  id        String   @id @default(uuid())
+  festId    String
+  userId    String
+  status    String   @default("REGISTERED")
+  createdAt DateTime @default(now())
+
+  fest Fest @relation(fields: [festId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([festId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// TICKETS
+// -----------------------------------------------------------------------------
+
+model Ticket {
+  id           String   @id @default(uuid())
+  ticketNumber String   @unique
+  festId       String
+  userId       String
+  qrSecret     String
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  fest Fest @relation(fields: [festId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([festId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// EVENTS
+// -----------------------------------------------------------------------------
+
+model Event {
+  id              String    @id @default(uuid())
+  festId          String
+  name            String
+  description     String
+  category        String
+  status          String    @default("DRAFT") // DRAFT, PUBLISHED, REGISTRATION_OPEN, REGISTRATION_CLOSED, STARTED, COMPLETED, ARCHIVED
+  startDate       DateTime
+  endDate         DateTime
+  venue           String?
+  maxParticipants Int?
+  minTeamSize     Int       @default(1)
+  maxTeamSize     Int       @default(1)
+  isPublic        Boolean   @default(true)
+  bannerUrl       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  fest          Fest                @relation(fields: [festId], references: [id], onDelete: Cascade)
+  organizers    EventOrganizer[]
+  form          EventForm?
+  registrations EventRegistration[]
+  attendances   Attendance[]
+  expenses      Expense[]
+  winners       EventWinner[]
+}
+
+model EventOrganizer {
+  eventId String
+  userId  String
+  role    String // PRIMARY, SECONDARY
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, userId])
+}
+
+model EventForm {
+  id        String   @id @default(uuid())
+  eventId   String   @unique
+  schema    Json // Array of form fields
+  isActive  Boolean  @default(true)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  event       Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  submissions EventFormSubmission[]
+}
+
+model EventFormSubmission {
+  id        String   @id @default(uuid())
+  formId    String
+  userId    String
+  answers   Json
+  createdAt DateTime @default(now())
+
+  form EventForm @relation(fields: [formId], references: [id], onDelete: Cascade)
+  user User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  eventRegistration EventRegistration?
+}
+
+model EventRegistration {
+  id              String   @id @default(uuid())
+  eventId         String
+  userId          String
+  submissionId    String?  @unique
+  status          String   @default("PENDING") // PENDING, APPROVED, REJECTED, WAITLISTED, CANCELLED, CHECKED_IN, COMPLETED
+  rejectionReason String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  event      Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  submission EventFormSubmission? @relation(fields: [submissionId], references: [id])
+
+  @@unique([eventId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// WORKFLOW ENGINE
+// -----------------------------------------------------------------------------
+
+model WorkflowDefinition {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  stages    WorkflowStage[]
+  instances WorkflowInstance[]
+}
+
+model WorkflowStage {
+  id           String  @id @default(uuid())
+  definitionId String
+  name         String
+  orderIndex   Int
+  approverRole String?
+
+  definition          WorkflowDefinition   @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  transitions         WorkflowTransition[] @relation("FromStage")
+  incomingTransitions WorkflowTransition[] @relation("ToStage")
+  instances           WorkflowInstance[]
+}
+
+model WorkflowTransition {
+  id          String @id @default(uuid())
+  fromStageId String
+  toStageId   String
+  action      String // APPROVE, REJECT, ESCALATE
+
+  fromStage WorkflowStage @relation("FromStage", fields: [fromStageId], references: [id], onDelete: Cascade)
+  toStage   WorkflowStage @relation("ToStage", fields: [toStageId], references: [id], onDelete: Cascade)
+}
+
+model WorkflowInstance {
+  id             String   @id @default(uuid())
+  definitionId   String
+  currentStageId String?
+  entityType     String // REGISTRATION, EXPENSE
+  entityId       String
+  status         String   @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, CANCELLED
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  definition   WorkflowDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  currentStage WorkflowStage?     @relation(fields: [currentStageId], references: [id])
+  actions      WorkflowAction[]
+}
+
+model WorkflowAction {
+  id         String   @id @default(uuid())
+  instanceId String
+  actorId    String
+  action     String
+  comments   String?
+  createdAt  DateTime @default(now())
+
+  instance WorkflowInstance @relation(fields: [instanceId], references: [id], onDelete: Cascade)
+  actor    User             @relation(fields: [actorId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------------------------------------------
+// ATTENDANCE
+// -----------------------------------------------------------------------------
+
+model Attendance {
+  id        String   @id @default(uuid())
+  eventId   String
+  userId    String
+  scannedBy String?
+  scannedAt DateTime @default(now())
+
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+// -----------------------------------------------------------------------------
+// EXPENSES
+// -----------------------------------------------------------------------------
+
+model ExpenseCategory {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  expenses Expense[]
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  eventId     String?
+  categoryId  String
+  submitterId String
+  amount      Float
+  description String
+  receiptUrl  String?
+  status      String   @default("DRAFT") // DRAFT, PENDING, APPROVED, REJECTED, NEEDS_REVISION
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event     Event?          @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  category  ExpenseCategory @relation(fields: [categoryId], references: [id])
+  submitter User            @relation(fields: [submitterId], references: [id])
+}
+
+// -----------------------------------------------------------------------------
+// CHAT
+// -----------------------------------------------------------------------------
+
+model Conversation {
+  id        String   @id @default(uuid())
+  type      String // DIRECT, GROUP, EVENT
+  name      String?
+  eventId   String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  members  ConversationMember[]
+  messages Message[]
+}
+
+model ConversationMember {
+  conversationId String
+  userId         String
+  role           String   @default("MEMBER") // ADMIN, MEMBER
+  joinedAt       DateTime @default(now())
+  lastReadAt     DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([conversationId, userId])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  senderId       String
+  content        String?
+  type           String   @default("TEXT") // TEXT, IMAGE, VIDEO, FILE, SYSTEM
+  replyToId      String?
+  isDeleted      Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  replyTo      Message?     @relation("Replies", fields: [replyToId], references: [id])
+  replies      Message[]    @relation("Replies")
+
+  attachments MessageAttachment[]
+  reactions   MessageReaction[]
+}
+
+model MessageAttachment {
+  id        String   @id @default(uuid())
+  messageId String
+  fileUrl   String
+  fileType  String
+  fileSize  Int
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+}
+
+model MessageReaction {
+  id        String   @id @default(uuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+}
+
+// -----------------------------------------------------------------------------
+// NOTIFICATIONS
+// -----------------------------------------------------------------------------
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  body      String
+  data      Json?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+}
+
+model NotificationPreference {
+  id           String  @id @default(uuid())
+  userId       String
+  type         String
+  inAppEnabled Boolean @default(true)
+  pushEnabled  Boolean @default(true)
+  emailEnabled Boolean @default(true)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, type])
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  platform  String // IOS, ANDROID, WEB
+  lastUsed  DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// -----------------------------------------------------------------------------
+// FILES
+// -----------------------------------------------------------------------------
+
+model File {
+  id         String   @id @default(uuid())
+  uploaderId String
+  url        String
+  key        String   @unique
+  type       String
+  size       Int
+  status     String   @default("PENDING") // PENDING, CONFIRMED, ORPHANED
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// -----------------------------------------------------------------------------
+// GAMIFICATION
+// -----------------------------------------------------------------------------
+
+model UserXp {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  totalXp   Int      @default(0)
+  level     Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BadgeDefinition {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String
+  iconUrl     String
+  condition   String
+  xpReward    Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  userBadges UserBadge[]
+}
+
+model UserBadge {
+  id       String   @id @default(uuid())
+  userId   String
+  badgeId  String
+  earnedAt DateTime @default(now())
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badge BadgeDefinition @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, badgeId])
+}
+
+model UserStreak {
+  id            String    @id @default(uuid())
+  userId        String    @unique
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
+  freezes       Int       @default(0)
+  lastCheckIn   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model LeaderboardCache {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  rank      Int
+  totalXp   Int
+  level     Int
+  updatedAt DateTime @default(now())
+}
+
+// -----------------------------------------------------------------------------
+// FEEDBACK
+// -----------------------------------------------------------------------------
+
+model Feedback {
+  id            String   @id @default(uuid())
+  userId        String?
+  category      String
+  content       String
+  status        String   @default("NEW") // NEW, REVIEWED, RESOLVED, DISMISSED
+  adminResponse String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+// -----------------------------------------------------------------------------
+// AUDIT
+// -----------------------------------------------------------------------------
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  actorId      String?
+  action       String
+  resourceType String
+  resourceId   String?
+  oldValue     Json?
+  newValue     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+}
+
+// -----------------------------------------------------------------------------
+// ADMIN
+// -----------------------------------------------------------------------------
+
+model AppSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}
+
+model EventWinner {
+  id           String   @id @default(uuid())
+  eventId      String
+  userId       String
+  position     Int      // 1 = 1st place, 2 = 2nd, etc.
+  prize        String?
+  note         String?
+  recordedById String
+  createdAt    DateTime @default(now())
+
+  event      Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user       User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recordedBy User  @relation("WinnerRecorder", fields: [recordedById], references: [id])
+
+  @@unique([eventId, userId])
+  @@unique([eventId, position])
+}
