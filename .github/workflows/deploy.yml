@@ -14,12 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
@@ -42,7 +42,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1
@@ -55,7 +55,7 @@ jobs:
             set -e
 
             echo "📦 Pulling latest code..."
-            cd /home/ubuntu/techgram-backend
+            cd /home/ubuntu/college_fest_backend
             git pull origin main
 
             echo "🐳 Building and restarting containers..."
