@@ -1,0 +1,87 @@
+# Docker Compose — Production (single EC2 instance)
+# Usage: docker compose -f docker-compose.prod.yml up -d
+
+services:
+  # ── PostgreSQL ───────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-techgram_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-techgram_db}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-techgram_user} -d ${DB_NAME:-techgram_db}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Redis ────────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── NestJS Backend ──────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.production
+    environment:
+      # Override DB/Redis to use container names
+      DATABASE_URL: postgresql://${DB_USER:-techgram_user}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-techgram_db}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  # ── Nginx Reverse Proxy (SSL Termination) ──────
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot-etc:/etc/letsencrypt:ro
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/certbot
+    depends_on:
+      - backend
+
+  # ── Certbot (SSL Certificate) ──────────────────
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - webroot:/var/www/certbot
+    # Run once to get cert, then use cron for renewal
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+volumes:
+  pgdata:
+  redisdata:
+  certbot-etc:
+  certbot-var:
+  webroot:

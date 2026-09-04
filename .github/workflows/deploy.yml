@@ -1,0 +1,71 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:  # Allow manual trigger
+
+env:
+  DOCKER_IMAGE: techgram-backend
+
+jobs:
+  # ── Job 1: Build & Test ────────────────────────────────
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Run lint
+        run: npm run lint --if-present
+
+  # ── Job 2: Deploy to EC2 ───────────────────────────────
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -e
+
+            echo "📦 Pulling latest code..."
+            cd /home/ubuntu/techgram-backend
+            git pull origin main
+
+            echo "🐳 Building and restarting containers..."
+            docker compose -f docker-compose.prod.yml build --no-cache backend
+            docker compose -f docker-compose.prod.yml up -d
+
+            echo "🧹 Cleaning up old images..."
+            docker image prune -f
+
+            echo "✅ Deployment complete!"
+            echo "Checking health..."
+            sleep 10
+            curl -sf http://localhost:3000/api/docs > /dev/null && echo "✅ Backend is healthy!" || echo "❌ Backend health check failed"
