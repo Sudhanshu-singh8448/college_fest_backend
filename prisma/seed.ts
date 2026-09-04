@@ -184,12 +184,14 @@ async function main() {
     create: {
       registrationNumber: 'ADMIN001',
       email: 'admin@techgram.app',
-      username: 'super_admin',
       passwordHash: adminPasswordHash,
-      firstName: 'Super',
-      lastName: 'Admin',
-      emailVerified: true,
       status: 'ACTIVE',
+      profile: {
+        create: {
+          firstName: 'Super',
+          lastName: 'Admin',
+        },
+      },
     },
   });
 
