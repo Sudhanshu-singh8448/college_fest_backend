@@ -8,22 +8,22 @@ export declare class OrganizationsController {
     findAll(): Promise<({
         colleges: ({
             branches: {
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 collegeId: string;
                 code: string;
             }[];
         } & {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             organizationId: string;
             code: string;
         })[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         domain: string | null;
@@ -31,36 +31,36 @@ export declare class OrganizationsController {
     findOne(id: string): Promise<{
         colleges: ({
             branches: {
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
                 collegeId: string;
                 code: string;
             }[];
         } & {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             organizationId: string;
             code: string;
         })[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         domain: string | null;
     }>;
     create(dto: CreateOrganizationDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         domain: string | null;
     }>;
     update(id: string, dto: UpdateOrganizationDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         domain: string | null;

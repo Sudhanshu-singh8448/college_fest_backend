@@ -18,6 +18,11 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
+    // Log unhandled errors for debugging
+    if (!(exception instanceof HttpException)) {
+      console.error('❌ Unhandled exception:', exception);
+    }
+
     const errorResponse = {
       success: false,
       error:

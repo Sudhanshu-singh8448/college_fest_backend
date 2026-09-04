@@ -7,61 +7,61 @@ export declare class WorkflowService {
     constructor(prisma: PrismaService);
     getWorkflows(): Promise<({
         stages: {
-            name: string;
             id: string;
+            name: string;
             orderIndex: number;
             approverRole: string | null;
             definitionId: string;
         }[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     })[]>;
     createWorkflow(dto: CreateWorkflowDto): Promise<{
         stages: {
-            name: string;
             id: string;
+            name: string;
             orderIndex: number;
             approverRole: string | null;
             definitionId: string;
         }[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     }>;
     getWorkflowById(id: string): Promise<{
         stages: {
-            name: string;
             id: string;
+            name: string;
             orderIndex: number;
             approverRole: string | null;
             definitionId: string;
         }[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     }>;
     updateWorkflow(id: string, dto: UpdateWorkflowDto): Promise<{
         stages: {
-            name: string;
             id: string;
+            name: string;
             orderIndex: number;
             approverRole: string | null;
             definitionId: string;
         }[];
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     }>;
     startWorkflowInstance(definitionId: string, entityType: string, entityId: string): Promise<{
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         entityType: string;
         entityId: string;
         definitionId: string;
@@ -69,9 +69,9 @@ export declare class WorkflowService {
     }>;
     executeAction(instanceId: string, dto: WorkflowActionDto, actorId: string, hasGlobalPerm: boolean): Promise<{
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         entityType: string;
         entityId: string;
         definitionId: string;
@@ -79,17 +79,17 @@ export declare class WorkflowService {
     }>;
     getWorkflowHistory(instanceId: string, userId: string, hasGlobalPerm: boolean): Promise<({
         actor: {
+            id: string;
             profile: {
                 firstName: string;
                 lastName: string;
             } | null;
-            id: string;
         };
     } & {
-        comments: string | null;
         id: string;
         createdAt: Date;
         action: string;
+        comments: string | null;
         instanceId: string;
         actorId: string;
     })[]>;

@@ -5,13 +5,13 @@ export declare class GamificationController {
     constructor(gamificationService: GamificationService);
     getMyProfile(user: any): Promise<{
         user: {
+            id: string;
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
                 avatarUrl: string | null;
             } | null;
-            id: string;
-            registrationNumber: string;
         } | null;
         xp: {
             total: number;
@@ -24,9 +24,9 @@ export declare class GamificationController {
             id: string;
             earnedAt: Date;
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
@@ -47,13 +47,13 @@ export declare class GamificationController {
             level: number;
             levelName: string;
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         }[];
         meta: {
@@ -80,28 +80,28 @@ export declare class GamificationController {
         xpToNextRank: number | null;
         nearbyRanks: {
             above: {
-                userId: string;
+                level: number;
                 id: string;
                 updatedAt: Date;
+                userId: string;
                 totalXp: number;
-                level: number;
                 rank: number;
             } | null;
             below: {
-                userId: string;
+                level: number;
                 id: string;
                 updatedAt: Date;
+                userId: string;
                 totalXp: number;
-                level: number;
                 rank: number;
             } | null;
         };
         message?: undefined;
     }>;
     getAllBadges(): Promise<{
-        description: string;
-        name: string;
         id: string;
+        name: string;
+        description: string;
         createdAt: Date;
         iconUrl: string;
         condition: string;
@@ -110,9 +110,9 @@ export declare class GamificationController {
     getMyBadges(user: any): Promise<{
         earned: {
             earnedAt: Date;
-            description: string;
-            name: string;
             id: string;
+            name: string;
+            description: string;
             createdAt: Date;
             iconUrl: string;
             condition: string;

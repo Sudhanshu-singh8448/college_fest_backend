@@ -22,6 +22,9 @@ const update_reg_format_dto_1 = require("./dto/update-reg-format.dto");
 const set_event_winners_dto_1 = require("./dto/set-event-winners.dto");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 function requirePerm(user, perm) {
+    console.log(`[DEBUG] requirePerm checking for ${perm}`);
+    console.log(`[DEBUG] user.roles:`, user?.roles);
+    console.log(`[DEBUG] user.permissions:`, user?.permissions);
     if (!user.permissions?.includes(perm)) {
         throw new common_1.ForbiddenException(`Permission "${perm}" required`);
     }

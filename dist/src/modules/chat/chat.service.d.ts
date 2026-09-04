@@ -12,100 +12,100 @@ export declare class ChatService {
         lastReadAt: Date;
         lastMessage: {
             sender: {
+                id: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
             };
         } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
             type: string;
             content: string | null;
             replyToId: string | null;
             conversationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             isDeleted: boolean;
             senderId: string;
         };
         unreadCount: number;
         messages: ({
             sender: {
+                id: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
             };
         } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
             type: string;
             content: string | null;
             replyToId: string | null;
             conversationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             isDeleted: boolean;
             senderId: string;
         })[];
         members: ({
             user: {
+                id: string;
+                email: string | null;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                email: string | null;
             };
         } & {
             role: string;
-            conversationId: string;
             userId: string;
+            conversationId: string;
             joinedAt: Date;
             lastReadAt: Date;
         })[];
-        type: string;
-        name: string | null;
         id: string;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         eventId: string | null;
     }[]>;
     createConversation(dto: CreateConversationDto, creatorId: string): Promise<{
-        type: string;
-        name: string | null;
         id: string;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         eventId: string | null;
     }>;
     getConversationById(id: string, userId: string): Promise<{
         members: ({
             user: {
+                id: string;
+                registrationNumber: string;
+                email: string | null;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
-                email: string | null;
             };
         } & {
             role: string;
-            conversationId: string;
             userId: string;
+            conversationId: string;
             joinedAt: Date;
             lastReadAt: Date;
         })[];
     } & {
-        type: string;
-        name: string | null;
         id: string;
+        name: string | null;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         eventId: string | null;
     }>;
     getMessages(conversationId: string, userId: string, query: MessageQueryDto): Promise<{
@@ -119,45 +119,45 @@ export declare class ChatService {
                 messageId: string;
             }[];
             sender: {
+                id: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
             };
             replyTo: {
-                content: string | null;
                 id: string;
+                content: string | null;
                 sender: {
+                    id: string;
                     profile: {
                         firstName: string;
                     } | null;
-                    id: string;
                 };
             } | null;
             reactions: ({
                 user: {
+                    id: string;
                     profile: {
                         firstName: string;
                     } | null;
-                    id: string;
                 };
             } & {
-                userId: string;
                 id: string;
                 createdAt: Date;
+                userId: string;
                 emoji: string;
                 messageId: string;
             })[];
         } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
             type: string;
             content: string | null;
             replyToId: string | null;
             conversationId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
             isDeleted: boolean;
             senderId: string;
         })[];
@@ -173,44 +173,44 @@ export declare class ChatService {
             messageId: string;
         }[];
         sender: {
+            id: string;
             profile: {
                 firstName: string;
                 lastName: string;
                 avatarUrl: string | null;
             } | null;
-            id: string;
         };
         replyTo: {
-            content: string | null;
             id: string;
+            content: string | null;
             senderId: string;
         } | null;
         reactions: {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             emoji: string;
             messageId: string;
         }[];
     } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         type: string;
         content: string | null;
         replyToId: string | null;
         conversationId: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         isDeleted: boolean;
         senderId: string;
     }>;
     updateMessage(messageId: string, userId: string, dto: UpdateMessageDto): Promise<{
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
         type: string;
         content: string | null;
         replyToId: string | null;
         conversationId: string;
-        id: string;
-        createdAt: Date;
-        updatedAt: Date;
         isDeleted: boolean;
         senderId: string;
     }>;
@@ -219,15 +219,15 @@ export declare class ChatService {
     }>;
     addReaction(messageId: string, userId: string, emoji: string): Promise<{
         user: {
+            id: string;
             profile: {
                 firstName: string;
             } | null;
-            id: string;
         };
     } & {
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         emoji: string;
         messageId: string;
     }>;

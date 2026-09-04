@@ -19,6 +19,9 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 /** Reusable permission guard helper */
 function requirePerm(user: any, perm: string) {
+  console.log(`[DEBUG] requirePerm checking for ${perm}`);
+  console.log(`[DEBUG] user.roles:`, user?.roles);
+  console.log(`[DEBUG] user.permissions:`, user?.permissions);
   if (!user.permissions?.includes(perm)) {
     throw new ForbiddenException(`Permission "${perm}" required`);
   }

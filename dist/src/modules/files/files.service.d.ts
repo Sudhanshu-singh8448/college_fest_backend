@@ -17,12 +17,12 @@ export declare class FilesService {
     }>;
     confirmUpload(userId: string, dto: ConfirmUploadDto): Promise<{
         url: string;
-        type: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         key: string;
+        type: string;
         size: number;
         uploaderId: string;
     }>;

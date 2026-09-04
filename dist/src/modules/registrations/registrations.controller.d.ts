@@ -5,11 +5,11 @@ export declare class RegistrationsController {
     private readonly registrationsService;
     constructor(registrationsService: RegistrationsService);
     register(eventId: string, dto: CreateRegistrationDto, user: any): Promise<{
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -17,7 +17,6 @@ export declare class RegistrationsController {
     getEventRegistrations(eventId: string, user: any): Promise<({
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -29,47 +28,48 @@ export declare class RegistrationsController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         submission: {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             answers: import("@prisma/client/runtime/client").JsonValue;
             formId: string;
         } | null;
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
     })[]>;
     getMyRegistrations(user: any): Promise<({
         event: {
-            name: string;
             id: string;
+            name: string;
             status: string;
             startDate: Date;
         };
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -77,7 +77,6 @@ export declare class RegistrationsController {
     getRegistrationById(id: string, user: any): Promise<{
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -89,24 +88,25 @@ export declare class RegistrationsController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         event: {
-            description: string;
-            name: string;
             id: string;
-            status: string;
+            name: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             deletedAt: Date | null;
             startDate: Date;
             endDate: Date;
@@ -120,28 +120,28 @@ export declare class RegistrationsController {
             bannerUrl: string | null;
         };
         submission: {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             answers: import("@prisma/client/runtime/client").JsonValue;
             formId: string;
         } | null;
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
     }>;
     updateStatus(id: string, dto: UpdateRegistrationStatusDto, user: any): Promise<{
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;

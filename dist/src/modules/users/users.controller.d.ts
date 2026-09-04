@@ -8,7 +8,6 @@ export declare class UsersController {
     constructor(usersService: UsersService);
     getMe(user: any): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -20,64 +19,64 @@ export declare class UsersController {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
-        } | null;
-        userXp: {
             userId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            totalXp: number;
-            level: number;
         } | null;
         roles: ({
             role: {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
+                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
         } & {
-            userId: string;
             roleId: string;
+            userId: string;
         })[];
+        userXp: {
+            level: number;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            totalXp: number;
+        } | null;
         userBadges: ({
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
                 xpReward: number;
             };
         } & {
-            userId: string;
             id: string;
+            userId: string;
             badgeId: string;
             earnedAt: Date;
         })[];
         userStreaks: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             currentStreak: number;
             longestStreak: number;
             freezes: number;
             lastCheckIn: Date | null;
         }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     updateMyProfile(user: any, dto: UpdateProfileDto): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -89,13 +88,14 @@ export declare class UsersController {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
+            userId: string;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     deleteAccount(user: any): Promise<{
@@ -104,7 +104,6 @@ export declare class UsersController {
     searchUsers(query: string, pagination: PaginationDto): Promise<{
         items: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -116,13 +115,14 @@ export declare class UsersController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         }[];
         meta: {
@@ -134,7 +134,6 @@ export declare class UsersController {
     }>;
     getUserById(id: string): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -146,49 +145,50 @@ export declare class UsersController {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
-        } | null;
-        userXp: {
             userId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            totalXp: number;
-            level: number;
         } | null;
         roles: ({
             role: {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
+                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
         } & {
-            userId: string;
             roleId: string;
+            userId: string;
         })[];
+        userXp: {
+            level: number;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            totalXp: number;
+        } | null;
         userBadges: ({
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
                 xpReward: number;
             };
         } & {
-            userId: string;
             id: string;
+            userId: string;
             badgeId: string;
             earnedAt: Date;
         })[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     updateUserStatus(id: string, dto: UpdateUserStatusDto): Promise<{

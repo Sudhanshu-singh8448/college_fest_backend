@@ -5,12 +5,12 @@ export declare class FeedbackService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     createFeedback(userId: string, dto: CreateFeedbackDto): Promise<{
-        content: string;
-        userId: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string | null;
+        content: string;
         category: string;
         adminResponse: string | null;
     }>;
@@ -22,19 +22,19 @@ export declare class FeedbackService {
     }): Promise<{
         items: {
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
-                registrationNumber: string;
             } | null | undefined;
-            content: string;
-            userId: string | null;
             id: string;
-            status: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
+            userId: string | null;
+            content: string;
             category: string;
             adminResponse: string | null;
         }[];
@@ -46,12 +46,12 @@ export declare class FeedbackService {
         };
     }>;
     updateFeedback(id: string, userId: string, hasGlobalPerm: boolean, dto: UpdateFeedbackDto): Promise<{
-        content: string;
-        userId: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string | null;
+        content: string;
         category: string;
         adminResponse: string | null;
     }>;

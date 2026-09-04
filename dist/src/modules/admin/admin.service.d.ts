@@ -33,13 +33,13 @@ export declare class AdminService {
             totalXp: number;
             level: number;
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         }[];
         generatedAt: Date;
@@ -50,26 +50,26 @@ export declare class AdminService {
         limit?: number;
     }): Promise<{
         users: {
+            id: string;
+            createdAt: Date;
+            registrationNumber: string;
+            email: string | null;
+            status: string;
             profile: {
                 firstName: string;
                 lastName: string;
                 avatarUrl: string | null;
                 phone: string | null;
             } | null;
-            userXp: {
-                totalXp: number;
-                level: number;
-            } | null;
-            id: string;
-            registrationNumber: string;
-            email: string | null;
-            status: string;
-            createdAt: Date;
             roles: {
                 role: {
                     name: string;
                 };
             }[];
+            userXp: {
+                level: number;
+                totalXp: number;
+            } | null;
         }[];
         meta: {
             total: number;
@@ -127,27 +127,27 @@ export declare class AdminService {
         }[];
         pendingApprovals: ({
             event: {
-                name: string;
                 id: string;
+                name: string;
             } | null;
             category: {
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
             };
             submitter: {
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                registrationNumber: string;
             };
         } & {
-            description: string;
             id: string;
-            status: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             eventId: string | null;
             categoryId: string;
             amount: number;
@@ -158,12 +158,12 @@ export declare class AdminService {
     getAuditLogs(query: AuditLogQueryDto): Promise<{
         items: ({
             actor: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
-                registrationNumber: string;
             } | null;
         } & {
             id: string;
@@ -203,23 +203,23 @@ export declare class AdminService {
     }>;
     getEventWinners(eventId: string): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         };
         winners: ({
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         } & {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             eventId: string;
             position: number;
             prize: string | null;
@@ -229,23 +229,23 @@ export declare class AdminService {
     }>;
     setEventWinners(eventId: string, recordedById: string, dto: SetEventWinnersDto): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         };
         winners: ({
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         } & {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             eventId: string;
             position: number;
             prize: string | null;
@@ -254,16 +254,16 @@ export declare class AdminService {
         })[];
     }>;
     exportData(type: string): Promise<{
+        id: string;
+        createdAt: Date;
+        registrationNumber: string;
+        email: string | null;
+        status: string;
         profile: {
             firstName: string;
             lastName: string;
             phone: string | null;
         } | null;
-        id: string;
-        registrationNumber: string;
-        email: string | null;
-        status: string;
-        createdAt: Date;
         roles: {
             role: {
                 name: string;
@@ -278,12 +278,12 @@ export declare class AdminService {
             registrations: number;
         };
     } & {
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -297,21 +297,21 @@ export declare class AdminService {
         bannerUrl: string | null;
     })[] | ({
         user: {
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
             } | null;
-            registrationNumber: string;
         };
         event: {
             name: string;
         };
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -320,23 +320,23 @@ export declare class AdminService {
             name: string;
         } | null;
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
             } | null;
-            registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;
@@ -344,36 +344,36 @@ export declare class AdminService {
         submitterId: string;
     })[] | ({
         user: {
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
             } | null;
-            registrationNumber: string;
         };
         event: {
             name: string;
         };
     } & {
-        userId: string;
         id: string;
+        userId: string;
         eventId: string;
         scannedBy: string | null;
         scannedAt: Date;
     })[] | ({
         user: {
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
             } | null;
-            registrationNumber: string;
         } | null;
     } & {
-        content: string;
-        userId: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string | null;
+        content: string;
         category: string;
         adminResponse: string | null;
     })[]>;

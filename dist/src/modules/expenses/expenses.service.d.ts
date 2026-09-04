@@ -7,17 +7,18 @@ export declare class ExpensesService {
     constructor(prisma: PrismaService);
     createExpense(userId: string, dto: CreateExpenseDto): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         } | null;
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
+            id: string;
+            registrationNumber: string;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -29,16 +30,15 @@ export declare class ExpensesService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;
@@ -48,28 +48,28 @@ export declare class ExpensesService {
     listExpenses(userId: string, hasGlobalPerm: boolean, query: ExpenseQueryDto): Promise<{
         items: ({
             event: {
-                name: string;
                 id: string;
+                name: string;
             } | null;
             category: {
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
             };
             submitter: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         } & {
-            description: string;
             id: string;
-            status: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             eventId: string | null;
             categoryId: string;
             amount: number;
@@ -84,23 +84,24 @@ export declare class ExpensesService {
         };
     }>;
     listCategories(): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     }[]>;
     getExpenseById(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         } | null;
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
+            id: string;
+            registrationNumber: string;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -112,16 +113,15 @@ export declare class ExpensesService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;
@@ -130,8 +130,8 @@ export declare class ExpensesService {
     }>;
     updateStatus(id: string, userId: string, hasGlobalPerm: boolean, dto: UpdateExpenseStatusDto): Promise<{
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
@@ -139,11 +139,11 @@ export declare class ExpensesService {
             registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;

@@ -8,20 +8,20 @@ export declare class EventsService {
     findAll(query: EventQueryDto): Promise<{
         items: ({
             fest: {
-                name: string;
                 id: string;
+                name: string;
                 year: number;
             };
             _count: {
                 registrations: number;
             };
         } & {
-            description: string;
-            name: string;
             id: string;
-            status: string;
+            name: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             deletedAt: Date | null;
             startDate: Date;
             endDate: Date;
@@ -45,7 +45,6 @@ export declare class EventsService {
         organizers: {
             user: {
                 profile: {
-                    userId: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
@@ -57,13 +56,14 @@ export declare class EventsService {
                     collegeId: string | null;
                     branchId: string | null;
                     batchId: string | null;
+                    userId: string;
                 } | null;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 registrationNumber: string;
                 email: string | null;
                 status: string;
-                createdAt: Date;
-                updatedAt: Date;
                 deletedAt: Date | null;
             };
             role: string;
@@ -71,8 +71,8 @@ export declare class EventsService {
             eventId: string;
         }[];
         fest: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             year: number;
@@ -81,12 +81,12 @@ export declare class EventsService {
             isActive: boolean;
             guidelines: string | null;
         };
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -100,12 +100,12 @@ export declare class EventsService {
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, creatorId: string): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -119,12 +119,12 @@ export declare class EventsService {
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, userId: string, hasGlobalPerm: boolean): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -138,12 +138,12 @@ export declare class EventsService {
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -157,12 +157,12 @@ export declare class EventsService {
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, status: string, userId: string, hasGlobalPerm: boolean): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -178,7 +178,6 @@ export declare class EventsService {
     getOrganizers(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -190,13 +189,14 @@ export declare class EventsService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         role: string;

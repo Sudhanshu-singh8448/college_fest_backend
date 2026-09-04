@@ -11,11 +11,11 @@ export declare class GroupsService {
         _count: {
             members: number;
         };
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: Prisma.JsonValue | null;
     }[]>;
     findOne(id: string, userId: string): Promise<{
@@ -23,27 +23,27 @@ export declare class GroupsService {
         _count: {
             members: number;
         };
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: Prisma.JsonValue | null;
     }>;
     create(dto: CreateGroupDto, creatorId: string): Promise<{
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: Prisma.JsonValue | null;
     }>;
     update(id: string, dto: UpdateGroupDto, userId: string): Promise<{
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: Prisma.JsonValue | null;
     }>;
     remove(id: string): Promise<{
@@ -52,7 +52,6 @@ export declare class GroupsService {
     getMembers(groupId: string, userId: string): Promise<({
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -64,15 +63,16 @@ export declare class GroupsService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
     } & {

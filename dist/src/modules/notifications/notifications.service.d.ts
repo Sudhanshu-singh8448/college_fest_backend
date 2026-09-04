@@ -24,12 +24,12 @@ export declare class NotificationsService implements OnModuleInit {
     onModuleInit(): void;
     getNotifications(userId: string, query: NotificationQueryDto): Promise<{
         items: {
-            type: string;
-            title: string;
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             data: import("@prisma/client/runtime/client").JsonValue | null;
+            type: string;
+            title: string;
             body: string;
             isRead: boolean;
         }[];
@@ -45,9 +45,9 @@ export declare class NotificationsService implements OnModuleInit {
         markedRead: number;
     }>;
     getPreferences(userId: string): Promise<({
-        type: string;
-        userId: string;
         id: string;
+        userId: string;
+        type: string;
         inAppEnabled: boolean;
         pushEnabled: boolean;
         emailEnabled: boolean;
@@ -59,17 +59,17 @@ export declare class NotificationsService implements OnModuleInit {
         emailEnabled: boolean;
     })[]>;
     updatePreferences(userId: string, dto: UpdatePreferencesDto): Promise<{
-        type: string;
-        userId: string;
         id: string;
+        userId: string;
+        type: string;
         inAppEnabled: boolean;
         pushEnabled: boolean;
         emailEnabled: boolean;
     }[]>;
     registerDeviceToken(userId: string, dto: RegisterDeviceTokenDto): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         token: string;
         platform: string;
         lastUsed: Date;
@@ -79,12 +79,12 @@ export declare class NotificationsService implements OnModuleInit {
     }>;
     send(payload: SendNotificationPayload): Promise<void>;
     createInAppNotification(payload: SendNotificationPayload): Promise<{
-        type: string;
-        title: string;
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         data: import("@prisma/client/runtime/client").JsonValue | null;
+        type: string;
+        title: string;
         body: string;
         isRead: boolean;
     }>;

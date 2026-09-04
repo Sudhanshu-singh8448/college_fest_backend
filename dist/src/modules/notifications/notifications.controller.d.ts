@@ -8,12 +8,12 @@ export declare class NotificationsController {
     constructor(notificationsService: NotificationsService);
     getNotifications(query: NotificationQueryDto, user: any): Promise<{
         items: {
-            type: string;
-            title: string;
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             data: import("@prisma/client/runtime/client").JsonValue | null;
+            type: string;
+            title: string;
             body: string;
             isRead: boolean;
         }[];
@@ -29,9 +29,9 @@ export declare class NotificationsController {
         markedRead: number;
     }>;
     getPreferences(user: any): Promise<({
-        type: string;
-        userId: string;
         id: string;
+        userId: string;
+        type: string;
         inAppEnabled: boolean;
         pushEnabled: boolean;
         emailEnabled: boolean;
@@ -43,17 +43,17 @@ export declare class NotificationsController {
         emailEnabled: boolean;
     })[]>;
     updatePreferences(dto: UpdatePreferencesDto, user: any): Promise<{
-        type: string;
-        userId: string;
         id: string;
+        userId: string;
+        type: string;
         inAppEnabled: boolean;
         pushEnabled: boolean;
         emailEnabled: boolean;
     }[]>;
     registerDeviceToken(dto: RegisterDeviceTokenDto, user: any): Promise<{
-        userId: string;
         id: string;
         createdAt: Date;
+        userId: string;
         token: string;
         platform: string;
         lastUsed: Date;

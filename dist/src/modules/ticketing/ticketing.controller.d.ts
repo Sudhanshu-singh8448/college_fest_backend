@@ -4,31 +4,33 @@ export declare class TicketingController {
     constructor(ticketingService: TicketingService);
     getMyTickets(user: any): Promise<{
         fest: {
-            name: string;
             id: string;
+            name: string;
             year: number;
             startDate: Date;
             endDate: Date;
         };
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         isActive: boolean;
         festId: string;
         ticketNumber: string;
     }[]>;
     getTicketById(id: string, user: any): Promise<{
         approvedEvents: {
-            name: string;
             id: string;
+            name: string;
             startDate: Date;
             category: string;
             venue: string | null;
         }[];
         user: {
+            id: string;
+            registrationNumber: string;
+            email: string | null;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -40,22 +42,20 @@ export declare class TicketingController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
-            email: string | null;
         };
         fest: {
-            name: string;
             id: string;
+            name: string;
             year: number;
             startDate: Date;
             endDate: Date;
         };
-        userId: string;
         id: string;
         createdAt: Date;
         updatedAt: Date;
+        userId: string;
         isActive: boolean;
         festId: string;
         ticketNumber: string;

@@ -11,8 +11,8 @@ export declare class FestController {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -27,8 +27,8 @@ export declare class FestController {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -43,8 +43,8 @@ export declare class FestController {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -54,8 +54,8 @@ export declare class FestController {
         guidelines: string | null;
     }>;
     create(dto: CreateFestDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -65,8 +65,8 @@ export declare class FestController {
         guidelines: string | null;
     }>;
     update(id: string, dto: UpdateFestDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -76,13 +76,13 @@ export declare class FestController {
         guidelines: string | null;
     }>;
     getGuidelines(id: string): Promise<{
-        name: string;
         id: string;
+        name: string;
         guidelines: string | null;
     }>;
     updateGuidelines(id: string, dto: UpdateGuidelinesDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         guidelines: string | null;
     }>;
 }

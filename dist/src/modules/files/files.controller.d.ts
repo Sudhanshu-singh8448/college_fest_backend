@@ -12,12 +12,12 @@ export declare class FilesController {
     }>;
     confirmUpload(dto: ConfirmUploadDto, user: any): Promise<{
         url: string;
-        type: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         key: string;
+        type: string;
         size: number;
         uploaderId: string;
     }>;

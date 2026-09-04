@@ -14,7 +14,6 @@ export declare class JwtStrategy extends JwtStrategy_base {
         roles: string[];
         permissions: string[];
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -26,14 +25,15 @@ export declare class JwtStrategy extends JwtStrategy_base {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
+            userId: string;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         passwordHash: string;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
 }

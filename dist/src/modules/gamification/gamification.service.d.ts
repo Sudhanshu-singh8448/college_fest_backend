@@ -6,13 +6,13 @@ export declare class GamificationService {
     constructor(prisma: PrismaService);
     getMyProfile(userId: string): Promise<{
         user: {
+            id: string;
+            registrationNumber: string;
             profile: {
                 firstName: string;
                 lastName: string;
                 avatarUrl: string | null;
             } | null;
-            id: string;
-            registrationNumber: string;
         } | null;
         xp: {
             total: number;
@@ -25,9 +25,9 @@ export declare class GamificationService {
             id: string;
             earnedAt: Date;
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
@@ -48,13 +48,13 @@ export declare class GamificationService {
             level: number;
             levelName: string;
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                     avatarUrl: string | null;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         }[];
         meta: {
@@ -81,28 +81,28 @@ export declare class GamificationService {
         xpToNextRank: number | null;
         nearbyRanks: {
             above: {
-                userId: string;
+                level: number;
                 id: string;
                 updatedAt: Date;
+                userId: string;
                 totalXp: number;
-                level: number;
                 rank: number;
             } | null;
             below: {
-                userId: string;
+                level: number;
                 id: string;
                 updatedAt: Date;
+                userId: string;
                 totalXp: number;
-                level: number;
                 rank: number;
             } | null;
         };
         message?: undefined;
     }>;
     getAllBadges(): Promise<{
-        description: string;
-        name: string;
         id: string;
+        name: string;
+        description: string;
         createdAt: Date;
         iconUrl: string;
         condition: string;
@@ -111,9 +111,9 @@ export declare class GamificationService {
     getMyBadges(userId: string): Promise<{
         earned: {
             earnedAt: Date;
-            description: string;
-            name: string;
             id: string;
+            name: string;
+            description: string;
             createdAt: Date;
             iconUrl: string;
             condition: string;

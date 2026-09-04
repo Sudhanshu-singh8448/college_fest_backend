@@ -1,28 +1,75 @@
-version: '3.8'
-
 services:
-  db:
+  # ── PostgreSQL 16 ─────────────────────────────────
+  postgres:
     image: postgres:16-alpine
-    container_name: techgram_postgres
+    container_name: techgram-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
     environment:
       POSTGRES_USER: techgram_user
       POSTGRES_PASSWORD: techgram_password
       POSTGRES_DB: techgram_db
-    ports:
-      - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U techgram_user -d techgram_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
+  # ── Redis 7 ───────────────────────────────────────
   redis:
     image: redis:7-alpine
-    container_name: techgram_redis
+    container_name: techgram-redis
+    restart: unless-stopped
     ports:
-      - '6379:6379'
+      - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── MinIO (S3-compatible, replaces Cloudflare R2 locally) ──
+  minio:
+    image: minio/minio:latest
+    container_name: techgram-minio
     restart: unless-stopped
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web console
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── MinIO bucket auto-create ──────────────────────
+  minio-init:
+    image: minio/mc:latest
+    container_name: techgram-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 minioadmin minioadmin123;
+      mc mb myminio/techgram-uploads --ignore-existing;
+      mc anonymous set download myminio/techgram-uploads;
+      echo 'Bucket techgram-uploads created and public read enabled';
+      exit 0;
+      "
 
 volumes:
   postgres_data:
   redis_data:
+  minio_data:

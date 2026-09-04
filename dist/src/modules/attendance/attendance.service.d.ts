@@ -27,8 +27,9 @@ export declare class AttendanceService {
     }>;
     getEventAttendance(eventId: string, actorId: string, hasGlobalPerm: boolean): Promise<({
         user: {
+            id: string;
+            registrationNumber: string;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -40,13 +41,12 @@ export declare class AttendanceService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
         };
     } & {
-        userId: string;
         id: string;
+        userId: string;
         eventId: string;
         scannedBy: string | null;
         scannedAt: Date;

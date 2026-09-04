@@ -7,17 +7,18 @@ export declare class ExpensesController {
     constructor(expensesService: ExpensesService);
     create(dto: CreateExpenseDto, user: any): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         } | null;
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
+            id: string;
+            registrationNumber: string;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -29,16 +30,15 @@ export declare class ExpensesController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;
@@ -46,8 +46,8 @@ export declare class ExpensesController {
         submitterId: string;
     }>;
     listCategories(): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
     }[]>;
     getReports(user: any): Promise<{
@@ -87,28 +87,28 @@ export declare class ExpensesController {
     list(query: ExpenseQueryDto, user: any): Promise<{
         items: ({
             event: {
-                name: string;
                 id: string;
+                name: string;
             } | null;
             category: {
-                name: string;
                 id: string;
+                name: string;
                 createdAt: Date;
             };
             submitter: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
-                registrationNumber: string;
             };
         } & {
-            description: string;
             id: string;
-            status: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             eventId: string | null;
             categoryId: string;
             amount: number;
@@ -124,17 +124,18 @@ export declare class ExpensesController {
     }>;
     getById(id: string, user: any): Promise<{
         event: {
-            name: string;
             id: string;
+            name: string;
         } | null;
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
+            id: string;
+            registrationNumber: string;
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -146,16 +147,15 @@ export declare class ExpensesController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
-            id: string;
-            registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;
@@ -164,8 +164,8 @@ export declare class ExpensesController {
     }>;
     updateStatus(id: string, dto: UpdateExpenseStatusDto, user: any): Promise<{
         category: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
         };
         submitter: {
@@ -173,11 +173,11 @@ export declare class ExpensesController {
             registrationNumber: string;
         };
     } & {
-        description: string;
         id: string;
-        status: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         eventId: string | null;
         categoryId: string;
         amount: number;

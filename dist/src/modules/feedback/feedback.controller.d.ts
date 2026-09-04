@@ -5,31 +5,31 @@ export declare class FeedbackController {
     private readonly feedbackService;
     constructor(feedbackService: FeedbackService);
     create(dto: CreateFeedbackDto, user: any): Promise<{
-        content: string;
-        userId: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string | null;
+        content: string;
         category: string;
         adminResponse: string | null;
     }>;
     list(status?: string, category?: string, page?: number, limit?: number, user?: any): Promise<{
         items: {
             user: {
+                id: string;
+                registrationNumber: string;
                 profile: {
                     firstName: string;
                     lastName: string;
                 } | null;
-                id: string;
-                registrationNumber: string;
             } | null | undefined;
-            content: string;
-            userId: string | null;
             id: string;
-            status: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
+            userId: string | null;
+            content: string;
             category: string;
             adminResponse: string | null;
         }[];
@@ -41,12 +41,12 @@ export declare class FeedbackController {
         };
     }>;
     update(id: string, dto: UpdateFeedbackDto, user: any): Promise<{
-        content: string;
-        userId: string | null;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string | null;
+        content: string;
         category: string;
         adminResponse: string | null;
     }>;

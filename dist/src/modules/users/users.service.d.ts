@@ -6,7 +6,6 @@ export declare class UsersService {
     constructor(prisma: PrismaService);
     getMe(userId: string): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -18,64 +17,64 @@ export declare class UsersService {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
-        } | null;
-        userXp: {
             userId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            totalXp: number;
-            level: number;
         } | null;
         roles: ({
             role: {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
+                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
         } & {
-            userId: string;
             roleId: string;
+            userId: string;
         })[];
+        userXp: {
+            level: number;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            totalXp: number;
+        } | null;
         userBadges: ({
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
                 xpReward: number;
             };
         } & {
-            userId: string;
             id: string;
+            userId: string;
             badgeId: string;
             earnedAt: Date;
         })[];
         userStreaks: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
+            userId: string;
             currentStreak: number;
             longestStreak: number;
             freezes: number;
             lastCheckIn: Date | null;
         }[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     updateMyProfile(userId: string, dto: UpdateProfileDto): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -87,13 +86,14 @@ export declare class UsersService {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
+            userId: string;
         } | null;
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     softDeleteUser(userId: string): Promise<{
@@ -102,7 +102,6 @@ export declare class UsersService {
     searchUsers(query: string, pagination: PaginationDto): Promise<{
         items: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -114,13 +113,14 @@ export declare class UsersService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         }[];
         meta: {
@@ -132,7 +132,6 @@ export declare class UsersService {
     }>;
     getUserById(id: string): Promise<{
         profile: {
-            userId: string;
             id: string;
             createdAt: Date;
             updatedAt: Date;
@@ -144,49 +143,50 @@ export declare class UsersService {
             collegeId: string | null;
             branchId: string | null;
             batchId: string | null;
-        } | null;
-        userXp: {
             userId: string;
-            id: string;
-            createdAt: Date;
-            updatedAt: Date;
-            totalXp: number;
-            level: number;
         } | null;
         roles: ({
             role: {
-                description: string | null;
-                name: string;
                 id: string;
+                name: string;
+                description: string | null;
                 createdAt: Date;
                 updatedAt: Date;
             };
         } & {
-            userId: string;
             roleId: string;
+            userId: string;
         })[];
+        userXp: {
+            level: number;
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            userId: string;
+            totalXp: number;
+        } | null;
         userBadges: ({
             badge: {
-                description: string;
-                name: string;
                 id: string;
+                name: string;
+                description: string;
                 createdAt: Date;
                 iconUrl: string;
                 condition: string;
                 xpReward: number;
             };
         } & {
-            userId: string;
             id: string;
+            userId: string;
             badgeId: string;
             earnedAt: Date;
         })[];
         id: string;
+        createdAt: Date;
+        updatedAt: Date;
         registrationNumber: string;
         email: string | null;
         status: string;
-        createdAt: Date;
-        updatedAt: Date;
         deletedAt: Date | null;
     }>;
     updateUserStatus(id: string, status: string): Promise<{

@@ -10,8 +10,8 @@ export declare class FestService {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -26,8 +26,8 @@ export declare class FestService {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -37,8 +37,8 @@ export declare class FestService {
         guidelines: string | null;
     }>;
     create(dto: CreateFestDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -48,8 +48,8 @@ export declare class FestService {
         guidelines: string | null;
     }>;
     update(id: string, dto: UpdateFestDto): Promise<{
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;
@@ -59,20 +59,20 @@ export declare class FestService {
         guidelines: string | null;
     }>;
     getGuidelines(id: string): Promise<{
-        name: string;
         id: string;
+        name: string;
         guidelines: string | null;
     }>;
     updateGuidelines(id: string, guidelines: string): Promise<{
-        name: string;
         id: string;
+        name: string;
         guidelines: string | null;
     }>;
     autoRegisterForActiveFest(userId: string): Promise<{
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
+        status: string;
+        userId: string;
         festId: string;
     } | null>;
     getActiveFest(): Promise<({
@@ -81,8 +81,8 @@ export declare class FestService {
             events: number;
         };
     } & {
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
         year: number;

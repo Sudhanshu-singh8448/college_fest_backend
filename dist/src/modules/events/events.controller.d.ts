@@ -10,20 +10,20 @@ export declare class EventsController {
     findAll(query: EventQueryDto): Promise<{
         items: ({
             fest: {
-                name: string;
                 id: string;
+                name: string;
                 year: number;
             };
             _count: {
                 registrations: number;
             };
         } & {
-            description: string;
-            name: string;
             id: string;
-            status: string;
+            name: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             deletedAt: Date | null;
             startDate: Date;
             endDate: Date;
@@ -47,7 +47,6 @@ export declare class EventsController {
         organizers: {
             user: {
                 profile: {
-                    userId: string;
                     id: string;
                     createdAt: Date;
                     updatedAt: Date;
@@ -59,13 +58,14 @@ export declare class EventsController {
                     collegeId: string | null;
                     branchId: string | null;
                     batchId: string | null;
+                    userId: string;
                 } | null;
                 id: string;
+                createdAt: Date;
+                updatedAt: Date;
                 registrationNumber: string;
                 email: string | null;
                 status: string;
-                createdAt: Date;
-                updatedAt: Date;
                 deletedAt: Date | null;
             };
             role: string;
@@ -73,8 +73,8 @@ export declare class EventsController {
             eventId: string;
         }[];
         fest: {
-            name: string;
             id: string;
+            name: string;
             createdAt: Date;
             updatedAt: Date;
             year: number;
@@ -83,12 +83,12 @@ export declare class EventsController {
             isActive: boolean;
             guidelines: string | null;
         };
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -102,12 +102,12 @@ export declare class EventsController {
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, user: any): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -121,12 +121,12 @@ export declare class EventsController {
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, user: any): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -140,12 +140,12 @@ export declare class EventsController {
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -159,12 +159,12 @@ export declare class EventsController {
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, dto: UpdateEventStatusDto, user: any): Promise<{
-        description: string;
-        name: string;
         id: string;
-        status: string;
+        name: string;
+        description: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
         deletedAt: Date | null;
         startDate: Date;
         endDate: Date;
@@ -180,7 +180,6 @@ export declare class EventsController {
     getOrganizers(id: string, user: any): Promise<{
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -192,13 +191,14 @@ export declare class EventsController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         role: string;

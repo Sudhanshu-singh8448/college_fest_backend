@@ -15,6 +15,9 @@ let GlobalExceptionFilter = class GlobalExceptionFilter {
         const status = exception instanceof common_1.HttpException
             ? exception.getStatus()
             : common_1.HttpStatus.INTERNAL_SERVER_ERROR;
+        if (!(exception instanceof common_1.HttpException)) {
+            console.error('❌ Unhandled exception:', exception);
+        }
         const errorResponse = {
             success: false,
             error: exception instanceof common_1.HttpException

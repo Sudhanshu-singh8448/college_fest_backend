@@ -7,8 +7,8 @@ export declare class FormsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        eventId: string;
         isActive: boolean;
+        eventId: string;
         schema: import("@prisma/client/runtime/client").JsonValue;
         version: number;
     }>;
@@ -16,8 +16,8 @@ export declare class FormsService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        eventId: string;
         isActive: boolean;
+        eventId: string;
         schema: import("@prisma/client/runtime/client").JsonValue;
         version: number;
     }>;

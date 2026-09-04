@@ -7,11 +7,11 @@ export declare class RegistrationsService {
     private readonly workflowService;
     constructor(prisma: PrismaService, workflowService: WorkflowService);
     register(eventId: string, userId: string, dto: CreateRegistrationDto): Promise<{
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -19,7 +19,6 @@ export declare class RegistrationsService {
     getEventRegistrations(eventId: string, userId: string, hasGlobalPerm: boolean): Promise<({
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -31,30 +30,31 @@ export declare class RegistrationsService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         submission: {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             answers: import("@prisma/client/runtime/client").JsonValue;
             formId: string;
         } | null;
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -62,7 +62,6 @@ export declare class RegistrationsService {
     getRegistrationById(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -74,24 +73,25 @@ export declare class RegistrationsService {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
         event: {
-            description: string;
-            name: string;
             id: string;
-            status: string;
+            name: string;
+            description: string;
             createdAt: Date;
             updatedAt: Date;
+            status: string;
             deletedAt: Date | null;
             startDate: Date;
             endDate: Date;
@@ -105,28 +105,28 @@ export declare class RegistrationsService {
             bannerUrl: string | null;
         };
         submission: {
-            userId: string;
             id: string;
             createdAt: Date;
+            userId: string;
             answers: import("@prisma/client/runtime/client").JsonValue;
             formId: string;
         } | null;
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
     }>;
     updateStatus(id: string, dto: UpdateRegistrationStatusDto, actorId: string, hasGlobalPerm: boolean): Promise<{
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;
@@ -136,17 +136,17 @@ export declare class RegistrationsService {
     }>;
     getMyRegistrations(userId: string): Promise<({
         event: {
-            name: string;
             id: string;
+            name: string;
             status: string;
             startDate: Date;
         };
     } & {
-        userId: string;
         id: string;
-        status: string;
         createdAt: Date;
         updatedAt: Date;
+        status: string;
+        userId: string;
         eventId: string;
         submissionId: string | null;
         rejectionReason: string | null;

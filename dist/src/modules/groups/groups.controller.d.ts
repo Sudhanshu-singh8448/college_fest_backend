@@ -11,11 +11,11 @@ export declare class GroupsController {
         _count: {
             members: number;
         };
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: import("@prisma/client/runtime/client").JsonValue | null;
     }[]>;
     findOne(id: string, user: any): Promise<{
@@ -23,27 +23,27 @@ export declare class GroupsController {
         _count: {
             members: number;
         };
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: import("@prisma/client/runtime/client").JsonValue | null;
     }>;
     create(dto: CreateGroupDto, user: any): Promise<{
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: import("@prisma/client/runtime/client").JsonValue | null;
     }>;
     update(id: string, dto: UpdateGroupDto, user: any): Promise<{
-        type: string;
-        name: string;
         id: string;
+        name: string;
         createdAt: Date;
         updatedAt: Date;
+        type: string;
         autoAssignRule: import("@prisma/client/runtime/client").JsonValue | null;
     }>;
     remove(id: string): Promise<{
@@ -52,7 +52,6 @@ export declare class GroupsController {
     getMembers(id: string, user: any): Promise<({
         user: {
             profile: {
-                userId: string;
                 id: string;
                 createdAt: Date;
                 updatedAt: Date;
@@ -64,15 +63,16 @@ export declare class GroupsController {
                 collegeId: string | null;
                 branchId: string | null;
                 batchId: string | null;
+                userId: string;
             } | null;
         } & {
             id: string;
+            createdAt: Date;
+            updatedAt: Date;
             registrationNumber: string;
             email: string | null;
             passwordHash: string;
             status: string;
-            createdAt: Date;
-            updatedAt: Date;
             deletedAt: Date | null;
         };
     } & {
