@@ -172,6 +172,46 @@ async function main() {
   });
   console.log(`  ✅ Fest "${fest.name}" seeded`);
 
+  // ──────────────────────────────────────────────────
+  // 8. SUPER ADMIN USER
+  // ──────────────────────────────────────────────────
+  const bcrypt = await import('bcrypt');
+  const adminPasswordHash = await bcrypt.hash('Admin@2026', 12);
+  
+  const adminUser = await prisma.user.upsert({
+    where: { registrationNumber: 'ADMIN001' },
+    update: {},
+    create: {
+      registrationNumber: 'ADMIN001',
+      email: 'admin@techgram.app',
+      username: 'super_admin',
+      passwordHash: adminPasswordHash,
+      firstName: 'Super',
+      lastName: 'Admin',
+      emailVerified: true,
+      status: 'ACTIVE',
+    },
+  });
+
+  // Assign super_admin role
+  const superAdminRole = roles['super_admin'];
+  if (superAdminRole) {
+    await prisma.userRole.upsert({
+      where: {
+        userId_roleId: {
+          userId: adminUser.id,
+          roleId: superAdminRole.id,
+        },
+      },
+      update: {},
+      create: {
+        userId: adminUser.id,
+        roleId: superAdminRole.id,
+      },
+    });
+  }
+  console.log(`  ✅ Super admin user seeded (reg: ADMIN001, pass: Admin@2026)`);
+
   console.log('\n🎉 Database seeded successfully!');
 }
 
