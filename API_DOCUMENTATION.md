@@ -242,7 +242,7 @@ GET /api/v1/auth/verify-email?token=<token> consumes a 24-hour token and activat
 - GET /api/v1/users/me returns safe user, profile, roles, XP, badges, and streak data.
 - PATCH /api/v1/users/me accepts optional firstName, lastName, avatarUrl, bio, and phone. avatarUrl must be a URL and phone must be valid.
 - DELETE /api/v1/users/me sets status to SUSPENDED and records deletedAt.
-- GET /api/v1/users?q=<text>&page=1&limit=10 requires user:list and searches registration number, email, first name, and last name. Returns items and pagination meta.
+- GET /api/v1/users?q=<text>&page=1&limit=10 requires user:list and searches registration number, email, first name, and last name. Returns items and   pagination meta.
 - GET /api/v1/users/:id requires user:view and returns safe details with roles, XP, and badges.
 - PATCH /api/v1/users/:id/status requires user:ban. Body field status is ACTIVE, SUSPENDED, or BANNED.
 - GET /api/v1/users/:id/roles and POST /api/v1/users/:id/roles require role:manage. Assignment body:
