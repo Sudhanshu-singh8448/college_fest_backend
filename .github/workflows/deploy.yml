@@ -1,15 +1,12 @@
-name: Deploy to AWS EC2
+name: Build & Test
 
 on:
   push:
     branches: [main]
-  workflow_dispatch:  # Allow manual trigger
-
-env:
-  DOCKER_IMAGE: techgram-backend
+  pull_request:
+    branches: [main]
 
 jobs:
-  # ── Job 1: Build & Test ────────────────────────────────
   build-and-test:
     runs-on: ubuntu-latest
     steps:
@@ -34,16 +31,13 @@ jobs:
       - name: Run lint
         run: npm run lint --if-present
 
-  # ── Job 2: Deploy to EC2 ───────────────────────────────
+  # ── Deploy to EC2 (manual trigger only) ─────────────
   deploy:
     needs: build-and-test
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1
         with:
