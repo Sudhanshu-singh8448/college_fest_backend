@@ -45,14 +45,18 @@ let FeedbackService = class FeedbackService {
                 orderBy: { createdAt: 'desc' },
                 include: {
                     user: {
-                        select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true } } },
+                        select: {
+                            id: true,
+                            registrationNumber: true,
+                            profile: { select: { firstName: true, lastName: true } },
+                        },
                     },
                 },
             }),
             this.prisma.feedback.count({ where }),
         ]);
         return {
-            items: items.map(f => ({
+            items: items.map((f) => ({
                 ...f,
                 user: hasGlobalPerm ? f.user : undefined,
             })),

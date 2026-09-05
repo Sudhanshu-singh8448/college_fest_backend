@@ -14,7 +14,8 @@ export class FilesController {
   @Post('upload-url')
   @ApiOperation({
     summary: 'Request a pre-signed S3/R2 PUT URL for direct client-side upload',
-    description: 'Returns a signed URL valid for 10 minutes. Upload the file directly from the client to this URL. Then call /confirm.',
+    description:
+      'Returns a signed URL valid for 10 minutes. Upload the file directly from the client to this URL. Then call /confirm.',
   })
   requestUploadUrl(@Body() dto: RequestUploadUrlDto, @CurrentUser() user: any) {
     return this.filesService.requestUploadUrl(user.id, dto);
@@ -23,7 +24,8 @@ export class FilesController {
   @Post('confirm')
   @ApiOperation({
     summary: 'Confirm a completed file upload',
-    description: 'Verifies the file exists in storage via HeadObject and marks the file record as CONFIRMED.',
+    description:
+      'Verifies the file exists in storage via HeadObject and marks the file record as CONFIRMED.',
   })
   confirmUpload(@Body() dto: ConfirmUploadDto, @CurrentUser() user: any) {
     return this.filesService.confirmUpload(user.id, dto);

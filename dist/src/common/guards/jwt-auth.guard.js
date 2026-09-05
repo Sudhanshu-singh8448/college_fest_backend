@@ -30,9 +30,10 @@ let JwtAuthGuard = class JwtAuthGuard extends (0, passport_1.AuthGuard)('jwt') {
         }
         return super.canActivate(context);
     }
-    handleRequest(err, user, info) {
+    handleRequest(err, user, _info) {
         if (err || !user) {
-            throw err || new common_1.UnauthorizedException('Missing or invalid authentication token');
+            throw (err ||
+                new common_1.UnauthorizedException('Missing or invalid authentication token'));
         }
         return user;
     }

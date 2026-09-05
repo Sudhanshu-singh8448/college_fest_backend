@@ -78,10 +78,23 @@ let UsersService = class UsersService {
         const where = query
             ? {
                 OR: [
-                    { registrationNumber: { contains: query, mode: 'insensitive' } },
+                    {
+                        registrationNumber: {
+                            contains: query,
+                            mode: 'insensitive',
+                        },
+                    },
                     { email: { contains: query, mode: 'insensitive' } },
-                    { profile: { firstName: { contains: query, mode: 'insensitive' } } },
-                    { profile: { lastName: { contains: query, mode: 'insensitive' } } },
+                    {
+                        profile: {
+                            firstName: { contains: query, mode: 'insensitive' },
+                        },
+                    },
+                    {
+                        profile: {
+                            lastName: { contains: query, mode: 'insensitive' },
+                        },
+                    },
                 ],
                 deletedAt: null,
             }
@@ -162,7 +175,9 @@ let UsersService = class UsersService {
         const user = await this.prisma.user.findUnique({ where: { id: userId } });
         if (!user)
             throw new common_1.NotFoundException('User not found');
-        const role = await this.prisma.role.findUnique({ where: { name: roleName } });
+        const role = await this.prisma.role.findUnique({
+            where: { name: roleName },
+        });
         if (!role)
             throw new common_1.NotFoundException(`Role "${roleName}" not found`);
         const existing = await this.prisma.userRole.findUnique({

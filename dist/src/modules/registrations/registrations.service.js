@@ -68,7 +68,9 @@ let RegistrationsService = class RegistrationsService {
         return registration;
     }
     async getEventRegistrations(eventId, userId, hasGlobalPerm) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         if (!hasGlobalPerm) {
@@ -115,7 +117,9 @@ let RegistrationsService = class RegistrationsService {
             throw new common_1.NotFoundException('Registration not found');
         if (!hasGlobalPerm) {
             const org = await this.prisma.eventOrganizer.findUnique({
-                where: { eventId_userId: { eventId: registration.eventId, userId: actorId } },
+                where: {
+                    eventId_userId: { eventId: registration.eventId, userId: actorId },
+                },
             });
             if (!org)
                 throw new common_1.ForbiddenException('You are not an organizer for this event');
@@ -132,7 +136,9 @@ let RegistrationsService = class RegistrationsService {
         });
     }
     async approveAll(eventId, actorId, hasGlobalPerm) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         if (!hasGlobalPerm) {
@@ -152,7 +158,9 @@ let RegistrationsService = class RegistrationsService {
         return this.prisma.eventRegistration.findMany({
             where: { userId },
             include: {
-                event: { select: { id: true, name: true, startDate: true, status: true } },
+                event: {
+                    select: { id: true, name: true, startDate: true, status: true },
+                },
             },
             orderBy: { createdAt: 'desc' },
         });
@@ -171,7 +179,9 @@ let RegistrationsService = class RegistrationsService {
         return { message: 'Registration deleted successfully' };
     }
     async exportRegistrations(eventId, userId, hasGlobalPerm) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         if (!hasGlobalPerm) {
@@ -188,7 +198,7 @@ let RegistrationsService = class RegistrationsService {
                 submission: true,
             },
         });
-        return registrations.map(reg => ({
+        return registrations.map((reg) => ({
             registrationId: reg.id,
             status: reg.status,
             user: {

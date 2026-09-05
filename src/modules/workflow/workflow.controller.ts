@@ -1,4 +1,12 @@
-import { Controller, Get, Post, Patch, Param, Body, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { WorkflowService } from './workflow.service';
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
@@ -25,7 +33,9 @@ export class WorkflowController {
   @Post('workflows')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('workflow:configure')
-  @ApiOperation({ summary: 'Create a new workflow (requires workflow:configure)' })
+  @ApiOperation({
+    summary: 'Create a new workflow (requires workflow:configure)',
+  })
   async createWorkflow(@Body() dto: CreateWorkflowDto) {
     return this.workflowService.createWorkflow(dto);
   }
@@ -33,7 +43,9 @@ export class WorkflowController {
   @Get('workflows/:id')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('workflow:configure')
-  @ApiOperation({ summary: 'Get workflow details (requires workflow:configure)' })
+  @ApiOperation({
+    summary: 'Get workflow details (requires workflow:configure)',
+  })
   async getWorkflowById(@Param('id') id: string) {
     return this.workflowService.getWorkflowById(id);
   }
@@ -42,12 +54,17 @@ export class WorkflowController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('workflow:configure')
   @ApiOperation({ summary: 'Update workflow (requires workflow:configure)' })
-  async updateWorkflow(@Param('id') id: string, @Body() dto: UpdateWorkflowDto) {
+  async updateWorkflow(
+    @Param('id') id: string,
+    @Body() dto: UpdateWorkflowDto,
+  ) {
     return this.workflowService.updateWorkflow(id, dto);
   }
 
   @Post('workflow-instances/:id/action')
-  @ApiOperation({ summary: 'Execute an action on a workflow instance (approvers only)' })
+  @ApiOperation({
+    summary: 'Execute an action on a workflow instance (approvers only)',
+  })
   async executeAction(
     @Param('id') id: string,
     @Body() dto: WorkflowActionDto,

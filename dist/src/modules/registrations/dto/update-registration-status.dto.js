@@ -18,13 +18,35 @@ class UpdateRegistrationStatusDto {
 }
 exports.UpdateRegistrationStatusDto = UpdateRegistrationStatusDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'APPROVED', enum: ['PENDING', 'APPROVED', 'REJECTED', 'WAITLISTED', 'CANCELLED', 'CHECKED_IN', 'COMPLETED'] }),
+    (0, swagger_1.ApiProperty)({
+        example: 'APPROVED',
+        enum: [
+            'PENDING',
+            'APPROVED',
+            'REJECTED',
+            'WAITLISTED',
+            'CANCELLED',
+            'CHECKED_IN',
+            'COMPLETED',
+        ],
+    }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['PENDING', 'APPROVED', 'REJECTED', 'WAITLISTED', 'CANCELLED', 'CHECKED_IN', 'COMPLETED']),
+    (0, class_validator_1.IsIn)([
+        'PENDING',
+        'APPROVED',
+        'REJECTED',
+        'WAITLISTED',
+        'CANCELLED',
+        'CHECKED_IN',
+        'COMPLETED',
+    ]),
     __metadata("design:type", String)
 ], UpdateRegistrationStatusDto.prototype, "status", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Required if status is REJECTED', example: 'Does not meet minimum requirements.' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Required if status is REJECTED',
+        example: 'Does not meet minimum requirements.',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

@@ -29,13 +29,31 @@ class RequestUploadUrlDto {
 }
 exports.RequestUploadUrlDto = RequestUploadUrlDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: ['avatar', 'event_banner', 'chat_image', 'chat_video', 'document', 'receipt'] }),
+    (0, swagger_1.ApiProperty)({
+        enum: [
+            'avatar',
+            'event_banner',
+            'chat_image',
+            'chat_video',
+            'document',
+            'receipt',
+        ],
+    }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['avatar', 'event_banner', 'chat_image', 'chat_video', 'document', 'receipt']),
+    (0, class_validator_1.IsIn)([
+        'avatar',
+        'event_banner',
+        'chat_image',
+        'chat_video',
+        'document',
+        'receipt',
+    ]),
     __metadata("design:type", String)
 ], RequestUploadUrlDto.prototype, "purpose", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'MIME type of the file (e.g. image/jpeg, video/mp4)' }),
+    (0, swagger_1.ApiProperty)({
+        description: 'MIME type of the file (e.g. image/jpeg, video/mp4)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

@@ -17,9 +17,28 @@ class UpdateEventStatusDto {
 }
 exports.UpdateEventStatusDto = UpdateEventStatusDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'PUBLISHED', enum: ['DRAFT', 'PUBLISHED', 'REGISTRATION_OPEN', 'REGISTRATION_CLOSED', 'STARTED', 'COMPLETED', 'ARCHIVED'] }),
+    (0, swagger_1.ApiProperty)({
+        example: 'PUBLISHED',
+        enum: [
+            'DRAFT',
+            'PUBLISHED',
+            'REGISTRATION_OPEN',
+            'REGISTRATION_CLOSED',
+            'STARTED',
+            'COMPLETED',
+            'ARCHIVED',
+        ],
+    }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsIn)(['DRAFT', 'PUBLISHED', 'REGISTRATION_OPEN', 'REGISTRATION_CLOSED', 'STARTED', 'COMPLETED', 'ARCHIVED']),
+    (0, class_validator_1.IsIn)([
+        'DRAFT',
+        'PUBLISHED',
+        'REGISTRATION_OPEN',
+        'REGISTRATION_CLOSED',
+        'STARTED',
+        'COMPLETED',
+        'ARCHIVED',
+    ]),
     __metadata("design:type", String)
 ], UpdateEventStatusDto.prototype, "status", void 0);
 //# sourceMappingURL=update-event-status.dto.js.map

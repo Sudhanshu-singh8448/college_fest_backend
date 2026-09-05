@@ -104,12 +104,16 @@ let GroupsService = class GroupsService {
         });
     }
     async addMember(groupId, targetUserId, actorId) {
-        const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+        const group = await this.prisma.group.findUnique({
+            where: { id: groupId },
+        });
         if (!group) {
             throw new common_1.NotFoundException('Group not found');
         }
         await this.assertMembership(groupId, actorId);
-        const targetUser = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+        const targetUser = await this.prisma.user.findUnique({
+            where: { id: targetUserId },
+        });
         if (!targetUser) {
             throw new common_1.NotFoundException('User not found');
         }
@@ -125,7 +129,9 @@ let GroupsService = class GroupsService {
         return { message: 'Member added successfully' };
     }
     async removeMember(groupId, targetUserId, actorId) {
-        const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+        const group = await this.prisma.group.findUnique({
+            where: { id: groupId },
+        });
         if (!group) {
             throw new common_1.NotFoundException('Group not found');
         }
@@ -149,7 +155,7 @@ let GroupsService = class GroupsService {
             },
         });
         const formats = await this.prisma.registrationNumberFormat.findMany();
-        let parsedData = {};
+        const parsedData = {};
         for (const format of formats) {
             const regex = new RegExp(format.regex);
             const match = registrationNumber.match(regex);

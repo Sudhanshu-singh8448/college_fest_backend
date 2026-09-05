@@ -5,25 +5,27 @@ import {
   CallHandler,
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
+import { Request } from 'express';
 import { PrismaService } from '../../database/prisma.service';
+import { JwtUser } from '../interfaces/jwt-user.interface';
 
 @Injectable()
 export class AuditInterceptor implements NestInterceptor {
   constructor(private readonly prisma: PrismaService) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    const request = context.switchToHttp().getRequest();
-    const method = request.method;
+  intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const method: string = request.method;
 
     // Only log state-changing operations
     if (['GET', 'HEAD', 'OPTIONS'].includes(method)) {
       return next.handle();
     }
 
-    const user = request.user;
-    const url = request.url;
-    const ip = request.ip || request.connection?.remoteAddress;
-    const userAgent = request.headers['user-agent'];
+    const user = request.user as JwtUser | undefined;
+    const url: string = request.url;
+    const ip: string = request.ip || '';
+    const userAgent: string = (request.headers['user-agent'] as string) || '';
 
     return next.handle().pipe(
       tap(async (responseData) => {
@@ -34,7 +36,9 @@ export class AuditInterceptor implements NestInterceptor {
               action: `${method} ${url}`,
               resourceType: this.extractResourceType(url),
               resourceId: this.extractResourceId(url),
-              newValue: responseData ? JSON.parse(JSON.stringify(responseData)) : null,
+              newValue: responseData
+                ? JSON.parse(JSON.stringify(responseData))
+                : null,
               ipAddress: ip,
               userAgent: userAgent,
             },

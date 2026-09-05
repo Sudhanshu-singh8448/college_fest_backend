@@ -71,7 +71,9 @@ __decorate([
     (0, common_1.Get)('events/:id/registrations'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('registration:view'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all registrations for an event (organizers only)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get all registrations for an event (organizers only)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -111,7 +113,9 @@ __decorate([
     (0, common_1.Post)('events/:id/registrations/approve-all'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('registration:approve'),
-    (0, swagger_1.ApiOperation)({ summary: 'Bulk approve pending registrations (organizers only)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Bulk approve pending registrations (organizers only)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),

@@ -17,7 +17,9 @@ class UpdateGuidelinesDto {
 }
 exports.UpdateGuidelinesDto = UpdateGuidelinesDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '# Fest Guidelines\n\n1. Be on time\n2. Carry your ID\n...' }),
+    (0, swagger_1.ApiProperty)({
+        example: '# Fest Guidelines\n\n1. Be on time\n2. Carry your ID\n...',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

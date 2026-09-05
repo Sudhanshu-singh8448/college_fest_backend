@@ -71,7 +71,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('leaderboard/my-rank'),
     (0, swagger_1.ApiOperation)({
-        summary: "Get my current leaderboard rank and surrounding context",
+        summary: 'Get my current leaderboard rank and surrounding context',
         description: 'Returns my rank, XP gap to the person above, and nearby rank entries.',
     }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),

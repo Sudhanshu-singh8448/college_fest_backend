@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Param,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Put, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { FormsService } from './forms.service';
 import { UpdateFormDto } from './dto/update-form.dto';
@@ -28,7 +21,10 @@ export class FormsController {
   @Put()
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Update event form schema (requires event:edit and organizer role unless global admin)' })
+  @ApiOperation({
+    summary:
+      'Update event form schema (requires event:edit and organizer role unless global admin)',
+  })
   async updateForm(
     @Param('id') id: string,
     @Body() dto: UpdateFormDto,

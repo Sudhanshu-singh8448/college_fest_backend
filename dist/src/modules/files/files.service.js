@@ -71,7 +71,9 @@ let FilesService = class FilesService {
         };
     }
     async confirmUpload(userId, dto) {
-        const file = await this.prisma.file.findUnique({ where: { id: dto.fileId } });
+        const file = await this.prisma.file.findUnique({
+            where: { id: dto.fileId },
+        });
         if (!file)
             throw new common_1.NotFoundException('File record not found');
         if (file.uploaderId !== userId)
@@ -95,8 +97,13 @@ let FilesService = class FilesService {
             throw new common_1.NotFoundException('File not found');
         if (file.status !== 'CONFIRMED')
             throw new common_1.BadRequestException('File upload is not complete');
-        const command = new client_s3_1.GetObjectCommand({ Bucket: this.bucket, Key: file.key });
-        const downloadUrl = await (0, s3_request_presigner_1.getSignedUrl)(this.s3, command, { expiresIn: 300 });
+        const command = new client_s3_1.GetObjectCommand({
+            Bucket: this.bucket,
+            Key: file.key,
+        });
+        const downloadUrl = await (0, s3_request_presigner_1.getSignedUrl)(this.s3, command, {
+            expiresIn: 300,
+        });
         return {
             fileId: file.id,
             url: file.url,

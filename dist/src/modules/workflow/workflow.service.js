@@ -55,7 +55,9 @@ let WorkflowService = class WorkflowService {
         return workflow;
     }
     async updateWorkflow(id, dto) {
-        const workflow = await this.prisma.workflowDefinition.findUnique({ where: { id } });
+        const workflow = await this.prisma.workflowDefinition.findUnique({
+            where: { id },
+        });
         if (!workflow)
             throw new common_1.NotFoundException('Workflow not found');
         if (dto.name) {
@@ -65,7 +67,9 @@ let WorkflowService = class WorkflowService {
             });
         }
         if (dto.stages) {
-            await this.prisma.workflowStage.deleteMany({ where: { definitionId: id } });
+            await this.prisma.workflowStage.deleteMany({
+                where: { definitionId: id },
+            });
             await this.prisma.workflowDefinition.update({
                 where: { id },
                 data: {
@@ -127,9 +131,13 @@ let WorkflowService = class WorkflowService {
                 if (!registration)
                     throw new common_1.NotFoundException('Related registration not found');
                 const org = await this.prisma.eventOrganizer.findUnique({
-                    where: { eventId_userId: { eventId: registration.eventId, userId: actorId } },
+                    where: {
+                        eventId_userId: { eventId: registration.eventId, userId: actorId },
+                    },
                 });
-                if (!org || (instance.currentStage.approverRole && org.role !== instance.currentStage.approverRole)) {
+                if (!org ||
+                    (instance.currentStage.approverRole &&
+                        org.role !== instance.currentStage.approverRole)) {
                     throw new common_1.ForbiddenException(`You do not have the required role: ${instance.currentStage.approverRole}`);
                 }
             }
@@ -138,7 +146,7 @@ let WorkflowService = class WorkflowService {
         let newStatus = instance.status;
         if (dto.action === 'APPROVE') {
             const currentIndex = instance.currentStage.orderIndex;
-            const nextStage = instance.definition.stages.find(s => s.orderIndex > currentIndex);
+            const nextStage = instance.definition.stages.find((s) => s.orderIndex > currentIndex);
             if (nextStage) {
                 nextStageId = nextStage.id;
             }
@@ -165,9 +173,9 @@ let WorkflowService = class WorkflowService {
         }
         else if (dto.action === 'RETURN') {
             const currentIndex = instance.currentStage.orderIndex;
-            const prevStages = instance.definition.stages.filter(s => s.orderIndex < currentIndex);
+            const prevStages = instance.definition.stages.filter((s) => s.orderIndex < currentIndex);
             if (prevStages.length > 0) {
-                const prevStage = prevStages.reduce((prev, current) => (prev.orderIndex > current.orderIndex) ? prev : current);
+                const prevStage = prevStages.reduce((prev, current) => prev.orderIndex > current.orderIndex ? prev : current);
                 nextStageId = prevStage.id;
             }
             else {
@@ -176,7 +184,7 @@ let WorkflowService = class WorkflowService {
         }
         else if (dto.action === 'SKIP') {
             const currentIndex = instance.currentStage.orderIndex;
-            const nextStage = instance.definition.stages.find(s => s.orderIndex > currentIndex);
+            const nextStage = instance.definition.stages.find((s) => s.orderIndex > currentIndex);
             if (nextStage) {
                 nextStageId = nextStage.id;
             }
@@ -216,7 +224,12 @@ let WorkflowService = class WorkflowService {
         const actions = await this.prisma.workflowAction.findMany({
             where: { instanceId },
             include: {
-                actor: { select: { id: true, profile: { select: { firstName: true, lastName: true } } } },
+                actor: {
+                    select: {
+                        id: true,
+                        profile: { select: { firstName: true, lastName: true } },
+                    },
+                },
             },
             orderBy: { createdAt: 'asc' },
         });

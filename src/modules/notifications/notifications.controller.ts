@@ -25,8 +25,13 @@ export class NotificationsController {
   // ── In-App Notifications ───────────────────────────
 
   @Get('notifications')
-  @ApiOperation({ summary: 'List my notifications (paginated, filterable by unread)' })
-  getNotifications(@Query() query: NotificationQueryDto, @CurrentUser() user: any) {
+  @ApiOperation({
+    summary: 'List my notifications (paginated, filterable by unread)',
+  })
+  getNotifications(
+    @Query() query: NotificationQueryDto,
+    @CurrentUser() user: any,
+  ) {
     return this.notificationsService.getNotifications(user.id, query);
   }
 
@@ -39,14 +44,22 @@ export class NotificationsController {
   // ── Preferences ────────────────────────────────────
 
   @Get('notifications/preferences')
-  @ApiOperation({ summary: 'Get per-type notification preferences (defaults shown for unset types)' })
+  @ApiOperation({
+    summary:
+      'Get per-type notification preferences (defaults shown for unset types)',
+  })
   getPreferences(@CurrentUser() user: any) {
     return this.notificationsService.getPreferences(user.id);
   }
 
   @Put('notifications/preferences')
-  @ApiOperation({ summary: 'Update notification preferences for one or more types' })
-  updatePreferences(@Body() dto: UpdatePreferencesDto, @CurrentUser() user: any) {
+  @ApiOperation({
+    summary: 'Update notification preferences for one or more types',
+  })
+  updatePreferences(
+    @Body() dto: UpdatePreferencesDto,
+    @CurrentUser() user: any,
+  ) {
     return this.notificationsService.updatePreferences(user.id, dto);
   }
 
@@ -54,12 +67,17 @@ export class NotificationsController {
 
   @Post('device-tokens')
   @ApiOperation({ summary: 'Register FCM device token for push notifications' })
-  registerDeviceToken(@Body() dto: RegisterDeviceTokenDto, @CurrentUser() user: any) {
+  registerDeviceToken(
+    @Body() dto: RegisterDeviceTokenDto,
+    @CurrentUser() user: any,
+  ) {
     return this.notificationsService.registerDeviceToken(user.id, dto);
   }
 
   @Delete('device-tokens/:id')
-  @ApiOperation({ summary: 'Remove a device token (on logout / token rotation)' })
+  @ApiOperation({
+    summary: 'Remove a device token (on logout / token rotation)',
+  })
   removeDeviceToken(@Param('id') id: string, @CurrentUser() user: any) {
     return this.notificationsService.removeDeviceToken(id, user.id);
   }

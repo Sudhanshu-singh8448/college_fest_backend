@@ -22,9 +22,6 @@ const update_reg_format_dto_1 = require("./dto/update-reg-format.dto");
 const set_event_winners_dto_1 = require("./dto/set-event-winners.dto");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 function requirePerm(user, perm) {
-    console.log(`[DEBUG] requirePerm checking for ${perm}`);
-    console.log(`[DEBUG] user.roles:`, user?.roles);
-    console.log(`[DEBUG] user.permissions:`, user?.permissions);
     if (!user.permissions?.includes(perm)) {
         throw new common_1.ForbiddenException(`Permission "${perm}" required`);
     }
@@ -173,7 +170,9 @@ __decorate([
 ], AdminController.prototype, "updateRegNumberFormat", null);
 __decorate([
     (0, common_1.Get)('events/:id/winners'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get all winners for an event, ordered by position' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get all winners for an event, ordered by position',
+    }),
     (0, swagger_1.ApiParam)({ name: 'id', description: 'Event ID' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
@@ -203,7 +202,14 @@ __decorate([
     }),
     (0, swagger_1.ApiParam)({
         name: 'type',
-        enum: ['users', 'events', 'registrations', 'expenses', 'attendance', 'feedback'],
+        enum: [
+            'users',
+            'events',
+            'registrations',
+            'expenses',
+            'attendance',
+            'feedback',
+        ],
     }),
     __param(0, (0, common_1.Param)('type')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),

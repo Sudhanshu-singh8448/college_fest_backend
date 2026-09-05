@@ -2,7 +2,10 @@ import { IsString, IsIn, IsOptional } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class WorkflowActionDto {
-  @ApiProperty({ example: 'APPROVE', enum: ['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP'] })
+  @ApiProperty({
+    example: 'APPROVE',
+    enum: ['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP'],
+  })
   @IsString()
   @IsIn(['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP'])
   action: string;

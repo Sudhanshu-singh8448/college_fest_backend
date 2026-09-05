@@ -84,10 +84,23 @@ export class UsersService {
     const where = query
       ? {
           OR: [
-            { registrationNumber: { contains: query, mode: 'insensitive' as const } },
+            {
+              registrationNumber: {
+                contains: query,
+                mode: 'insensitive' as const,
+              },
+            },
             { email: { contains: query, mode: 'insensitive' as const } },
-            { profile: { firstName: { contains: query, mode: 'insensitive' as const } } },
-            { profile: { lastName: { contains: query, mode: 'insensitive' as const } } },
+            {
+              profile: {
+                firstName: { contains: query, mode: 'insensitive' as const },
+              },
+            },
+            {
+              profile: {
+                lastName: { contains: query, mode: 'insensitive' as const },
+              },
+            },
           ],
           deletedAt: null,
         }
@@ -184,7 +197,9 @@ export class UsersService {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
 
-    const role = await this.prisma.role.findUnique({ where: { name: roleName } });
+    const role = await this.prisma.role.findUnique({
+      where: { name: roleName },
+    });
     if (!role) throw new NotFoundException(`Role "${roleName}" not found`);
 
     // Check if already assigned

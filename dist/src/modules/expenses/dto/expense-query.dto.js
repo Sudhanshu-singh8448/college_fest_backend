@@ -22,7 +22,9 @@ class ExpenseQueryDto {
 }
 exports.ExpenseQueryDto = ExpenseQueryDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION'] }),
+    (0, swagger_1.ApiPropertyOptional)({
+        enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION'],
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsIn)(['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION']),
     (0, class_validator_1.IsOptional)(),

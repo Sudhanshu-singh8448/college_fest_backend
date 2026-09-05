@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateFeedbackDto } from './dto/create-feedback.dto';
 import { UpdateFeedbackDto } from './dto/update-feedback.dto';
@@ -29,7 +33,12 @@ export class FeedbackService {
   async listFeedback(
     userId: string,
     hasGlobalPerm: boolean,
-    query: { status?: string; category?: string; page?: number; limit?: number },
+    query: {
+      status?: string;
+      category?: string;
+      page?: number;
+      limit?: number;
+    },
   ) {
     const { page = 1, limit = 20, status, category } = query;
     const skip = (page - 1) * limit;
@@ -47,7 +56,11 @@ export class FeedbackService {
         orderBy: { createdAt: 'desc' },
         include: {
           user: {
-            select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true } } },
+            select: {
+              id: true,
+              registrationNumber: true,
+              profile: { select: { firstName: true, lastName: true } },
+            },
           },
         },
       }),
@@ -56,7 +69,7 @@ export class FeedbackService {
 
     // Hide submitter identity from non-admin users when viewing others' feedback
     return {
-      items: items.map(f => ({
+      items: items.map((f) => ({
         ...f,
         user: hasGlobalPerm ? f.user : undefined, // Non-admins don't see user info
       })),
@@ -68,12 +81,18 @@ export class FeedbackService {
   /**
    * Admin responds to or updates the status of a feedback item.
    */
-  async updateFeedback(id: string, userId: string, hasGlobalPerm: boolean, dto: UpdateFeedbackDto) {
+  async updateFeedback(
+    id: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+    dto: UpdateFeedbackDto,
+  ) {
     const feedback = await this.prisma.feedback.findUnique({ where: { id } });
     if (!feedback) throw new NotFoundException('Feedback not found');
 
     // Only admins can update feedback
-    if (!hasGlobalPerm) throw new ForbiddenException('Only admins can respond to feedback');
+    if (!hasGlobalPerm)
+      throw new ForbiddenException('Only admins can respond to feedback');
 
     return this.prisma.feedback.update({
       where: { id },

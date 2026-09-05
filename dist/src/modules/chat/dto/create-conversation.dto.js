@@ -35,7 +35,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateConversationDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Array of user IDs to add (required for DIRECT)', example: ['uuid-of-user'] }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Array of user IDs to add (required for DIRECT)',
+        example: ['uuid-of-user'],
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Array)
 ], CreateConversationDto.prototype, "memberIds", void 0);

@@ -61,7 +61,9 @@ let ChatController = class ChatController {
 exports.ChatController = ChatController;
 __decorate([
     (0, common_1.Get)('conversations'),
-    (0, swagger_1.ApiOperation)({ summary: 'List all my conversations (sorted by latest message)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'List all my conversations (sorted by latest message)',
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -87,7 +89,9 @@ __decorate([
 ], ChatController.prototype, "getConversationById", null);
 __decorate([
     (0, common_1.Get)('conversations/:id/messages'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get messages with cursor-based pagination (oldest first, newest page)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get messages with cursor-based pagination (oldest first, newest page)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Query)()),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),
@@ -97,7 +101,9 @@ __decorate([
 ], ChatController.prototype, "getMessages", null);
 __decorate([
     (0, common_1.Post)('conversations/:id/messages'),
-    (0, swagger_1.ApiOperation)({ summary: 'Send a message via REST (WebSocket is preferred for real-time delivery)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Send a message via REST (WebSocket is preferred for real-time delivery)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),
@@ -146,7 +152,9 @@ __decorate([
 ], ChatController.prototype, "removeReaction", null);
 __decorate([
     (0, common_1.Post)('conversations/:id/read'),
-    (0, swagger_1.ApiOperation)({ summary: 'Mark all messages in a conversation as read up to now' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Mark all messages in a conversation as read up to now',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),

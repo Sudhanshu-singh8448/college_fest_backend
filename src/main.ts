@@ -42,7 +42,9 @@ async function bootstrap() {
   // Swagger API docs
   const swaggerConfig = new DocumentBuilder()
     .setTitle('TechGram API')
-    .setDescription('TechGram College Fest Backend — Platform Agnostic REST API')
+    .setDescription(
+      'TechGram College Fest Backend — Platform Agnostic REST API',
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
@@ -54,4 +56,4 @@ async function bootstrap() {
   console.log(`🚀 TechGram API running on http://localhost:${port}`);
   console.log(`📝 Swagger docs at http://localhost:${port}/api/docs`);
 }
-bootstrap();
+void bootstrap();

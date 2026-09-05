@@ -7,7 +7,12 @@ import {
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
@@ -84,7 +89,10 @@ export class AuthController {
   @Public()
   @Get('verify-email')
   @ApiOperation({ summary: 'Verify email address via token link' })
-  @ApiQuery({ name: 'token', description: 'Verification token from the email link' })
+  @ApiQuery({
+    name: 'token',
+    description: 'Verification token from the email link',
+  })
   async verifyEmail(@Query('token') token: string) {
     return this.authService.verifyEmail(token);
   }

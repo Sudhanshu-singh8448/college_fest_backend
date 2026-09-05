@@ -17,7 +17,11 @@ class AddReactionDto {
 }
 exports.AddReactionDto = AddReactionDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Emoji character(s)', example: '👍', maxLength: 10 }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Emoji character(s)',
+        example: '👍',
+        maxLength: 10,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MaxLength)(10),

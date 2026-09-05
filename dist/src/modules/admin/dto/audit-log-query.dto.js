@@ -31,13 +31,17 @@ __decorate([
     __metadata("design:type", String)
 ], AuditLogQueryDto.prototype, "actorId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by action (e.g. UPDATE_EXPENSE_STATUS)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Filter by action (e.g. UPDATE_EXPENSE_STATUS)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], AuditLogQueryDto.prototype, "action", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by resource type (e.g. Expense, EventRegistration)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Filter by resource type (e.g. Expense, EventRegistration)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -49,13 +53,19 @@ __decorate([
     __metadata("design:type", String)
 ], AuditLogQueryDto.prototype, "resourceId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'From date (ISO 8601)', example: '2025-01-01T00:00:00Z' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'From date (ISO 8601)',
+        example: '2025-01-01T00:00:00Z',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], AuditLogQueryDto.prototype, "from", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'To date (ISO 8601)', example: '2025-12-31T23:59:59Z' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'To date (ISO 8601)',
+        example: '2025-12-31T23:59:59Z',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

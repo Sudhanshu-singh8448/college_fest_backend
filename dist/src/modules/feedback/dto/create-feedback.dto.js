@@ -19,7 +19,11 @@ class CreateFeedbackDto {
 }
 exports.CreateFeedbackDto = CreateFeedbackDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Feedback category', example: 'EVENT', enum: ['EVENT', 'APP', 'ORGANIZER', 'GENERAL', 'BUG'] }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Feedback category',
+        example: 'EVENT',
+        enum: ['EVENT', 'APP', 'ORGANIZER', 'GENERAL', 'BUG'],
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
@@ -31,7 +35,10 @@ __decorate([
     __metadata("design:type", String)
 ], CreateFeedbackDto.prototype, "content", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Submit anonymously (userId will not be stored)', default: false }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Submit anonymously (userId will not be stored)',
+        default: false,
+    }),
     (0, class_validator_1.IsBoolean)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)

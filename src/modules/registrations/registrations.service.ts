@@ -1,4 +1,10 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateRegistrationDto } from './dto/create-registration.dto';
 import { UpdateRegistrationStatusDto } from './dto/update-registration-status.dto';
@@ -78,15 +84,22 @@ export class RegistrationsService {
   }
 
   // ── GET /events/:id/registrations ───────────────
-  async getEventRegistrations(eventId: string, userId: string, hasGlobalPerm: boolean) {
-    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+  async getEventRegistrations(
+    eventId: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     if (!hasGlobalPerm) {
       const org = await this.prisma.eventOrganizer.findUnique({
         where: { eventId_userId: { eventId, userId } },
       });
-      if (!org) throw new ForbiddenException('You are not an organizer for this event');
+      if (!org)
+        throw new ForbiddenException('You are not an organizer for this event');
     }
 
     return this.prisma.eventRegistration.findMany({
@@ -100,7 +113,11 @@ export class RegistrationsService {
   }
 
   // ── GET /registrations/:id ──────────────────────
-  async getRegistrationById(id: string, userId: string, hasGlobalPerm: boolean) {
+  async getRegistrationById(
+    id: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
     const registration = await this.prisma.eventRegistration.findUnique({
       where: { id },
       include: {
@@ -116,14 +133,22 @@ export class RegistrationsService {
       const org = await this.prisma.eventOrganizer.findUnique({
         where: { eventId_userId: { eventId: registration.eventId, userId } },
       });
-      if (!org) throw new ForbiddenException('You do not have access to this registration');
+      if (!org)
+        throw new ForbiddenException(
+          'You do not have access to this registration',
+        );
     }
 
     return registration;
   }
 
   // ── PATCH /registrations/:id/status ─────────────
-  async updateStatus(id: string, dto: UpdateRegistrationStatusDto, actorId: string, hasGlobalPerm: boolean) {
+  async updateStatus(
+    id: string,
+    dto: UpdateRegistrationStatusDto,
+    actorId: string,
+    hasGlobalPerm: boolean,
+  ) {
     const registration = await this.prisma.eventRegistration.findUnique({
       where: { id },
     });
@@ -131,9 +156,12 @@ export class RegistrationsService {
 
     if (!hasGlobalPerm) {
       const org = await this.prisma.eventOrganizer.findUnique({
-        where: { eventId_userId: { eventId: registration.eventId, userId: actorId } },
+        where: {
+          eventId_userId: { eventId: registration.eventId, userId: actorId },
+        },
       });
-      if (!org) throw new ForbiddenException('You are not an organizer for this event');
+      if (!org)
+        throw new ForbiddenException('You are not an organizer for this event');
     }
 
     if (dto.status === 'REJECTED' && !dto.rejectionReason) {
@@ -151,14 +179,17 @@ export class RegistrationsService {
 
   // ── POST /registrations/approve-all ─────────────
   async approveAll(eventId: string, actorId: string, hasGlobalPerm: boolean) {
-    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     if (!hasGlobalPerm) {
       const org = await this.prisma.eventOrganizer.findUnique({
         where: { eventId_userId: { eventId, userId: actorId } },
       });
-      if (!org) throw new ForbiddenException('You are not an organizer for this event');
+      if (!org)
+        throw new ForbiddenException('You are not an organizer for this event');
     }
 
     const result = await this.prisma.eventRegistration.updateMany({
@@ -174,7 +205,9 @@ export class RegistrationsService {
     return this.prisma.eventRegistration.findMany({
       where: { userId },
       include: {
-        event: { select: { id: true, name: true, startDate: true, status: true } },
+        event: {
+          select: { id: true, name: true, startDate: true, status: true },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -186,7 +219,10 @@ export class RegistrationsService {
       where: { id },
     });
     if (!registration) throw new NotFoundException('Registration not found');
-    if (registration.userId !== userId) throw new ForbiddenException('You can only delete your own registrations');
+    if (registration.userId !== userId)
+      throw new ForbiddenException(
+        'You can only delete your own registrations',
+      );
 
     // Soft delete or just cancel? The plan says "DELETE /api/v1/registrations/:id - Owner".
     // Let's actually delete it for simplicity or mark as CANCELLED.
@@ -198,15 +234,22 @@ export class RegistrationsService {
   }
 
   // ── GET /events/:id/registrations/export ────────
-  async exportRegistrations(eventId: string, userId: string, hasGlobalPerm: boolean) {
-    const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+  async exportRegistrations(
+    eventId: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
+    const event = await this.prisma.event.findUnique({
+      where: { id: eventId },
+    });
     if (!event) throw new NotFoundException('Event not found');
 
     if (!hasGlobalPerm) {
       const org = await this.prisma.eventOrganizer.findUnique({
         where: { eventId_userId: { eventId, userId } },
       });
-      if (!org) throw new ForbiddenException('You are not an organizer for this event');
+      if (!org)
+        throw new ForbiddenException('You are not an organizer for this event');
     }
 
     const registrations = await this.prisma.eventRegistration.findMany({
@@ -218,7 +261,7 @@ export class RegistrationsService {
     });
 
     // Basic export format (in a real app, generate CSV here)
-    return registrations.map(reg => ({
+    return registrations.map((reg) => ({
       registrationId: reg.id,
       status: reg.status,
       user: {

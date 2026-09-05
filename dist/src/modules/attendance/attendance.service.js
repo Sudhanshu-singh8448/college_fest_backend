@@ -45,7 +45,9 @@ let AttendanceService = class AttendanceService {
         };
     }
     async checkIn(eventId, qrToken, actorId, hasGlobalPerm) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         if (!hasGlobalPerm) {
@@ -86,7 +88,7 @@ let AttendanceService = class AttendanceService {
         if (registration.status === 'APPROVED') {
             await this.prisma.eventRegistration.update({
                 where: { id: registration.id },
-                data: { status: 'CHECKED_IN' }
+                data: { status: 'CHECKED_IN' },
             });
         }
         const user = await this.prisma.user.findUnique({
@@ -101,7 +103,9 @@ let AttendanceService = class AttendanceService {
         };
     }
     async getEventAttendance(eventId, actorId, hasGlobalPerm) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         if (!hasGlobalPerm) {

@@ -1,4 +1,12 @@
-import { IsArray, ValidateNested, IsBoolean, IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
+import {
+  IsArray,
+  ValidateNested,
+  IsBoolean,
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsNumber,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -50,7 +58,24 @@ export class FormFieldDto {
   @IsNotEmpty()
   label: string;
 
-  @ApiProperty({ example: 'text', enum: ['text', 'number', 'email', 'phone', 'dropdown', 'radio', 'checkbox', 'date', 'file', 'image', 'textarea', 'url', 'team_member'] })
+  @ApiProperty({
+    example: 'text',
+    enum: [
+      'text',
+      'number',
+      'email',
+      'phone',
+      'dropdown',
+      'radio',
+      'checkbox',
+      'date',
+      'file',
+      'image',
+      'textarea',
+      'url',
+      'team_member',
+    ],
+  })
   @IsString()
   @IsNotEmpty()
   type: string;

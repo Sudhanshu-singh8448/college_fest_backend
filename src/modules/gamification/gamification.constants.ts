@@ -28,15 +28,26 @@ export const LEVEL_THRESHOLDS = [
 ] as const;
 
 /** Calculate level & level name from total XP */
-export function calculateLevel(totalXp: number): { level: number; name: string; nextLevelXp: number | null } {
-  let current: { level: number; name: string; xp: number } = LEVEL_THRESHOLDS[0];
+export function calculateLevel(totalXp: number): {
+  level: number;
+  name: string;
+  nextLevelXp: number | null;
+} {
+  let current: { level: number; name: string; xp: number } =
+    LEVEL_THRESHOLDS[0];
   for (const threshold of LEVEL_THRESHOLDS) {
     if (totalXp >= threshold.xp) current = threshold;
     else break;
   }
-  const currentIndex = LEVEL_THRESHOLDS.findIndex(t => t.level === current.level);
+  const currentIndex = LEVEL_THRESHOLDS.findIndex(
+    (t) => t.level === current.level,
+  );
   const next = LEVEL_THRESHOLDS[currentIndex + 1] ?? null;
-  return { level: current.level, name: current.name, nextLevelXp: next?.xp ?? null };
+  return {
+    level: current.level,
+    name: current.name,
+    nextLevelXp: next?.xp ?? null,
+  };
 }
 
 // Default streak freeze inventory for new users

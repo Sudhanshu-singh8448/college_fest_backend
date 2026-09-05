@@ -104,7 +104,9 @@ __decorate([
     (0, common_1.Put)(':id/guidelines'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('guidelines:manage'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update fest guidelines (requires guidelines:manage)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Update fest guidelines (requires guidelines:manage)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

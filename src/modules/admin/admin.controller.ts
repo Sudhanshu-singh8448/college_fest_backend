@@ -9,7 +9,13 @@ import {
   Query,
   ForbiddenException,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiParam, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiParam,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { AuditLogQueryDto } from './dto/audit-log-query.dto';
 import { UpdateSettingsDto } from './dto/update-settings.dto';
@@ -19,9 +25,6 @@ import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 /** Reusable permission guard helper */
 function requirePerm(user: any, perm: string) {
-  console.log(`[DEBUG] requirePerm checking for ${perm}`);
-  console.log(`[DEBUG] user.roles:`, user?.roles);
-  console.log(`[DEBUG] user.permissions:`, user?.permissions);
   if (!user.permissions?.includes(perm)) {
     throw new ForbiddenException(`Permission "${perm}" required`);
   }
@@ -37,7 +40,8 @@ export class AdminController {
 
   @Get('dashboard')
   @ApiOperation({
-    summary: 'Super dashboard: users, events, finance, leaderboard KPIs in one call',
+    summary:
+      'Super dashboard: users, events, finance, leaderboard KPIs in one call',
   })
   getDashboard(@CurrentUser() user: any) {
     requirePerm(user, 'analytics:view');
@@ -48,8 +52,10 @@ export class AdminController {
 
   @Get('users/stats')
   @ApiOperation({
-    summary: 'User statistics + searchable user list (by name, reg number, or email)',
-    description: 'Returns user list with roles/XP enriched, plus breakdowns by status and new-this-month count.',
+    summary:
+      'User statistics + searchable user list (by name, reg number, or email)',
+    description:
+      'Returns user list with roles/XP enriched, plus breakdowns by status and new-this-month count.',
   })
   @ApiQuery({ name: 'search', required: false })
   @ApiQuery({ name: 'page', required: false })
@@ -68,7 +74,8 @@ export class AdminController {
 
   @Get('events/stats')
   @ApiOperation({
-    summary: 'Event analytics: fill rates, attendance rates, breakdowns by category and status',
+    summary:
+      'Event analytics: fill rates, attendance rates, breakdowns by category and status',
   })
   getEventStats(@CurrentUser() user: any) {
     requirePerm(user, 'analytics:view');
@@ -79,7 +86,8 @@ export class AdminController {
 
   @Get('finance/stats')
   @ApiOperation({
-    summary: 'Finance analytics: expense totals by status/category/event, pending approval queue',
+    summary:
+      'Finance analytics: expense totals by status/category/event, pending approval queue',
   })
   getFinanceStats(@CurrentUser() user: any) {
     requirePerm(user, 'analytics:view');
@@ -91,7 +99,8 @@ export class AdminController {
   @Get('audit-logs')
   @ApiOperation({
     summary: 'Search paginated audit logs (append-only, 1-year retention)',
-    description: 'Filterable by actor, action, resource type, resource ID, and date range.',
+    description:
+      'Filterable by actor, action, resource type, resource ID, and date range.',
   })
   getAuditLogs(@Query() query: AuditLogQueryDto, @CurrentUser() user: any) {
     requirePerm(user, 'audit:view');
@@ -110,7 +119,8 @@ export class AdminController {
   @Patch('settings')
   @ApiOperation({
     summary: 'Bulk-upsert app settings',
-    description: 'Pass a key-value map. Missing keys are created; existing keys are updated.',
+    description:
+      'Pass a key-value map. Missing keys are created; existing keys are updated.',
   })
   updateSettings(@Body() dto: UpdateSettingsDto, @CurrentUser() user: any) {
     requirePerm(user, 'settings:manage');
@@ -122,9 +132,13 @@ export class AdminController {
   @Put('reg-number-format')
   @ApiOperation({
     summary: 'Update the registration number format',
-    description: 'Supported placeholders: {YEAR}, {BRANCH}, {BATCH}, {SEQ:N}. Returns a live preview.',
+    description:
+      'Supported placeholders: {YEAR}, {BRANCH}, {BATCH}, {SEQ:N}. Returns a live preview.',
   })
-  updateRegNumberFormat(@Body() dto: UpdateRegNumberFormatDto, @CurrentUser() user: any) {
+  updateRegNumberFormat(
+    @Body() dto: UpdateRegNumberFormatDto,
+    @CurrentUser() user: any,
+  ) {
     requirePerm(user, 'settings:manage');
     return this.adminService.updateRegNumberFormat(dto);
   }
@@ -132,7 +146,9 @@ export class AdminController {
   // ── Event Winners ──────────────────────────────────
 
   @Get('events/:id/winners')
-  @ApiOperation({ summary: 'Get all winners for an event, ordered by position' })
+  @ApiOperation({
+    summary: 'Get all winners for an event, ordered by position',
+  })
   @ApiParam({ name: 'id', description: 'Event ID' })
   getEventWinners(@Param('id') id: string, @CurrentUser() user: any) {
     requirePerm(user, 'analytics:view');
@@ -142,7 +158,8 @@ export class AdminController {
   @Post('events/:id/winners')
   @ApiOperation({
     summary: 'Set (replace) all winners for an event',
-    description: 'All provided userIds must be APPROVED or CHECKED_IN participants. Replaces any existing winners.',
+    description:
+      'All provided userIds must be APPROVED or CHECKED_IN participants. Replaces any existing winners.',
   })
   @ApiParam({ name: 'id', description: 'Event ID' })
   setEventWinners(
@@ -159,11 +176,19 @@ export class AdminController {
   @Get('export/:type')
   @ApiOperation({
     summary: 'Export structured data as JSON (ready for client-side CSV/Excel)',
-    description: 'Supported types: **users**, **events**, **registrations**, **expenses**, **attendance**, **feedback**',
+    description:
+      'Supported types: **users**, **events**, **registrations**, **expenses**, **attendance**, **feedback**',
   })
   @ApiParam({
     name: 'type',
-    enum: ['users', 'events', 'registrations', 'expenses', 'attendance', 'feedback'],
+    enum: [
+      'users',
+      'events',
+      'registrations',
+      'expenses',
+      'attendance',
+      'feedback',
+    ],
   })
   exportData(@Param('type') type: string, @CurrentUser() user: any) {
     requirePerm(user, 'analytics:view');

@@ -41,7 +41,9 @@ export class GamificationService {
         select: {
           id: true,
           registrationNumber: true,
-          profile: { select: { firstName: true, lastName: true, avatarUrl: true } },
+          profile: {
+            select: { firstName: true, lastName: true, avatarUrl: true },
+          },
         },
       }),
     ]);
@@ -49,13 +51,16 @@ export class GamificationService {
     const totalXp = xpRecord?.totalXp ?? 0;
     const levelInfo = calculateLevel(totalXp);
     const xpForCurrentLevel =
-      (([100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 12000, 22000, 36000, 50000].find(
-        (_, i, arr) => totalXp < (arr[i] ?? Infinity),
-      ) ?? 0) -
-        (levelInfo.nextLevelXp ? levelInfo.nextLevelXp - 1 : 0));
+      ([
+        100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 12000, 22000, 36000,
+        50000,
+      ].find((_, i, arr) => totalXp < (arr[i] ?? Infinity)) ?? 0) -
+      (levelInfo.nextLevelXp ? levelInfo.nextLevelXp - 1 : 0);
 
     // Rank from leaderboard cache
-    const leaderboardEntry = await this.prisma.leaderboardCache.findUnique({ where: { userId } });
+    const leaderboardEntry = await this.prisma.leaderboardCache.findUnique({
+      where: { userId },
+    });
 
     return {
       user,
@@ -66,7 +71,7 @@ export class GamificationService {
         nextLevelXp: levelInfo.nextLevelXp,
         rank: leaderboardEntry?.rank ?? null,
       },
-      badges: badges.map(b => ({
+      badges: badges.map((b) => ({
         id: b.id,
         earnedAt: b.earnedAt,
         badge: b.badge,
@@ -78,7 +83,12 @@ export class GamificationService {
             freezesRemaining: streak.freezes,
             lastCheckIn: streak.lastCheckIn,
           }
-        : { current: 0, longest: 0, freezesRemaining: DEFAULT_FREEZE_COUNT, lastCheckIn: null },
+        : {
+            current: 0,
+            longest: 0,
+            freezesRemaining: DEFAULT_FREEZE_COUNT,
+            lastCheckIn: null,
+          },
     };
   }
 
@@ -103,19 +113,21 @@ export class GamificationService {
     ]);
 
     // Enrich with user profile data
-    const userIds = entries.map(e => e.userId);
+    const userIds = entries.map((e) => e.userId);
     const users = await this.prisma.user.findMany({
       where: { id: { in: userIds } },
       select: {
         id: true,
         registrationNumber: true,
-        profile: { select: { firstName: true, lastName: true, avatarUrl: true } },
+        profile: {
+          select: { firstName: true, lastName: true, avatarUrl: true },
+        },
       },
     });
-    const userMap = Object.fromEntries(users.map(u => [u.id, u]));
+    const userMap = Object.fromEntries(users.map((u) => [u.id, u]));
 
     return {
-      entries: entries.map(e => ({
+      entries: entries.map((e) => ({
         rank: e.rank,
         totalXp: e.totalXp,
         level: e.level,
@@ -134,9 +146,16 @@ export class GamificationService {
    * Returns the current user's rank, XP, and surrounding context on the leaderboard.
    */
   async getMyRank(userId: string) {
-    const entry = await this.prisma.leaderboardCache.findUnique({ where: { userId } });
+    const entry = await this.prisma.leaderboardCache.findUnique({
+      where: { userId },
+    });
     if (!entry) {
-      return { rank: null, totalXp: 0, level: 1, message: 'Not yet on the leaderboard — earn some XP first!' };
+      return {
+        rank: null,
+        totalXp: 0,
+        level: 1,
+        message: 'Not yet on the leaderboard — earn some XP first!',
+      };
     }
 
     // Fetch users just above and below for context
@@ -168,7 +187,9 @@ export class GamificationService {
    * Returns all badge definitions (the "badge catalogue").
    */
   async getAllBadges() {
-    return this.prisma.badgeDefinition.findMany({ orderBy: { xpReward: 'desc' } });
+    return this.prisma.badgeDefinition.findMany({
+      orderBy: { xpReward: 'desc' },
+    });
   }
 
   // ─────────────────────────────────────────────────────
@@ -188,7 +209,7 @@ export class GamificationService {
     const totalAvailable = await this.prisma.badgeDefinition.count();
 
     return {
-      earned: badges.map(b => ({ ...b.badge, earnedAt: b.earnedAt })),
+      earned: badges.map((b) => ({ ...b.badge, earnedAt: b.earnedAt })),
       total: badges.length,
       totalAvailable,
       completionPercent: Math.round((badges.length / totalAvailable) * 100),
@@ -204,14 +225,21 @@ export class GamificationService {
    */
   async checkIn(userId: string) {
     const now = new Date();
-    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const todayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
     const yesterdayUTC = new Date(todayUTC.getTime() - 86_400_000);
 
     // Get or create streak record
     let streak = await this.prisma.userStreak.findUnique({ where: { userId } });
     if (!streak) {
       streak = await this.prisma.userStreak.create({
-        data: { userId, currentStreak: 0, longestStreak: 0, freezes: DEFAULT_FREEZE_COUNT },
+        data: {
+          userId,
+          currentStreak: 0,
+          longestStreak: 0,
+          freezes: DEFAULT_FREEZE_COUNT,
+        },
       });
     }
 
@@ -226,7 +254,8 @@ export class GamificationService {
     }
 
     // Calculate new streak value
-    const isConsecutive = streak.lastCheckIn && streak.lastCheckIn >= yesterdayUTC;
+    const isConsecutive =
+      streak.lastCheckIn && streak.lastCheckIn >= yesterdayUTC;
     const newStreak = isConsecutive ? streak.currentStreak + 1 : 1;
     const newLongest = Math.max(newStreak, streak.longestStreak);
 
@@ -237,12 +266,16 @@ export class GamificationService {
     // Streak milestone bonuses
     if (newStreak === 7) {
       xpAwarded += XP_REWARDS.STREAK_7_DAYS;
-      bonusMessages.push(`🔥 7-day streak bonus! +${XP_REWARDS.STREAK_7_DAYS} XP`);
+      bonusMessages.push(
+        `🔥 7-day streak bonus! +${XP_REWARDS.STREAK_7_DAYS} XP`,
+      );
       await this.awardBadgeIfNotEarned(userId, 'Digital Native');
     }
     if (newStreak === 30) {
       xpAwarded += XP_REWARDS.STREAK_30_DAYS;
-      bonusMessages.push(`🏆 30-day streak bonus! +${XP_REWARDS.STREAK_30_DAYS} XP`);
+      bonusMessages.push(
+        `🏆 30-day streak bonus! +${XP_REWARDS.STREAK_30_DAYS} XP`,
+      );
     }
 
     // Night owl badge (check-in between 00:00 and 04:00 local)
@@ -253,7 +286,11 @@ export class GamificationService {
     // Update streak record
     const updatedStreak = await this.prisma.userStreak.update({
       where: { userId },
-      data: { currentStreak: newStreak, longestStreak: newLongest, lastCheckIn: now },
+      data: {
+        currentStreak: newStreak,
+        longestStreak: newLongest,
+        lastCheckIn: now,
+      },
     });
 
     // Award XP
@@ -279,17 +316,25 @@ export class GamificationService {
    * Consumes 1 freeze from the user's inventory.
    */
   async useStreakFreeze(userId: string) {
-    const streak = await this.prisma.userStreak.findUnique({ where: { userId } });
+    const streak = await this.prisma.userStreak.findUnique({
+      where: { userId },
+    });
 
     if (!streak || streak.freezes <= 0) {
-      throw new BadRequestException('No streak freezes remaining. Earn more by completing challenges!');
+      throw new BadRequestException(
+        'No streak freezes remaining. Earn more by completing challenges!',
+      );
     }
 
     const now = new Date();
-    const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+    const todayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()),
+    );
 
     if (streak.lastCheckIn && streak.lastCheckIn >= todayUTC) {
-      throw new ConflictException('You already checked in today — no need to use a freeze!');
+      throw new ConflictException(
+        'You already checked in today — no need to use a freeze!',
+      );
     }
 
     // Apply freeze: advance lastCheckIn to now without incrementing the streak
@@ -318,7 +363,10 @@ export class GamificationService {
    * Called by other modules (RegistrationsService, AttendanceService, etc.)
    * via EventEmitter2 listeners or direct injection.
    */
-  async awardXp(userId: string, amount: number): Promise<{ totalXp: number; level: number; leveledUp: boolean }> {
+  async awardXp(
+    userId: string,
+    amount: number,
+  ): Promise<{ totalXp: number; level: number; leveledUp: boolean }> {
     // Upsert XP record atomically
     const current = await this.prisma.userXp.upsert({
       where: { userId },
@@ -336,7 +384,9 @@ export class GamificationService {
       });
     }
 
-    this.logger.log(`[XP] +${amount} XP to user ${userId} → total=${current.totalXp} level=${newLevelInfo.level}`);
+    this.logger.log(
+      `[XP] +${amount} XP to user ${userId} → total=${current.totalXp} level=${newLevelInfo.level}`,
+    );
     return { totalXp: current.totalXp, level: newLevelInfo.level, leveledUp };
   }
 
@@ -344,8 +394,13 @@ export class GamificationService {
    * Award a badge to a user (no-op if already earned).
    * Returns true if newly earned.
    */
-  async awardBadgeIfNotEarned(userId: string, badgeName: string): Promise<boolean> {
-    const badge = await this.prisma.badgeDefinition.findUnique({ where: { name: badgeName } });
+  async awardBadgeIfNotEarned(
+    userId: string,
+    badgeName: string,
+  ): Promise<boolean> {
+    const badge = await this.prisma.badgeDefinition.findUnique({
+      where: { name: badgeName },
+    });
     if (!badge) return false;
 
     const existing = await this.prisma.userBadge.findFirst({
@@ -380,8 +435,18 @@ export class GamificationService {
       allXp.map((entry, index) =>
         this.prisma.leaderboardCache.upsert({
           where: { userId: entry.userId },
-          update: { rank: index + 1, totalXp: entry.totalXp, level: entry.level, updatedAt: new Date() },
-          create: { userId: entry.userId, rank: index + 1, totalXp: entry.totalXp, level: entry.level },
+          update: {
+            rank: index + 1,
+            totalXp: entry.totalXp,
+            level: entry.level,
+            updatedAt: new Date(),
+          },
+          create: {
+            userId: entry.userId,
+            rank: index + 1,
+            totalXp: entry.totalXp,
+            level: entry.level,
+          },
         }),
       ),
     );
@@ -403,19 +468,28 @@ export class GamificationService {
 
     // First Blood: first registration
     if (registrationCount >= 1) {
-      const newlyEarned = await this.awardBadgeIfNotEarned(userId, 'First Blood');
+      const newlyEarned = await this.awardBadgeIfNotEarned(
+        userId,
+        'First Blood',
+      );
       if (newlyEarned) awarded.push('First Blood');
     }
 
     // Fire Starter: attended 3 events
     if (attendanceCount >= 3) {
-      const newlyEarned = await this.awardBadgeIfNotEarned(userId, 'Fire Starter');
+      const newlyEarned = await this.awardBadgeIfNotEarned(
+        userId,
+        'Fire Starter',
+      );
       if (newlyEarned) awarded.push('Fire Starter');
     }
 
     // Event Royalty: attended 10 events
     if (attendanceCount >= 10) {
-      const newlyEarned = await this.awardBadgeIfNotEarned(userId, 'Event Royalty');
+      const newlyEarned = await this.awardBadgeIfNotEarned(
+        userId,
+        'Event Royalty',
+      );
       if (newlyEarned) awarded.push('Event Royalty');
     }
 

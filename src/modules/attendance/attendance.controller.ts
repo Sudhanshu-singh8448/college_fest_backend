@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Param,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { AttendanceService } from './attendance.service';
 import { CheckInDto } from './dto/check-in.dto';
@@ -32,12 +25,16 @@ export class AttendanceController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('attendance:manage')
   @ApiOperation({ summary: 'Check-in a user via QR to an event' })
-  async checkIn(
-    @Body() dto: CheckInDto,
-    @CurrentUser() user: any,
-  ) {
-    const hasGlobalPerm = user.permissions.includes('attendance:manage_all');
-    return this.attendanceService.checkIn(dto.eventId, dto.qrToken, user.id, hasGlobalPerm);
+  async checkIn(@Body() dto: CheckInDto, @CurrentUser() user: any) {
+    const hasGlobalPerm: boolean = user.permissions.includes(
+      'attendance:manage_all',
+    );
+    return this.attendanceService.checkIn(
+      dto.eventId,
+      dto.qrToken,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Get('events/:id/attendance')
@@ -48,7 +45,13 @@ export class AttendanceController {
     @Param('id') eventId: string,
     @CurrentUser() user: any,
   ) {
-    const hasGlobalPerm = user.permissions.includes('attendance:manage_all');
-    return this.attendanceService.getEventAttendance(eventId, user.id, hasGlobalPerm);
+    const hasGlobalPerm: boolean = user.permissions.includes(
+      'attendance:manage_all',
+    );
+    return this.attendanceService.getEventAttendance(
+      eventId,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 }

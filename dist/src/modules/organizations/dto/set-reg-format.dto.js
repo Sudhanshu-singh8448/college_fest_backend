@@ -18,14 +18,22 @@ class SetRegFormatDto {
 }
 exports.SetRegFormatDto = SetRegFormatDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: '^(\\d{4})(\\w{2})(\\w{2})(\\d{4})$', description: 'Regex pattern to parse registration numbers' }),
+    (0, swagger_1.ApiProperty)({
+        example: '^(\\d{4})(\\w{2})(\\w{2})(\\d{4})$',
+        description: 'Regex pattern to parse registration numbers',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)
 ], SetRegFormatDto.prototype, "regex", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({
-        example: { '1': 'batch_year', '2': 'college_code', '3': 'branch_code', '4': 'roll_number' },
+        example: {
+            '1': 'batch_year',
+            '2': 'college_code',
+            '3': 'branch_code',
+            '4': 'roll_number',
+        },
         description: 'Maps regex capture groups to their meaning',
     }),
     (0, class_validator_1.IsObject)(),

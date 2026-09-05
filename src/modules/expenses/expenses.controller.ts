@@ -21,7 +21,9 @@ export class ExpensesController {
   constructor(private readonly expensesService: ExpensesService) {}
 
   @Post()
-  @ApiOperation({ summary: 'Create an expense (DRAFT or submit immediately to PENDING)' })
+  @ApiOperation({
+    summary: 'Create an expense (DRAFT or submit immediately to PENDING)',
+  })
   create(@Body() dto: CreateExpenseDto, @CurrentUser() user: any) {
     return this.expensesService.createExpense(user.id, dto);
   }
@@ -33,14 +35,20 @@ export class ExpensesController {
   }
 
   @Get('reports')
-  @ApiOperation({ summary: 'Aggregated expense reports by status, category, and event (admin only)' })
+  @ApiOperation({
+    summary:
+      'Aggregated expense reports by status, category, and event (admin only)',
+  })
   getReports(@CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('expense:manage_all');
     return this.expensesService.getReports(hasGlobalPerm, user.id);
   }
 
   @Get('export')
-  @ApiOperation({ summary: 'Export all expenses as structured JSON for CSV/Excel (admin only)' })
+  @ApiOperation({
+    summary:
+      'Export all expenses as structured JSON for CSV/Excel (admin only)',
+  })
   exportExpenses(@CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('expense:manage_all');
     return this.expensesService.exportExpenses(hasGlobalPerm);

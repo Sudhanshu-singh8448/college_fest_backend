@@ -19,13 +19,19 @@ class MessageQueryDto {
 }
 exports.MessageQueryDto = MessageQueryDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Cursor-based pagination: message ID before which to fetch', example: 'uuid-of-last-message' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Cursor-based pagination: message ID before which to fetch',
+        example: 'uuid-of-last-message',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], MessageQueryDto.prototype, "before", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Number of messages to return', default: 30 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Number of messages to return',
+        default: 30,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)

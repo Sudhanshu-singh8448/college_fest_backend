@@ -6,7 +6,10 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
-import { CreateConversationDto, ConversationType } from './dto/create-conversation.dto';
+import {
+  CreateConversationDto,
+  ConversationType,
+} from './dto/create-conversation.dto';
 import { SendMessageDto } from './dto/send-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
 import { MessageQueryDto } from './dto/message-query.dto';
@@ -35,7 +38,19 @@ export class ChatService {
           include: {
             members: {
               include: {
-                user: { select: { id: true, email: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+                user: {
+                  select: {
+                    id: true,
+                    email: true,
+                    profile: {
+                      select: {
+                        firstName: true,
+                        lastName: true,
+                        avatarUrl: true,
+                      },
+                    },
+                  },
+                },
               },
             },
             messages: {
@@ -43,7 +58,12 @@ export class ChatService {
               take: 1,
               where: { isDeleted: false },
               include: {
-                sender: { select: { id: true, profile: { select: { firstName: true, lastName: true } } } },
+                sender: {
+                  select: {
+                    id: true,
+                    profile: { select: { firstName: true, lastName: true } },
+                  },
+                },
               },
             },
           },
@@ -52,7 +72,7 @@ export class ChatService {
       orderBy: { conversation: { updatedAt: 'desc' } },
     });
 
-    return memberships.map(m => ({
+    return memberships.map((m) => ({
       ...m.conversation,
       lastReadAt: m.lastReadAt,
       lastMessage: m.conversation.messages[0] || null,
@@ -65,13 +85,17 @@ export class ChatService {
    * Creates a DIRECT or GROUP conversation.
    */
   async createConversation(dto: CreateConversationDto, creatorId: string) {
-    const memberIds = Array.from(new Set([creatorId, ...(dto.memberIds ?? [])]));
+    const memberIds = Array.from(
+      new Set([creatorId, ...(dto.memberIds ?? [])]),
+    );
 
     if (dto.type === ConversationType.DIRECT) {
       if (memberIds.length !== 2) {
-        throw new BadRequestException('DIRECT conversation requires exactly 2 members');
+        throw new BadRequestException(
+          'DIRECT conversation requires exactly 2 members',
+        );
       }
-      const otherId = memberIds.find(id => id !== creatorId)!;
+      const otherId = memberIds.find((id) => id !== creatorId)!;
 
       // Prevent duplicate direct conversations
       const existing = await this.prisma.conversation.findFirst({
@@ -95,7 +119,7 @@ export class ChatService {
         type: dto.type,
         name: dto.name,
         members: {
-          create: memberIds.map(uid => ({
+          create: memberIds.map((uid) => ({
             userId: uid,
             role: uid === creatorId ? 'ADMIN' : 'MEMBER',
           })),
@@ -103,7 +127,17 @@ export class ChatService {
       },
       include: {
         members: {
-          include: { user: { select: { id: true, email: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } } },
+          include: {
+            user: {
+              select: {
+                id: true,
+                email: true,
+                profile: {
+                  select: { firstName: true, lastName: true, avatarUrl: true },
+                },
+              },
+            },
+          },
         },
       },
     });
@@ -119,7 +153,16 @@ export class ChatService {
       include: {
         members: {
           include: {
-            user: { select: { id: true, email: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+            user: {
+              select: {
+                id: true,
+                email: true,
+                registrationNumber: true,
+                profile: {
+                  select: { firstName: true, lastName: true, avatarUrl: true },
+                },
+              },
+            },
           },
         },
       },
@@ -138,14 +181,27 @@ export class ChatService {
    * GET /conversations/:id/messages
    * Cursor-based pagination — newest first, starting before `cursor`.
    */
-  async getMessages(conversationId: string, userId: string, query: MessageQueryDto) {
+  async getMessages(
+    conversationId: string,
+    userId: string,
+    query: MessageQueryDto,
+  ) {
     await this.assertMember(conversationId, userId);
 
     const limit = Math.min(query.limit ?? 30, 100);
 
     // Build cursor condition
     const cursorCondition = query.before
-      ? { createdAt: { lt: (await this.prisma.message.findUnique({ where: { id: query.before }, select: { createdAt: true } }))?.createdAt } }
+      ? {
+          createdAt: {
+            lt: (
+              await this.prisma.message.findUnique({
+                where: { id: query.before },
+                select: { createdAt: true },
+              })
+            )?.createdAt,
+          },
+        }
       : {};
 
     const messages = await this.prisma.message.findMany({
@@ -157,18 +213,36 @@ export class ChatService {
       orderBy: { createdAt: 'desc' },
       take: limit,
       include: {
-        sender: { select: { id: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+        sender: {
+          select: {
+            id: true,
+            profile: {
+              select: { firstName: true, lastName: true, avatarUrl: true },
+            },
+          },
+        },
         replyTo: {
-          select: { id: true, content: true, sender: { select: { id: true, profile: { select: { firstName: true } } } } },
+          select: {
+            id: true,
+            content: true,
+            sender: {
+              select: { id: true, profile: { select: { firstName: true } } },
+            },
+          },
         },
         attachments: true,
         reactions: {
-          include: { user: { select: { id: true, profile: { select: { firstName: true } } } } },
+          include: {
+            user: {
+              select: { id: true, profile: { select: { firstName: true } } },
+            },
+          },
         },
       },
     });
 
-    const nextCursor = messages.length === limit ? messages[messages.length - 1].id : null;
+    const nextCursor =
+      messages.length === limit ? messages[messages.length - 1].id : null;
     return { messages: messages.reverse(), nextCursor };
   }
 
@@ -176,7 +250,11 @@ export class ChatService {
    * POST /conversations/:id/messages
    * REST fallback for sending a message (same logic as WS handler).
    */
-  async sendMessage(conversationId: string, senderId: string, dto: SendMessageDto) {
+  async sendMessage(
+    conversationId: string,
+    senderId: string,
+    dto: SendMessageDto,
+  ) {
     await this.assertMember(conversationId, senderId);
 
     // Validate replyToId exists in this conversation
@@ -184,7 +262,10 @@ export class ChatService {
       const replied = await this.prisma.message.findFirst({
         where: { id: dto.replyToId, conversationId },
       });
-      if (!replied) throw new NotFoundException('Replied-to message not found in this conversation');
+      if (!replied)
+        throw new NotFoundException(
+          'Replied-to message not found in this conversation',
+        );
     }
 
     const message = await this.prisma.message.create({
@@ -195,11 +276,24 @@ export class ChatService {
         type: dto.type ?? 'TEXT',
         replyToId: dto.replyToId ?? null,
         attachments: dto.attachments
-          ? { create: dto.attachments.map(a => ({ fileUrl: a.fileUrl, fileType: a.fileType, fileSize: a.fileSize })) }
+          ? {
+              create: dto.attachments.map((a) => ({
+                fileUrl: a.fileUrl,
+                fileType: a.fileType,
+                fileSize: a.fileSize,
+              })),
+            }
           : undefined,
       },
       include: {
-        sender: { select: { id: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+        sender: {
+          select: {
+            id: true,
+            profile: {
+              select: { firstName: true, lastName: true, avatarUrl: true },
+            },
+          },
+        },
         replyTo: { select: { id: true, content: true, senderId: true } },
         attachments: true,
         reactions: true,
@@ -207,7 +301,10 @@ export class ChatService {
     });
 
     // Update conversation updatedAt
-    await this.prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
+    await this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { updatedAt: new Date() },
+    });
 
     // Emit internally (Gateway will forward to socket rooms)
     this.eventEmitter.emit('chat.message.new', { conversationId, message });
@@ -219,7 +316,11 @@ export class ChatService {
    * PATCH /messages/:id
    * Edit own message.
    */
-  async updateMessage(messageId: string, userId: string, dto: UpdateMessageDto) {
+  async updateMessage(
+    messageId: string,
+    userId: string,
+    dto: UpdateMessageDto,
+  ) {
     const msg = await this.assertMessageOwner(messageId, userId);
 
     const updated = await this.prisma.message.update({
@@ -227,7 +328,10 @@ export class ChatService {
       data: { content: dto.content },
     });
 
-    this.eventEmitter.emit('chat.message.updated', { conversationId: msg.conversationId, message: updated });
+    this.eventEmitter.emit('chat.message.updated', {
+      conversationId: msg.conversationId,
+      message: updated,
+    });
     return updated;
   }
 
@@ -243,7 +347,10 @@ export class ChatService {
       data: { isDeleted: true, content: null },
     });
 
-    this.eventEmitter.emit('chat.message.deleted', { conversationId: msg.conversationId, messageId });
+    this.eventEmitter.emit('chat.message.deleted', {
+      conversationId: msg.conversationId,
+      messageId,
+    });
     return { message: 'Message deleted' };
   }
 
@@ -256,7 +363,9 @@ export class ChatService {
    * Add emoji reaction to a message.
    */
   async addReaction(messageId: string, userId: string, emoji: string) {
-    const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+    const msg = await this.prisma.message.findUnique({
+      where: { id: messageId },
+    });
     if (!msg || msg.isDeleted) throw new NotFoundException('Message not found');
     await this.assertMember(msg.conversationId, userId);
 
@@ -264,12 +373,21 @@ export class ChatService {
     try {
       const reaction = await this.prisma.messageReaction.create({
         data: { messageId, userId, emoji },
-        include: { user: { select: { id: true, profile: { select: { firstName: true } } } } },
+        include: {
+          user: {
+            select: { id: true, profile: { select: { firstName: true } } },
+          },
+        },
       });
-      this.eventEmitter.emit('chat.reaction.added', { conversationId: msg.conversationId, messageId, reaction });
+      this.eventEmitter.emit('chat.reaction.added', {
+        conversationId: msg.conversationId,
+        messageId,
+        reaction,
+      });
       return reaction;
     } catch (e: any) {
-      if (e.code === 'P2002') throw new ConflictException('You already reacted with this emoji');
+      if (e.code === 'P2002')
+        throw new ConflictException('You already reacted with this emoji');
       throw e;
     }
   }
@@ -279,7 +397,9 @@ export class ChatService {
    * Remove own emoji reaction.
    */
   async removeReaction(messageId: string, userId: string, emoji: string) {
-    const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+    const msg = await this.prisma.message.findUnique({
+      where: { id: messageId },
+    });
     if (!msg) throw new NotFoundException('Message not found');
 
     const reaction = await this.prisma.messageReaction.findFirst({
@@ -288,7 +408,12 @@ export class ChatService {
     if (!reaction) throw new NotFoundException('Reaction not found');
 
     await this.prisma.messageReaction.delete({ where: { id: reaction.id } });
-    this.eventEmitter.emit('chat.reaction.removed', { conversationId: msg.conversationId, messageId, userId, emoji });
+    this.eventEmitter.emit('chat.reaction.removed', {
+      conversationId: msg.conversationId,
+      messageId,
+      userId,
+      emoji,
+    });
     return { message: 'Reaction removed' };
   }
 
@@ -308,7 +433,11 @@ export class ChatService {
       data: { lastReadAt: new Date() },
     });
 
-    this.eventEmitter.emit('chat.read', { conversationId, userId, readAt: new Date() });
+    this.eventEmitter.emit('chat.read', {
+      conversationId,
+      userId,
+      readAt: new Date(),
+    });
     return { message: 'Marked as read' };
   }
 
@@ -320,14 +449,20 @@ export class ChatService {
     const membership = await this.prisma.conversationMember.findUnique({
       where: { conversationId_userId: { conversationId, userId } },
     });
-    if (!membership) throw new ForbiddenException('You are not a member of this conversation');
+    if (!membership)
+      throw new ForbiddenException('You are not a member of this conversation');
     return membership;
   }
 
   private async assertMessageOwner(messageId: string, userId: string) {
-    const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+    const msg = await this.prisma.message.findUnique({
+      where: { id: messageId },
+    });
     if (!msg || msg.isDeleted) throw new NotFoundException('Message not found');
-    if (msg.senderId !== userId) throw new ForbiddenException('You can only edit/delete your own messages');
+    if (msg.senderId !== userId)
+      throw new ForbiddenException(
+        'You can only edit/delete your own messages',
+      );
     return msg;
   }
 }

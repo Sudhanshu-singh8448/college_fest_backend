@@ -132,7 +132,10 @@ __decorate([
     (0, public_decorator_1.Public)(),
     (0, common_1.Get)('verify-email'),
     (0, swagger_1.ApiOperation)({ summary: 'Verify email address via token link' }),
-    (0, swagger_1.ApiQuery)({ name: 'token', description: 'Verification token from the email link' }),
+    (0, swagger_1.ApiQuery)({
+        name: 'token',
+        description: 'Verification token from the email link',
+    }),
     __param(0, (0, common_1.Query)('token')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

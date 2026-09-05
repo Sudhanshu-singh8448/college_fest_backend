@@ -29,7 +29,12 @@ let FeedbackController = class FeedbackController {
     }
     list(status, category, page, limit, user) {
         const hasGlobalPerm = user.permissions.includes('feedback:manage');
-        return this.feedbackService.listFeedback(user.id, hasGlobalPerm, { status, category, page, limit });
+        return this.feedbackService.listFeedback(user.id, hasGlobalPerm, {
+            status,
+            category,
+            page,
+            limit,
+        });
     }
     update(id, dto, user) {
         const hasGlobalPerm = user.permissions.includes('feedback:manage');
@@ -51,7 +56,9 @@ __decorate([
 ], FeedbackController.prototype, "create", null);
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'List feedback — admin sees all, user sees their own non-anonymous submissions' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'List feedback — admin sees all, user sees their own non-anonymous submissions',
+    }),
     __param(0, (0, common_1.Query)('status')),
     __param(1, (0, common_1.Query)('category')),
     __param(2, (0, common_1.Query)('page')),
@@ -63,7 +70,9 @@ __decorate([
 ], FeedbackController.prototype, "list", null);
 __decorate([
     (0, common_1.Patch)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Admin: respond to feedback or update its status (REVIEWED/RESOLVED/DISMISSED)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Admin: respond to feedback or update its status (REVIEWED/RESOLVED/DISMISSED)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),

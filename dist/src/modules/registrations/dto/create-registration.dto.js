@@ -17,7 +17,10 @@ class CreateRegistrationDto {
 }
 exports.CreateRegistrationDto = CreateRegistrationDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'JSON object containing form answers', example: { team_name: 'TechTitans', members: ['A', 'B'] } }),
+    (0, swagger_1.ApiProperty)({
+        description: 'JSON object containing form answers',
+        example: { team_name: 'TechTitans', members: ['A', 'B'] },
+    }),
     (0, class_validator_1.IsObject)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", Object)

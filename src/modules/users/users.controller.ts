@@ -51,7 +51,9 @@ export class UsersController {
   @Get()
   @UseGuards(PermissionsGuard)
   @RequirePermissions('user:list')
-  @ApiOperation({ summary: 'List/search users (requires user:list permission)' })
+  @ApiOperation({
+    summary: 'List/search users (requires user:list permission)',
+  })
   async searchUsers(
     @Query('q') query: string,
     @Query() pagination: PaginationDto,
@@ -72,7 +74,9 @@ export class UsersController {
   @Patch(':id/status')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('user:ban')
-  @ApiOperation({ summary: 'Ban/suspend/activate a user (requires user:ban permission)' })
+  @ApiOperation({
+    summary: 'Ban/suspend/activate a user (requires user:ban permission)',
+  })
   async updateUserStatus(
     @Param('id') id: string,
     @Body() dto: UpdateUserStatusDto,
@@ -92,22 +96,20 @@ export class UsersController {
   @Post(':id/roles')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('role:manage')
-  @ApiOperation({ summary: 'Assign role to user (requires role:manage permission)' })
-  async assignRole(
-    @Param('id') id: string,
-    @Body() dto: AssignRoleDto,
-  ) {
+  @ApiOperation({
+    summary: 'Assign role to user (requires role:manage permission)',
+  })
+  async assignRole(@Param('id') id: string, @Body() dto: AssignRoleDto) {
     return this.usersService.assignRole(id, dto.roleName);
   }
 
   @Delete(':id/roles/:roleId')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('role:manage')
-  @ApiOperation({ summary: 'Remove role from user (requires role:manage permission)' })
-  async removeRole(
-    @Param('id') id: string,
-    @Param('roleId') roleId: string,
-  ) {
+  @ApiOperation({
+    summary: 'Remove role from user (requires role:manage permission)',
+  })
+  async removeRole(@Param('id') id: string, @Param('roleId') roleId: string) {
     return this.usersService.removeRole(id, roleId);
   }
 }

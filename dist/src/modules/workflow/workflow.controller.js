@@ -62,7 +62,9 @@ __decorate([
     (0, common_1.Post)('workflows'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('workflow:configure'),
-    (0, swagger_1.ApiOperation)({ summary: 'Create a new workflow (requires workflow:configure)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Create a new workflow (requires workflow:configure)',
+    }),
     __param(0, (0, common_1.Body)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [create_workflow_dto_1.CreateWorkflowDto]),
@@ -72,7 +74,9 @@ __decorate([
     (0, common_1.Get)('workflows/:id'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('workflow:configure'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get workflow details (requires workflow:configure)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get workflow details (requires workflow:configure)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -91,7 +95,9 @@ __decorate([
 ], WorkflowController.prototype, "updateWorkflow", null);
 __decorate([
     (0, common_1.Post)('workflow-instances/:id/action'),
-    (0, swagger_1.ApiOperation)({ summary: 'Execute an action on a workflow instance (approvers only)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Execute an action on a workflow instance (approvers only)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),

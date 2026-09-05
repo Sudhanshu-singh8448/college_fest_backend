@@ -86,7 +86,9 @@ __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('user:list'),
-    (0, swagger_1.ApiOperation)({ summary: 'List/search users (requires user:list permission)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'List/search users (requires user:list permission)',
+    }),
     __param(0, (0, common_1.Query)('q')),
     __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
@@ -107,7 +109,9 @@ __decorate([
     (0, common_1.Patch)(':id/status'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('user:ban'),
-    (0, swagger_1.ApiOperation)({ summary: 'Ban/suspend/activate a user (requires user:ban permission)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Ban/suspend/activate a user (requires user:ban permission)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -128,7 +132,9 @@ __decorate([
     (0, common_1.Post)(':id/roles'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('role:manage'),
-    (0, swagger_1.ApiOperation)({ summary: 'Assign role to user (requires role:manage permission)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Assign role to user (requires role:manage permission)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -139,7 +145,9 @@ __decorate([
     (0, common_1.Delete)(':id/roles/:roleId'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('role:manage'),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove role from user (requires role:manage permission)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Remove role from user (requires role:manage permission)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Param)('roleId')),
     __metadata("design:type", Function),

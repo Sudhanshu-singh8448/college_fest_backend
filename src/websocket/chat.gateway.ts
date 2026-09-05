@@ -101,7 +101,8 @@ export class ChatGateway
       (client as any).userId = userId;
 
       // Track socket
-      if (!this.userSockets.has(userId)) this.userSockets.set(userId, new Set());
+      if (!this.userSockets.has(userId))
+        this.userSockets.set(userId, new Set());
       this.userSockets.get(userId)!.add(client.id);
 
       // Join user-specific room for direct notifications
@@ -119,7 +120,10 @@ export class ChatGateway
       // Broadcast presence: ONLINE
       this.broadcastPresence(userId, 'ONLINE');
 
-      client.emit('authenticated', { userId, joinedRooms: memberships.length + 1 });
+      client.emit('authenticated', {
+        userId,
+        joinedRooms: memberships.length + 1,
+      });
       this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
     } catch {
       client.emit('error', { message: 'Authentication failed' });
@@ -140,15 +144,21 @@ export class ChatGateway
     if (!userId) return client.emit('error', { message: 'Not authenticated' });
 
     try {
-      const message = await this.chatService.sendMessage(data.conversationId, userId, {
-        content: data.content,
-        type: data.type,
-        replyToId: data.replyToId,
-        attachments: data.attachments,
-      });
+      const message = await this.chatService.sendMessage(
+        data.conversationId,
+        userId,
+        {
+          content: data.content,
+          type: data.type,
+          replyToId: data.replyToId,
+          attachments: data.attachments,
+        },
+      );
 
       // Broadcast to entire conversation room (including sender for confirmation)
-      this.server.to(`conv:${data.conversationId}`).emit('message:new', { message });
+      this.server
+        .to(`conv:${data.conversationId}`)
+        .emit('message:new', { message });
     } catch (e: any) {
       client.emit('error', { message: e.message });
     }
@@ -219,39 +229,67 @@ export class ChatGateway
    */
   @OnEvent('chat.message.new')
   handleChatMessageNew(payload: { conversationId: string; message: any }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:new', { message: payload.message });
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:new', { message: payload.message });
   }
 
   @OnEvent('chat.message.updated')
   handleChatMessageUpdated(payload: { conversationId: string; message: any }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:updated', { message: payload.message });
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:updated', { message: payload.message });
   }
 
   @OnEvent('chat.message.deleted')
-  handleChatMessageDeleted(payload: { conversationId: string; messageId: string }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:deleted', { messageId: payload.messageId });
+  handleChatMessageDeleted(payload: {
+    conversationId: string;
+    messageId: string;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:deleted', { messageId: payload.messageId });
   }
 
   @OnEvent('chat.reaction.added')
-  handleReactionAdded(payload: { conversationId: string; messageId: string; reaction: any }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:reaction_added', {
-      messageId: payload.messageId,
-      reaction: payload.reaction,
-    });
+  handleReactionAdded(payload: {
+    conversationId: string;
+    messageId: string;
+    reaction: any;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:reaction_added', {
+        messageId: payload.messageId,
+        reaction: payload.reaction,
+      });
   }
 
   @OnEvent('chat.reaction.removed')
-  handleReactionRemoved(payload: { conversationId: string; messageId: string; userId: string; emoji: string }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:reaction_removed', {
-      messageId: payload.messageId,
-      userId: payload.userId,
-      emoji: payload.emoji,
-    });
+  handleReactionRemoved(payload: {
+    conversationId: string;
+    messageId: string;
+    userId: string;
+    emoji: string;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:reaction_removed', {
+        messageId: payload.messageId,
+        userId: payload.userId,
+        emoji: payload.emoji,
+      });
   }
 
   @OnEvent('chat.read')
-  handleChatRead(payload: { conversationId: string; userId: string; readAt: Date }) {
-    this.server.to(`conv:${payload.conversationId}`).emit('message:read', payload);
+  handleChatRead(payload: {
+    conversationId: string;
+    userId: string;
+    readAt: Date;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:read', payload);
   }
 
   // ─────────────────────────────────────────────────────
@@ -270,7 +308,9 @@ export class ChatGateway
     const payload = { userId, status, lastSeen: new Date() };
 
     for (const m of memberships) {
-      this.server.to(`conv:${m.conversationId}`).emit('presence:changed', payload);
+      this.server
+        .to(`conv:${m.conversationId}`)
+        .emit('presence:changed', payload);
     }
   }
 

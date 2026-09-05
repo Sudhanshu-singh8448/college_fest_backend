@@ -126,7 +126,9 @@ export class GroupsService {
 
   // ── POST /groups/:id/members ──────────────────
   async addMember(groupId: string, targetUserId: string, actorId: string) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) {
       throw new NotFoundException('Group not found');
     }
@@ -134,7 +136,9 @@ export class GroupsService {
     await this.assertMembership(groupId, actorId);
 
     // Check target user exists
-    const targetUser = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+    const targetUser = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+    });
     if (!targetUser) {
       throw new NotFoundException('User not found');
     }
@@ -156,7 +160,9 @@ export class GroupsService {
 
   // ── DELETE /groups/:id/members/:userId ────────
   async removeMember(groupId: string, targetUserId: string, actorId: string) {
-    const group = await this.prisma.group.findUnique({ where: { id: groupId } });
+    const group = await this.prisma.group.findUnique({
+      where: { id: groupId },
+    });
     if (!group) {
       throw new NotFoundException('Group not found');
     }
@@ -190,7 +196,7 @@ export class GroupsService {
     // Get all reg number formats to parse the registration number
     const formats = await this.prisma.registrationNumberFormat.findMany();
 
-    let parsedData: Record<string, string> = {};
+    const parsedData: Record<string, string> = {};
 
     for (const format of formats) {
       const regex = new RegExp(format.regex);

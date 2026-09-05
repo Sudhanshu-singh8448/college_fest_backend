@@ -20,7 +20,9 @@ class UpdatePreferenceDto {
 }
 exports.UpdatePreferenceDto = UpdatePreferenceDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Notification type key, e.g. CHAT_MESSAGE, REGISTRATION_APPROVED' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Notification type key, e.g. CHAT_MESSAGE, REGISTRATION_APPROVED',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -48,7 +50,10 @@ class UpdatePreferencesDto {
 }
 exports.UpdatePreferencesDto = UpdatePreferencesDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Array of preference updates', type: [UpdatePreferenceDto] }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Array of preference updates',
+        type: [UpdatePreferenceDto],
+    }),
     __metadata("design:type", Array)
 ], UpdatePreferencesDto.prototype, "preferences", void 0);
 //# sourceMappingURL=update-preferences.dto.js.map

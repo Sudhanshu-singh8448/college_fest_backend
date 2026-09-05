@@ -17,7 +17,10 @@ class UpdateMessageDto {
 }
 exports.UpdateMessageDto = UpdateMessageDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Updated message content', maxLength: 4096 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Updated message content',
+        maxLength: 4096,
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MaxLength)(4096),

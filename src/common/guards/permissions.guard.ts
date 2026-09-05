@@ -5,7 +5,9 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import { PERMISSIONS_KEY } from '../decorators/permissions.decorator';
+import { JwtUser } from '../interfaces/jwt-user.interface';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -21,7 +23,8 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    const { user } = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
+    const user = request.user as JwtUser | undefined;
 
     if (!user || !user.permissions) {
       throw new ForbiddenException('Insufficient permissions');

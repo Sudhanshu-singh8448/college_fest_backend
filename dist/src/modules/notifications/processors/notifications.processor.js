@@ -39,8 +39,14 @@ let NotificationsProcessor = NotificationsProcessor_1 = class NotificationsProce
             if (prefs.pushEnabled) {
                 await this.notificationsService.sendFcmPush(payload.userId, payload.title, payload.body, payload.data);
             }
-            const emailTypes = ['REGISTRATION_APPROVED', 'REGISTRATION_REJECTED', 'ANNOUNCEMENT'];
-            if (prefs.emailEnabled && emailTypes.includes(payload.type) && this.resend) {
+            const emailTypes = [
+                'REGISTRATION_APPROVED',
+                'REGISTRATION_REJECTED',
+                'ANNOUNCEMENT',
+            ];
+            if (prefs.emailEnabled &&
+                emailTypes.includes(payload.type) &&
+                this.resend) {
                 await this.sendEmail(payload);
             }
         }

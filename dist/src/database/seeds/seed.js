@@ -6,16 +6,46 @@ async function main() {
     console.log('🌱 Seeding database...');
     const roles = [
         { name: 'super_admin', description: 'System Super Admin — full access' },
-        { name: 'admin', description: 'College Admin — manages settings, users, fests' },
-        { name: 'finance_manager', description: 'Finance Manager — manages expenses & budgets' },
-        { name: 'content_manager', description: 'Content Manager — manages announcements & content' },
-        { name: 'committee_member', description: 'Committee Member — event review & approval' },
-        { name: 'event_coordinator', description: 'Event Coordinator — oversees multiple events' },
-        { name: 'organizer', description: 'Event Organizer — manages assigned events' },
-        { name: 'moderator', description: 'Community Moderator — manages chat & groups' },
-        { name: 'check_in_staff', description: 'Check-in Staff — scans tickets at entry' },
-        { name: 'volunteer', description: 'Volunteer — assists with event operations' },
-        { name: 'participant', description: 'Participant — default role for all users' },
+        {
+            name: 'admin',
+            description: 'College Admin — manages settings, users, fests',
+        },
+        {
+            name: 'finance_manager',
+            description: 'Finance Manager — manages expenses & budgets',
+        },
+        {
+            name: 'content_manager',
+            description: 'Content Manager — manages announcements & content',
+        },
+        {
+            name: 'committee_member',
+            description: 'Committee Member — event review & approval',
+        },
+        {
+            name: 'event_coordinator',
+            description: 'Event Coordinator — oversees multiple events',
+        },
+        {
+            name: 'organizer',
+            description: 'Event Organizer — manages assigned events',
+        },
+        {
+            name: 'moderator',
+            description: 'Community Moderator — manages chat & groups',
+        },
+        {
+            name: 'check_in_staff',
+            description: 'Check-in Staff — scans tickets at entry',
+        },
+        {
+            name: 'volunteer',
+            description: 'Volunteer — assists with event operations',
+        },
+        {
+            name: 'participant',
+            description: 'Participant — default role for all users',
+        },
     ];
     const createdRoles = {};
     for (const role of roles) {
@@ -37,7 +67,10 @@ async function main() {
         { action: 'event:delete', description: 'Delete events' },
         { action: 'event:view', description: 'View event organizer details' },
         { action: 'registration:view', description: 'View event registrations' },
-        { action: 'registration:approve', description: 'Approve/reject registrations' },
+        {
+            action: 'registration:approve',
+            description: 'Approve/reject registrations',
+        },
         { action: 'group:create', description: 'Create community groups' },
         { action: 'fest:manage', description: 'Create and manage fest editions' },
         { action: 'guidelines:manage', description: 'Edit fest guidelines' },
@@ -46,11 +79,17 @@ async function main() {
         { action: 'expense:create', description: 'Submit expenses' },
         { action: 'expense:view', description: 'View expense reports' },
         { action: 'expense:approve', description: 'Approve/reject expenses' },
-        { action: 'workflow:configure', description: 'Configure approval workflows' },
+        {
+            action: 'workflow:configure',
+            description: 'Configure approval workflows',
+        },
         { action: 'analytics:view', description: 'View dashboard analytics' },
         { action: 'audit:view', description: 'View audit logs' },
         { action: 'settings:manage', description: 'Manage system settings' },
-        { action: 'notification:broadcast', description: 'Send broadcast notifications' },
+        {
+            action: 'notification:broadcast',
+            description: 'Send broadcast notifications',
+        },
         { action: 'chat:moderate', description: 'Moderate chat messages' },
     ];
     const createdPerms = {};
@@ -66,44 +105,70 @@ async function main() {
     const rolePermMap = {
         super_admin: permissions.map((p) => p.action),
         admin: [
-            'user:list', 'user:view', 'user:ban', 'role:manage',
-            'event:create', 'event:edit', 'event:delete', 'event:view',
-            'registration:view', 'registration:approve',
-            'group:create', 'fest:manage', 'guidelines:manage',
-            'attendance:manage', 'ticket:scan',
-            'expense:view', 'expense:approve',
-            'workflow:configure', 'analytics:view', 'audit:view',
-            'settings:manage', 'notification:broadcast', 'chat:moderate',
+            'user:list',
+            'user:view',
+            'user:ban',
+            'role:manage',
+            'event:create',
+            'event:edit',
+            'event:delete',
+            'event:view',
+            'registration:view',
+            'registration:approve',
+            'group:create',
+            'fest:manage',
+            'guidelines:manage',
+            'attendance:manage',
+            'ticket:scan',
+            'expense:view',
+            'expense:approve',
+            'workflow:configure',
+            'analytics:view',
+            'audit:view',
+            'settings:manage',
+            'notification:broadcast',
+            'chat:moderate',
         ],
         finance_manager: [
-            'expense:create', 'expense:view', 'expense:approve', 'analytics:view',
+            'expense:create',
+            'expense:view',
+            'expense:approve',
+            'analytics:view',
         ],
         content_manager: [
-            'event:create', 'event:edit', 'guidelines:manage', 'notification:broadcast',
+            'event:create',
+            'event:edit',
+            'guidelines:manage',
+            'notification:broadcast',
         ],
         committee_member: [
-            'event:view', 'registration:view', 'registration:approve',
-            'expense:view', 'analytics:view',
+            'event:view',
+            'registration:view',
+            'registration:approve',
+            'expense:view',
+            'analytics:view',
         ],
         event_coordinator: [
-            'event:create', 'event:edit', 'event:view',
-            'registration:view', 'registration:approve',
-            'attendance:manage', 'expense:create', 'expense:view',
+            'event:create',
+            'event:edit',
+            'event:view',
+            'registration:view',
+            'registration:approve',
+            'attendance:manage',
+            'expense:create',
+            'expense:view',
         ],
         organizer: [
-            'event:edit', 'event:view',
-            'registration:view', 'registration:approve',
-            'attendance:manage', 'expense:create',
+            'event:edit',
+            'event:view',
+            'registration:view',
+            'registration:approve',
+            'attendance:manage',
+            'expense:create',
         ],
-        moderator: [
-            'group:create', 'chat:moderate', 'user:list', 'user:view',
-        ],
-        check_in_staff: [
-            'ticket:scan', 'attendance:manage',
-        ],
-        volunteer: [
-            'ticket:scan',
-        ],
+        moderator: ['group:create', 'chat:moderate', 'user:list', 'user:view'],
+        check_in_staff: ['ticket:scan', 'attendance:manage'],
+        volunteer: ['ticket:scan'],
         participant: [],
     };
     for (const [roleName, permActions] of Object.entries(rolePermMap)) {
@@ -123,8 +188,13 @@ async function main() {
     }
     console.log(`  ✓ Role-permission mappings seeded`);
     const categories = [
-        'Venue', 'Equipment', 'Prizes', 'Food',
-        'Marketing', 'Travel', 'Miscellaneous',
+        'Venue',
+        'Equipment',
+        'Prizes',
+        'Food',
+        'Marketing',
+        'Travel',
+        'Miscellaneous',
     ];
     for (const name of categories) {
         await prisma.expenseCategory.upsert({
@@ -135,14 +205,62 @@ async function main() {
     }
     console.log(`  ✓ ${categories.length} expense categories seeded`);
     const badges = [
-        { name: 'First Blood', description: 'Register for your first event', iconUrl: '/badges/first_blood.png', condition: 'register_1_event', xpReward: 50 },
-        { name: 'Fire Starter', description: 'Attend 3 events', iconUrl: '/badges/fire_starter.png', condition: 'attend_3_events', xpReward: 100 },
-        { name: 'Sharpshooter', description: 'Complete all events in a category', iconUrl: '/badges/sharpshooter.png', condition: 'complete_category', xpReward: 200 },
-        { name: 'Event Royalty', description: 'Attend 10+ events', iconUrl: '/badges/event_royalty.png', condition: 'attend_10_events', xpReward: 500 },
-        { name: 'Speedster', description: 'Register within 10 min of event publish', iconUrl: '/badges/speedster.png', condition: 'fast_registration', xpReward: 75 },
-        { name: 'Night Owl', description: 'Login after midnight', iconUrl: '/badges/night_owl.png', condition: 'midnight_login', xpReward: 25 },
-        { name: 'Champion', description: 'Win any event', iconUrl: '/badges/champion.png', condition: 'win_event', xpReward: 300 },
-        { name: 'Digital Native', description: '7 consecutive login days', iconUrl: '/badges/digital_native.png', condition: '7_day_streak', xpReward: 150 },
+        {
+            name: 'First Blood',
+            description: 'Register for your first event',
+            iconUrl: '/badges/first_blood.png',
+            condition: 'register_1_event',
+            xpReward: 50,
+        },
+        {
+            name: 'Fire Starter',
+            description: 'Attend 3 events',
+            iconUrl: '/badges/fire_starter.png',
+            condition: 'attend_3_events',
+            xpReward: 100,
+        },
+        {
+            name: 'Sharpshooter',
+            description: 'Complete all events in a category',
+            iconUrl: '/badges/sharpshooter.png',
+            condition: 'complete_category',
+            xpReward: 200,
+        },
+        {
+            name: 'Event Royalty',
+            description: 'Attend 10+ events',
+            iconUrl: '/badges/event_royalty.png',
+            condition: 'attend_10_events',
+            xpReward: 500,
+        },
+        {
+            name: 'Speedster',
+            description: 'Register within 10 min of event publish',
+            iconUrl: '/badges/speedster.png',
+            condition: 'fast_registration',
+            xpReward: 75,
+        },
+        {
+            name: 'Night Owl',
+            description: 'Login after midnight',
+            iconUrl: '/badges/night_owl.png',
+            condition: 'midnight_login',
+            xpReward: 25,
+        },
+        {
+            name: 'Champion',
+            description: 'Win any event',
+            iconUrl: '/badges/champion.png',
+            condition: 'win_event',
+            xpReward: 300,
+        },
+        {
+            name: 'Digital Native',
+            description: '7 consecutive login days',
+            iconUrl: '/badges/digital_native.png',
+            condition: '7_day_streak',
+            xpReward: 150,
+        },
     ];
     for (const badge of badges) {
         await prisma.badgeDefinition.upsert({

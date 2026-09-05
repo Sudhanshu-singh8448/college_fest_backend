@@ -18,13 +18,18 @@ class UpdateExpenseStatusDto {
 }
 exports.UpdateExpenseStatusDto = UpdateExpenseStatusDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ enum: ['APPROVED', 'REJECTED', 'NEEDS_REVISION', 'PENDING'], example: 'APPROVED' }),
+    (0, swagger_1.ApiProperty)({
+        enum: ['APPROVED', 'REJECTED', 'NEEDS_REVISION', 'PENDING'],
+        example: 'APPROVED',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsIn)(['APPROVED', 'REJECTED', 'NEEDS_REVISION', 'PENDING']),
     __metadata("design:type", String)
 ], UpdateExpenseStatusDto.prototype, "status", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Required when status is REJECTED or NEEDS_REVISION' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Required when status is REJECTED or NEEDS_REVISION',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)

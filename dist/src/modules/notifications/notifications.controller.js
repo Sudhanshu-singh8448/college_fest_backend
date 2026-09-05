@@ -48,7 +48,9 @@ let NotificationsController = class NotificationsController {
 exports.NotificationsController = NotificationsController;
 __decorate([
     (0, common_1.Get)('notifications'),
-    (0, swagger_1.ApiOperation)({ summary: 'List my notifications (paginated, filterable by unread)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'List my notifications (paginated, filterable by unread)',
+    }),
     __param(0, (0, common_1.Query)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -66,7 +68,9 @@ __decorate([
 ], NotificationsController.prototype, "markRead", null);
 __decorate([
     (0, common_1.Get)('notifications/preferences'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get per-type notification preferences (defaults shown for unset types)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Get per-type notification preferences (defaults shown for unset types)',
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -74,7 +78,9 @@ __decorate([
 ], NotificationsController.prototype, "getPreferences", null);
 __decorate([
     (0, common_1.Put)('notifications/preferences'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update notification preferences for one or more types' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Update notification preferences for one or more types',
+    }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -92,7 +98,9 @@ __decorate([
 ], NotificationsController.prototype, "registerDeviceToken", null);
 __decorate([
     (0, common_1.Delete)('device-tokens/:id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Remove a device token (on logout / token rotation)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Remove a device token (on logout / token rotation)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),

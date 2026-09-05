@@ -115,7 +115,9 @@ let AuthService = class AuthService {
         this.festService.autoRegisterForActiveFest(user.id).catch((err) => {
             console.warn(`Auto-fest-registration failed for ${user.id}:`, err.message);
         });
-        this.groupsService.autoAssignGroups(user.id, dto.registrationNumber).catch((err) => {
+        this.groupsService
+            .autoAssignGroups(user.id, dto.registrationNumber)
+            .catch((err) => {
             console.warn(`Auto-group-assignment failed for ${user.id}:`, err.message);
         });
         return this.generateTokens(user.id);
@@ -198,7 +200,9 @@ let AuthService = class AuthService {
             where: { registrationNumber: dto.registrationNumber },
         });
         if (!user || !user.email) {
-            return { message: 'If the account exists and has an email, a reset link has been sent.' };
+            return {
+                message: 'If the account exists and has an email, a reset link has been sent.',
+            };
         }
         const resetToken = (0, uuid_1.v4)();
         const resetTokenHash = this.hashToken(resetToken);
@@ -212,14 +216,18 @@ let AuthService = class AuthService {
             },
         });
         console.log(`[DEV] Password reset token for ${user.registrationNumber}: ${resetToken}`);
-        return { message: 'If the account exists and has an email, a reset link has been sent.' };
+        return {
+            message: 'If the account exists and has an email, a reset link has been sent.',
+        };
     }
     async resetPassword(dto) {
         const tokenHash = this.hashToken(dto.token);
         const storedToken = await this.prisma.refreshToken.findUnique({
             where: { tokenHash },
         });
-        if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
+        if (!storedToken ||
+            storedToken.isRevoked ||
+            storedToken.expiresAt < new Date()) {
             throw new common_1.BadRequestException('Invalid or expired reset token');
         }
         if (!storedToken.familyId.startsWith('RESET_')) {
@@ -248,7 +256,9 @@ let AuthService = class AuthService {
         const storedToken = await this.prisma.refreshToken.findUnique({
             where: { tokenHash },
         });
-        if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
+        if (!storedToken ||
+            storedToken.isRevoked ||
+            storedToken.expiresAt < new Date()) {
             throw new common_1.BadRequestException('Invalid or expired verification token');
         }
         if (!storedToken.familyId.startsWith('VERIFY_')) {
@@ -262,7 +272,9 @@ let AuthService = class AuthService {
             where: { id: storedToken.id },
             data: { isRevoked: true },
         });
-        return { message: 'Email verified successfully. Your account is now active.' };
+        return {
+            message: 'Email verified successfully. Your account is now active.',
+        };
     }
     async resendVerification(userId) {
         const user = await this.prisma.user.findUnique({
@@ -333,11 +345,16 @@ let AuthService = class AuthService {
         const value = parseInt(match[1], 10);
         const unit = match[2];
         switch (unit) {
-            case 's': return value * 1000;
-            case 'm': return value * 60 * 1000;
-            case 'h': return value * 60 * 60 * 1000;
-            case 'd': return value * 24 * 60 * 60 * 1000;
-            default: return 7 * 24 * 60 * 60 * 1000;
+            case 's':
+                return value * 1000;
+            case 'm':
+                return value * 60 * 1000;
+            case 'h':
+                return value * 60 * 60 * 1000;
+            case 'd':
+                return value * 24 * 60 * 60 * 1000;
+            default:
+                return 7 * 24 * 60 * 60 * 1000;
         }
     }
 };

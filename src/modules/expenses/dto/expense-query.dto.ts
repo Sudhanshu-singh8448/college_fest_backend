@@ -3,7 +3,9 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class ExpenseQueryDto {
-  @ApiPropertyOptional({ enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION'] })
+  @ApiPropertyOptional({
+    enum: ['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION'],
+  })
   @IsString()
   @IsIn(['DRAFT', 'PENDING', 'APPROVED', 'REJECTED', 'NEEDS_REVISION'])
   @IsOptional()

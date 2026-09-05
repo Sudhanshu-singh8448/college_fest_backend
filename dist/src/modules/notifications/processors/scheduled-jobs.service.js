@@ -40,7 +40,10 @@ let ScheduledJobsService = ScheduledJobsService_1 = class ScheduledJobsService {
         });
         for (const event of upcomingEvents) {
             const registrations = await this.prisma.eventRegistration.findMany({
-                where: { eventId: event.id, status: { in: ['APPROVED', 'CHECKED_IN'] } },
+                where: {
+                    eventId: event.id,
+                    status: { in: ['APPROVED', 'CHECKED_IN'] },
+                },
                 select: { userId: true },
             });
             for (const reg of registrations) {
@@ -91,7 +94,9 @@ let ScheduledJobsService = ScheduledJobsService_1 = class ScheduledJobsService {
         today.setHours(0, 0, 0, 0);
         const [totalUsers, totalRegistrations, totalEvents] = await Promise.all([
             this.prisma.user.count({ where: { status: 'ACTIVE' } }),
-            this.prisma.eventRegistration.count({ where: { createdAt: { gte: today } } }),
+            this.prisma.eventRegistration.count({
+                where: { createdAt: { gte: today } },
+            }),
             this.prisma.event.count({ where: { deletedAt: null } }),
         ]);
         this.logger.log(`[CRON] Daily snapshot — users:${totalUsers} regs_today:${totalRegistrations} events:${totalEvents}`);

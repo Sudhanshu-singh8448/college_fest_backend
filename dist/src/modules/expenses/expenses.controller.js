@@ -55,7 +55,9 @@ let ExpensesController = class ExpensesController {
 exports.ExpensesController = ExpensesController;
 __decorate([
     (0, common_1.Post)(),
-    (0, swagger_1.ApiOperation)({ summary: 'Create an expense (DRAFT or submit immediately to PENDING)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Create an expense (DRAFT or submit immediately to PENDING)',
+    }),
     __param(0, (0, common_1.Body)()),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
@@ -71,7 +73,9 @@ __decorate([
 ], ExpensesController.prototype, "listCategories", null);
 __decorate([
     (0, common_1.Get)('reports'),
-    (0, swagger_1.ApiOperation)({ summary: 'Aggregated expense reports by status, category, and event (admin only)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Aggregated expense reports by status, category, and event (admin only)',
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -79,7 +83,9 @@ __decorate([
 ], ExpensesController.prototype, "getReports", null);
 __decorate([
     (0, common_1.Get)('export'),
-    (0, swagger_1.ApiOperation)({ summary: 'Export all expenses as structured JSON for CSV/Excel (admin only)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Export all expenses as structured JSON for CSV/Excel (admin only)',
+    }),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  ConflictException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
@@ -34,7 +39,7 @@ export class EventsService {
         include: {
           fest: { select: { id: true, name: true, year: true } },
           _count: { select: { registrations: true } },
-        }
+        },
       }),
       this.prisma.event.count({ where }),
     ]);
@@ -57,8 +62,8 @@ export class EventsService {
       include: {
         organizers: {
           include: {
-            user: { include: { profile: true } }
-          }
+            user: { include: { profile: true } },
+          },
         },
         fest: true,
       },
@@ -67,7 +72,7 @@ export class EventsService {
     if (!event) throw new NotFoundException('Event not found');
 
     // Strip passwordHash
-    const safeOrganizers = event.organizers.map(org => {
+    const safeOrganizers = event.organizers.map((org) => {
       const { passwordHash, ...safeUser } = org.user;
       return { ...org, user: safeUser };
     });
@@ -78,7 +83,9 @@ export class EventsService {
   // ── POST /events ──────────────────────────────
   async create(dto: CreateEventDto, creatorId: string) {
     // Ensure fest exists
-    const fest = await this.prisma.fest.findUnique({ where: { id: dto.festId } });
+    const fest = await this.prisma.fest.findUnique({
+      where: { id: dto.festId },
+    });
     if (!fest) throw new NotFoundException('Fest not found');
 
     // Create event, assign creator as PRIMARY organizer, create EVENT group
@@ -100,17 +107,22 @@ export class EventsService {
           create: {
             userId: creatorId,
             role: 'PRIMARY',
-          }
+          },
         },
         // Auto-create basic form schema
         form: {
           create: {
             schema: [
-              { name: 'team_name', label: 'Team Name', type: 'text', validation: { required: true } }
-            ]
-          }
-        }
-      }
+              {
+                name: 'team_name',
+                label: 'Team Name',
+                type: 'text',
+                validation: { required: true },
+              },
+            ],
+          },
+        },
+      },
     });
 
     // Create an EVENT group for this event
@@ -119,16 +131,21 @@ export class EventsService {
         name: `Event: ${event.name}`,
         type: 'EVENT',
         members: {
-          create: { userId: creatorId }
-        }
-      }
+          create: { userId: creatorId },
+        },
+      },
     });
 
     return event;
   }
 
   // ── PATCH /events/:id ─────────────────────────
-  async update(id: string, dto: UpdateEventDto, userId: string, hasGlobalPerm: boolean) {
+  async update(
+    id: string,
+    dto: UpdateEventDto,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
     await this.assertEventExists(id);
     if (!hasGlobalPerm) await this.assertOrganizer(id, userId);
 
@@ -138,15 +155,19 @@ export class EventsService {
         ...(dto.name !== undefined && { name: dto.name }),
         ...(dto.description !== undefined && { description: dto.description }),
         ...(dto.category !== undefined && { category: dto.category }),
-        ...(dto.startDate !== undefined && { startDate: new Date(dto.startDate) }),
+        ...(dto.startDate !== undefined && {
+          startDate: new Date(dto.startDate),
+        }),
         ...(dto.endDate !== undefined && { endDate: new Date(dto.endDate) }),
         ...(dto.venue !== undefined && { venue: dto.venue }),
-        ...(dto.maxParticipants !== undefined && { maxParticipants: dto.maxParticipants }),
+        ...(dto.maxParticipants !== undefined && {
+          maxParticipants: dto.maxParticipants,
+        }),
         ...(dto.minTeamSize !== undefined && { minTeamSize: dto.minTeamSize }),
         ...(dto.maxTeamSize !== undefined && { maxTeamSize: dto.maxTeamSize }),
         ...(dto.isPublic !== undefined && { isPublic: dto.isPublic }),
         ...(dto.bannerUrl !== undefined && { bannerUrl: dto.bannerUrl }),
-      }
+      },
     });
   }
 
@@ -160,7 +181,12 @@ export class EventsService {
   }
 
   // ── PATCH /events/:id/status ──────────────────
-  async updateStatus(id: string, status: string, userId: string, hasGlobalPerm: boolean) {
+  async updateStatus(
+    id: string,
+    status: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
     await this.assertEventExists(id);
     if (!hasGlobalPerm) await this.assertOrganizer(id, userId);
 
@@ -178,51 +204,64 @@ export class EventsService {
     const organizers = await this.prisma.eventOrganizer.findMany({
       where: { eventId: id },
       include: {
-        user: { include: { profile: true } }
-      }
+        user: { include: { profile: true } },
+      },
     });
 
-    return organizers.map(org => {
+    return organizers.map((org) => {
       const { passwordHash, ...safeUser } = org.user;
       return { ...org, user: safeUser };
     });
   }
 
   // ── POST /events/:id/organizers ───────────────
-  async addOrganizer(id: string, targetUserId: string, role: string, actorId: string, hasGlobalPerm: boolean) {
+  async addOrganizer(
+    id: string,
+    targetUserId: string,
+    role: string,
+    actorId: string,
+    hasGlobalPerm: boolean,
+  ) {
     await this.assertEventExists(id);
     if (!hasGlobalPerm) await this.assertOrganizer(id, actorId, ['PRIMARY']); // Only PRIMARY can add others
 
-    const user = await this.prisma.user.findUnique({ where: { id: targetUserId } });
+    const user = await this.prisma.user.findUnique({
+      where: { id: targetUserId },
+    });
     if (!user) throw new NotFoundException('User not found');
 
     const existing = await this.prisma.eventOrganizer.findUnique({
-      where: { eventId_userId: { eventId: id, userId: targetUserId } }
+      where: { eventId_userId: { eventId: id, userId: targetUserId } },
     });
 
     if (existing) throw new ConflictException('User is already an organizer');
 
     await this.prisma.eventOrganizer.create({
-      data: { eventId: id, userId: targetUserId, role }
+      data: { eventId: id, userId: targetUserId, role },
     });
 
     return { message: 'Organizer added successfully' };
   }
 
   // ── DELETE /events/:id/organizers/:userId ─────
-  async removeOrganizer(id: string, targetUserId: string, actorId: string, hasGlobalPerm: boolean) {
+  async removeOrganizer(
+    id: string,
+    targetUserId: string,
+    actorId: string,
+    hasGlobalPerm: boolean,
+  ) {
     await this.assertEventExists(id);
     if (!hasGlobalPerm) await this.assertOrganizer(id, actorId, ['PRIMARY']);
 
     const existing = await this.prisma.eventOrganizer.findUnique({
-      where: { eventId_userId: { eventId: id, userId: targetUserId } }
+      where: { eventId_userId: { eventId: id, userId: targetUserId } },
     });
 
     if (!existing) throw new NotFoundException('Organizer not found');
 
     if (existing.role === 'PRIMARY') {
       const primaryCount = await this.prisma.eventOrganizer.count({
-        where: { eventId: id, role: 'PRIMARY' }
+        where: { eventId: id, role: 'PRIMARY' },
       });
       if (primaryCount <= 1) {
         throw new ConflictException('Cannot remove the last PRIMARY organizer');
@@ -230,7 +269,7 @@ export class EventsService {
     }
 
     await this.prisma.eventOrganizer.delete({
-      where: { eventId_userId: { eventId: id, userId: targetUserId } }
+      where: { eventId_userId: { eventId: id, userId: targetUserId } },
     });
 
     return { message: 'Organizer removed successfully' };
@@ -246,28 +285,37 @@ export class EventsService {
       this.prisma.eventRegistration.groupBy({
         by: ['status'],
         where: { eventId: id },
-        _count: true
+        _count: true,
       }),
       this.prisma.attendance.count({ where: { eventId: id } }),
     ]);
 
     return {
       totalRegistrations: totalRegs,
-      statusBreakdown: statusCounts.map(s => ({ status: s.status, count: s._count })),
+      statusBreakdown: statusCounts.map((s) => ({
+        status: s.status,
+        count: s._count,
+      })),
       checkedIn: attendanceCount,
     };
   }
 
   // ── Helpers ───────────────────────────────────
   private async assertEventExists(id: string) {
-    const event = await this.prisma.event.findFirst({ where: { id, deletedAt: null } });
+    const event = await this.prisma.event.findFirst({
+      where: { id, deletedAt: null },
+    });
     if (!event) throw new NotFoundException('Event not found');
     return event;
   }
 
-  private async assertOrganizer(eventId: string, userId: string, allowedRoles?: string[]) {
+  private async assertOrganizer(
+    eventId: string,
+    userId: string,
+    allowedRoles?: string[],
+  ) {
     const org = await this.prisma.eventOrganizer.findUnique({
-      where: { eventId_userId: { eventId, userId } }
+      where: { eventId_userId: { eventId, userId } },
     });
 
     if (!org) {
@@ -275,7 +323,9 @@ export class EventsService {
     }
 
     if (allowedRoles && !allowedRoles.includes(org.role)) {
-      throw new ForbiddenException(`Requires one of roles: ${allowedRoles.join(', ')}`);
+      throw new ForbiddenException(
+        `Requires one of roles: ${allowedRoles.join(', ')}`,
+      );
     }
 
     return org;

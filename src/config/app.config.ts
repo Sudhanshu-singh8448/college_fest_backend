@@ -5,6 +5,8 @@ export default registerAs('app', () => ({
   port: parseInt(process.env.PORT || '3000', 10),
   name: 'TechGram API',
   cors: {
-    origins: process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(',') : ['*'],
+    origins: process.env.CORS_ORIGINS
+      ? process.env.CORS_ORIGINS.split(',')
+      : ['*'],
   },
 }));

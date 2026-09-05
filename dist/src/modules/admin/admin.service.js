@@ -23,24 +23,42 @@ let AdminService = class AdminService {
         today.setHours(0, 0, 0, 0);
         const [totalUsers, activeUsers, newUsers, totalEvents, eventsByStatus, totalRegistrations, pendingRegistrations, approvedExpenses, pendingExpenses, totalExpenseAmount, feedbackByStatus, topLeaderboard,] = await Promise.all([
             this.prisma.user.count({ where: { status: 'ACTIVE' } }),
-            this.prisma.user.count({ where: { status: 'ACTIVE', updatedAt: { gte: sevenDaysAgo } } }),
+            this.prisma.user.count({
+                where: { status: 'ACTIVE', updatedAt: { gte: sevenDaysAgo } },
+            }),
             this.prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
             this.prisma.event.count({ where: { deletedAt: null } }),
-            this.prisma.event.groupBy({ by: ['status'], _count: { id: true }, where: { deletedAt: null } }),
+            this.prisma.event.groupBy({
+                by: ['status'],
+                _count: { id: true },
+                where: { deletedAt: null },
+            }),
             this.prisma.eventRegistration.count(),
             this.prisma.eventRegistration.count({ where: { status: 'PENDING' } }),
             this.prisma.expense.count({ where: { status: 'APPROVED' } }),
             this.prisma.expense.count({ where: { status: 'PENDING' } }),
-            this.prisma.expense.aggregate({ _sum: { amount: true }, where: { status: 'APPROVED' } }),
+            this.prisma.expense.aggregate({
+                _sum: { amount: true },
+                where: { status: 'APPROVED' },
+            }),
             this.prisma.feedback.groupBy({ by: ['status'], _count: { id: true } }),
-            this.prisma.leaderboardCache.findMany({ orderBy: { rank: 'asc' }, take: 5 }),
+            this.prisma.leaderboardCache.findMany({
+                orderBy: { rank: 'asc' },
+                take: 5,
+            }),
         ]);
-        const topUserIds = topLeaderboard.map(e => e.userId);
+        const topUserIds = topLeaderboard.map((e) => e.userId);
         const topUsers = await this.prisma.user.findMany({
             where: { id: { in: topUserIds } },
-            select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } },
+            select: {
+                id: true,
+                registrationNumber: true,
+                profile: {
+                    select: { firstName: true, lastName: true, avatarUrl: true },
+                },
+            },
         });
-        const userMap = Object.fromEntries(topUsers.map(u => [u.id, u]));
+        const userMap = Object.fromEntries(topUsers.map((u) => [u.id, u]));
         return {
             users: {
                 total: totalUsers,
@@ -49,7 +67,7 @@ let AdminService = class AdminService {
             },
             events: {
                 total: totalEvents,
-                byStatus: Object.fromEntries(eventsByStatus.map(r => [r.status, r._count.id])),
+                byStatus: Object.fromEntries(eventsByStatus.map((r) => [r.status, r._count.id])),
                 totalRegistrations,
                 pendingRegistrations,
             },
@@ -58,8 +76,8 @@ let AdminService = class AdminService {
                 pendingApprovalCount: pendingExpenses,
                 totalApprovedSpend: totalExpenseAmount._sum.amount ?? 0,
             },
-            feedback: Object.fromEntries(feedbackByStatus.map(r => [r.status, r._count.id])),
-            leaderboard: topLeaderboard.map(e => ({
+            feedback: Object.fromEntries(feedbackByStatus.map((r) => [r.status, r._count.id])),
+            leaderboard: topLeaderboard.map((e) => ({
                 rank: e.rank,
                 totalXp: e.totalXp,
                 level: e.level,
@@ -92,20 +110,33 @@ let AdminService = class AdminService {
                     email: true,
                     status: true,
                     createdAt: true,
-                    profile: { select: { firstName: true, lastName: true, avatarUrl: true, phone: true } },
+                    profile: {
+                        select: {
+                            firstName: true,
+                            lastName: true,
+                            avatarUrl: true,
+                            phone: true,
+                        },
+                    },
                     roles: { select: { role: { select: { name: true } } } },
                     userXp: { select: { totalXp: true, level: true } },
                 },
             }),
             this.prisma.user.count({ where }),
             this.prisma.user.groupBy({ by: ['status'], _count: { id: true } }),
-            this.prisma.user.count({ where: { createdAt: { gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1) } } }),
+            this.prisma.user.count({
+                where: {
+                    createdAt: {
+                        gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+                    },
+                },
+            }),
         ]);
         return {
             users,
             meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
             stats: {
-                byStatus: Object.fromEntries(byStatus.map(r => [r.status, r._count.id])),
+                byStatus: Object.fromEntries(byStatus.map((r) => [r.status, r._count.id])),
                 newThisMonth,
             },
         };
@@ -119,10 +150,18 @@ let AdminService = class AdminService {
             orderBy: { startDate: 'desc' },
         });
         const [byCategory, byStatus] = await Promise.all([
-            this.prisma.event.groupBy({ by: ['category'], _count: { id: true }, where: { deletedAt: null } }),
-            this.prisma.event.groupBy({ by: ['status'], _count: { id: true }, where: { deletedAt: null } }),
+            this.prisma.event.groupBy({
+                by: ['category'],
+                _count: { id: true },
+                where: { deletedAt: null },
+            }),
+            this.prisma.event.groupBy({
+                by: ['status'],
+                _count: { id: true },
+                where: { deletedAt: null },
+            }),
         ]);
-        const enriched = events.map(e => ({
+        const enriched = events.map((e) => ({
             id: e.id,
             name: e.name,
             status: e.status,
@@ -131,7 +170,9 @@ let AdminService = class AdminService {
             maxParticipants: e.maxParticipants,
             registrationCount: e._count.registrations,
             attendanceCount: e._count.attendances,
-            fillRate: e.maxParticipants ? Math.round((e._count.registrations / e.maxParticipants) * 100) : null,
+            fillRate: e.maxParticipants
+                ? Math.round((e._count.registrations / e.maxParticipants) * 100)
+                : null,
             attendanceRate: e._count.registrations > 0
                 ? Math.round((e._count.attendances / e._count.registrations) * 100)
                 : 0,
@@ -140,16 +181,22 @@ let AdminService = class AdminService {
             events: enriched,
             summary: {
                 total: events.length,
-                byCategory: Object.fromEntries(byCategory.map(r => [r.category, r._count.id])),
-                byStatus: Object.fromEntries(byStatus.map(r => [r.status, r._count.id])),
-                avgFillRate: enriched.filter(e => e.fillRate !== null).reduce((acc, e) => acc + (e.fillRate ?? 0), 0)
-                    / (enriched.filter(e => e.fillRate !== null).length || 1),
+                byCategory: Object.fromEntries(byCategory.map((r) => [r.category, r._count.id])),
+                byStatus: Object.fromEntries(byStatus.map((r) => [r.status, r._count.id])),
+                avgFillRate: enriched
+                    .filter((e) => e.fillRate !== null)
+                    .reduce((acc, e) => acc + (e.fillRate ?? 0), 0) /
+                    (enriched.filter((e) => e.fillRate !== null).length || 1),
             },
         };
     }
     async getFinanceStats() {
         const [byStatus, byCategory, byEvent, recent] = await Promise.all([
-            this.prisma.expense.groupBy({ by: ['status'], _sum: { amount: true }, _count: { id: true } }),
+            this.prisma.expense.groupBy({
+                by: ['status'],
+                _sum: { amount: true },
+                _count: { id: true },
+            }),
             this.prisma.expense.groupBy({
                 by: ['categoryId'],
                 _sum: { amount: true },
@@ -169,28 +216,41 @@ let AdminService = class AdminService {
                 orderBy: { createdAt: 'asc' },
                 take: 10,
                 include: {
-                    submitter: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                    submitter: {
+                        select: {
+                            registrationNumber: true,
+                            profile: { select: { firstName: true, lastName: true } },
+                        },
+                    },
                     category: true,
                     event: { select: { id: true, name: true } },
                 },
             }),
         ]);
         const categories = await this.prisma.expenseCategory.findMany();
-        const catMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
+        const catMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
         return {
-            byStatus: byStatus.map(r => ({ status: r.status, total: r._sum.amount ?? 0, count: r._count.id })),
-            byCategory: byCategory.map(r => ({
+            byStatus: byStatus.map((r) => ({
+                status: r.status,
+                total: r._sum.amount ?? 0,
+                count: r._count.id,
+            })),
+            byCategory: byCategory.map((r) => ({
                 categoryId: r.categoryId,
                 categoryName: catMap[r.categoryId] ?? 'Unknown',
                 total: r._sum.amount ?? 0,
                 count: r._count.id,
             })),
-            topEventsBySpend: byEvent.map(r => ({ eventId: r.eventId, total: r._sum.amount ?? 0, count: r._count.id })),
+            topEventsBySpend: byEvent.map((r) => ({
+                eventId: r.eventId,
+                total: r._sum.amount ?? 0,
+                count: r._count.id,
+            })),
             pendingApprovals: recent,
         };
     }
     async getAuditLogs(query) {
-        const { page = 1, limit = 50, actorId, action, resourceType, resourceId, from, to } = query;
+        const { page = 1, limit = 50, actorId, action, resourceType, resourceId, from, to, } = query;
         const skip = (page - 1) * limit;
         const where = {};
         if (actorId)
@@ -216,18 +276,27 @@ let AdminService = class AdminService {
                 orderBy: { createdAt: 'desc' },
                 include: {
                     actor: {
-                        select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true } } },
+                        select: {
+                            id: true,
+                            registrationNumber: true,
+                            profile: { select: { firstName: true, lastName: true } },
+                        },
                     },
                 },
             }),
             this.prisma.auditLog.count({ where }),
         ]);
-        return { items, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+        return {
+            items,
+            meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+        };
     }
     async getSettings() {
-        const settings = await this.prisma.appSetting.findMany({ orderBy: { key: 'asc' } });
+        const settings = await this.prisma.appSetting.findMany({
+            orderBy: { key: 'asc' },
+        });
         return {
-            settings: Object.fromEntries(settings.map(s => [s.key, s.value])),
+            settings: Object.fromEntries(settings.map((s) => [s.key, s.value])),
             updatedAt: settings.reduce((latest, s) => (s.updatedAt > latest ? s.updatedAt : latest), new Date(0)),
         };
     }
@@ -262,7 +331,10 @@ let AdminService = class AdminService {
         return { format: dto.format, prefix: dto.prefix, preview };
     }
     async getEventWinners(eventId) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId }, select: { id: true, name: true } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+            select: { id: true, name: true },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
         const winners = await this.prisma.eventWinner.findMany({
@@ -270,33 +342,45 @@ let AdminService = class AdminService {
             orderBy: { position: 'asc' },
             include: {
                 user: {
-                    select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } },
+                    select: {
+                        id: true,
+                        registrationNumber: true,
+                        profile: {
+                            select: { firstName: true, lastName: true, avatarUrl: true },
+                        },
+                    },
                 },
             },
         });
         return { event, winners };
     }
     async setEventWinners(eventId, recordedById, dto) {
-        const event = await this.prisma.event.findUnique({ where: { id: eventId } });
+        const event = await this.prisma.event.findUnique({
+            where: { id: eventId },
+        });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
-        const userIds = dto.winners.map(w => w.userId);
+        const userIds = dto.winners.map((w) => w.userId);
         const registrations = await this.prisma.eventRegistration.findMany({
-            where: { eventId, userId: { in: userIds }, status: { in: ['APPROVED', 'CHECKED_IN'] } },
+            where: {
+                eventId,
+                userId: { in: userIds },
+                status: { in: ['APPROVED', 'CHECKED_IN'] },
+            },
             select: { userId: true },
         });
-        const registeredIds = new Set(registrations.map(r => r.userId));
-        const invalidIds = userIds.filter(id => !registeredIds.has(id));
+        const registeredIds = new Set(registrations.map((r) => r.userId));
+        const invalidIds = userIds.filter((id) => !registeredIds.has(id));
         if (invalidIds.length > 0) {
             throw new common_1.BadRequestException(`These users are not registered participants: ${invalidIds.join(', ')}`);
         }
-        const positions = dto.winners.map(w => w.position);
+        const positions = dto.winners.map((w) => w.position);
         if (new Set(positions).size !== positions.length) {
             throw new common_1.BadRequestException('Duplicate positions are not allowed');
         }
         await this.prisma.$transaction([
             this.prisma.eventWinner.deleteMany({ where: { eventId } }),
-            ...dto.winners.map(w => this.prisma.eventWinner.create({
+            ...dto.winners.map((w) => this.prisma.eventWinner.create({
                 data: {
                     eventId,
                     userId: w.userId,
@@ -314,8 +398,14 @@ let AdminService = class AdminService {
             case 'users':
                 return this.prisma.user.findMany({
                     select: {
-                        id: true, registrationNumber: true, email: true, status: true, createdAt: true,
-                        profile: { select: { firstName: true, lastName: true, phone: true } },
+                        id: true,
+                        registrationNumber: true,
+                        email: true,
+                        status: true,
+                        createdAt: true,
+                        profile: {
+                            select: { firstName: true, lastName: true, phone: true },
+                        },
                         roles: { select: { role: { select: { name: true } } } },
                     },
                     orderBy: { registrationNumber: 'asc' },
@@ -332,7 +422,12 @@ let AdminService = class AdminService {
             case 'registrations':
                 return this.prisma.eventRegistration.findMany({
                     include: {
-                        user: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                        user: {
+                            select: {
+                                registrationNumber: true,
+                                profile: { select: { firstName: true, lastName: true } },
+                            },
+                        },
                         event: { select: { name: true } },
                     },
                     orderBy: { createdAt: 'desc' },
@@ -340,7 +435,12 @@ let AdminService = class AdminService {
             case 'expenses':
                 return this.prisma.expense.findMany({
                     include: {
-                        submitter: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                        submitter: {
+                            select: {
+                                registrationNumber: true,
+                                profile: { select: { firstName: true, lastName: true } },
+                            },
+                        },
                         category: true,
                         event: { select: { name: true } },
                     },
@@ -349,7 +449,12 @@ let AdminService = class AdminService {
             case 'attendance':
                 return this.prisma.attendance.findMany({
                     include: {
-                        user: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                        user: {
+                            select: {
+                                registrationNumber: true,
+                                profile: { select: { firstName: true, lastName: true } },
+                            },
+                        },
                         event: { select: { name: true } },
                     },
                     orderBy: { scannedAt: 'desc' },
@@ -357,7 +462,12 @@ let AdminService = class AdminService {
             case 'feedback':
                 return this.prisma.feedback.findMany({
                     include: {
-                        user: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                        user: {
+                            select: {
+                                registrationNumber: true,
+                                profile: { select: { firstName: true, lastName: true } },
+                            },
+                        },
                     },
                     orderBy: { createdAt: 'desc' },
                 });

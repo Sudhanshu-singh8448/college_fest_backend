@@ -35,9 +35,13 @@ function calculateLevel(totalXp) {
         else
             break;
     }
-    const currentIndex = exports.LEVEL_THRESHOLDS.findIndex(t => t.level === current.level);
+    const currentIndex = exports.LEVEL_THRESHOLDS.findIndex((t) => t.level === current.level);
     const next = exports.LEVEL_THRESHOLDS[currentIndex + 1] ?? null;
-    return { level: current.level, name: current.name, nextLevelXp: next?.xp ?? null };
+    return {
+        level: current.level,
+        name: current.name,
+        nextLevelXp: next?.xp ?? null,
+    };
 }
 exports.DEFAULT_FREEZE_COUNT = 3;
 //# sourceMappingURL=gamification.constants.js.map

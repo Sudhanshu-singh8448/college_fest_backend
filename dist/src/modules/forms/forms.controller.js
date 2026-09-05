@@ -46,7 +46,9 @@ __decorate([
     (0, common_1.Put)(),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('event:edit'),
-    (0, swagger_1.ApiOperation)({ summary: 'Update event form schema (requires event:edit and organizer role unless global admin)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Update event form schema (requires event:edit and organizer role unless global admin)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __param(2, (0, current_user_decorator_1.CurrentUser)()),

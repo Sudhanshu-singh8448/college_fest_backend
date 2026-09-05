@@ -1,4 +1,10 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsInt } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsArray,
+  ValidateNested,
+  IsInt,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -12,7 +18,10 @@ export class WorkflowStageDto {
   @IsInt()
   orderIndex: number;
 
-  @ApiProperty({ example: 'PRIMARY', description: 'Role required to approve this stage' })
+  @ApiProperty({
+    example: 'PRIMARY',
+    description: 'Role required to approve this stage',
+  })
   @IsString()
   @IsNotEmpty()
   approverRole: string;

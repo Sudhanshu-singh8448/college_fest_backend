@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { UpdateFormDto } from './dto/update-form.dto';
 
@@ -21,7 +25,12 @@ export class FormsService {
     return form;
   }
 
-  async updateForm(eventId: string, dto: UpdateFormDto, userId: string, hasGlobalPerm: boolean) {
+  async updateForm(
+    eventId: string,
+    dto: UpdateFormDto,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
     const event = await this.prisma.event.findUnique({
       where: { id: eventId },
     });

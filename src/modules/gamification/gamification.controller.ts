@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { GamificationService } from './gamification.service';
 import { LeaderboardQueryDto } from './dto/leaderboard-query.dto';
@@ -20,7 +15,8 @@ export class GamificationController {
   @Get('me')
   @ApiOperation({
     summary: 'Get my full gamification profile',
-    description: 'Returns XP, level, level name, progress to next level, rank on leaderboard, all earned badges, and streak data.',
+    description:
+      'Returns XP, level, level name, progress to next level, rank on leaderboard, all earned badges, and streak data.',
   })
   getMyProfile(@CurrentUser() user: any) {
     return this.gamificationService.getMyProfile(user.id);
@@ -31,7 +27,8 @@ export class GamificationController {
   @Get('leaderboard')
   @ApiOperation({
     summary: 'Get the global XP leaderboard (paginated)',
-    description: 'Returns top users ranked by XP from the materialized LeaderboardCache (refreshed every 5 min).',
+    description:
+      'Returns top users ranked by XP from the materialized LeaderboardCache (refreshed every 5 min).',
   })
   getLeaderboard(@Query() query: LeaderboardQueryDto) {
     return this.gamificationService.getLeaderboard(query);
@@ -39,8 +36,9 @@ export class GamificationController {
 
   @Get('leaderboard/my-rank')
   @ApiOperation({
-    summary: "Get my current leaderboard rank and surrounding context",
-    description: 'Returns my rank, XP gap to the person above, and nearby rank entries.',
+    summary: 'Get my current leaderboard rank and surrounding context',
+    description:
+      'Returns my rank, XP gap to the person above, and nearby rank entries.',
   })
   getMyRank(@CurrentUser() user: any) {
     return this.gamificationService.getMyRank(user.id);
@@ -51,7 +49,8 @@ export class GamificationController {
   @Get('badges')
   @ApiOperation({
     summary: 'Get all available badge definitions (the badge catalogue)',
-    description: 'Returns all 8 badge types with their names, descriptions, icons, conditions, and XP rewards.',
+    description:
+      'Returns all 8 badge types with their names, descriptions, icons, conditions, and XP rewards.',
   })
   getAllBadges() {
     return this.gamificationService.getAllBadges();
@@ -60,7 +59,8 @@ export class GamificationController {
   @Get('badges/my')
   @ApiOperation({
     summary: 'Get my earned badges',
-    description: 'Returns all badges the current user has earned, with earnedAt timestamps and completion percentage.',
+    description:
+      'Returns all badges the current user has earned, with earnedAt timestamps and completion percentage.',
   })
   getMyBadges(@CurrentUser() user: any) {
     return this.gamificationService.getMyBadges(user.id);

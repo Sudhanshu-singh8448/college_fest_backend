@@ -49,7 +49,10 @@ export class EventsController {
   @Patch(':id')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Update an event (requires event:edit and organizer role unless global admin)' })
+  @ApiOperation({
+    summary:
+      'Update an event (requires event:edit and organizer role unless global admin)',
+  })
   async update(
     @Param('id') id: string,
     @Body() dto: UpdateEventDto,
@@ -70,24 +73,29 @@ export class EventsController {
   @Patch(':id/status')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Update event status (requires event:edit and organizer role unless global admin)' })
+  @ApiOperation({
+    summary:
+      'Update event status (requires event:edit and organizer role unless global admin)',
+  })
   async updateStatus(
     @Param('id') id: string,
     @Body() dto: UpdateEventStatusDto,
     @CurrentUser() user: any,
   ) {
     const hasGlobalPerm = user.permissions.includes('event:manage_all');
-    return this.eventsService.updateStatus(id, dto.status, user.id, hasGlobalPerm);
+    return this.eventsService.updateStatus(
+      id,
+      dto.status,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Get(':id/organizers')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:view')
   @ApiOperation({ summary: 'Get event organizers' })
-  async getOrganizers(
-    @Param('id') id: string,
-    @CurrentUser() user: any,
-  ) {
+  async getOrganizers(@Param('id') id: string, @CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('event:manage_all');
     return this.eventsService.getOrganizers(id, user.id, hasGlobalPerm);
   }
@@ -95,37 +103,54 @@ export class EventsController {
   @Post(':id/organizers')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Add an organizer (requires event:edit and PRIMARY role unless global admin)' })
+  @ApiOperation({
+    summary:
+      'Add an organizer (requires event:edit and PRIMARY role unless global admin)',
+  })
   async addOrganizer(
     @Param('id') id: string,
     @Body() dto: AddOrganizerDto,
     @CurrentUser() user: any,
   ) {
     const hasGlobalPerm = user.permissions.includes('event:manage_all');
-    return this.eventsService.addOrganizer(id, dto.userId, dto.role, user.id, hasGlobalPerm);
+    return this.eventsService.addOrganizer(
+      id,
+      dto.userId,
+      dto.role,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Delete(':id/organizers/:userId')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Remove an organizer (requires event:edit and PRIMARY role unless global admin)' })
+  @ApiOperation({
+    summary:
+      'Remove an organizer (requires event:edit and PRIMARY role unless global admin)',
+  })
   async removeOrganizer(
     @Param('id') id: string,
     @Param('userId') targetUserId: string,
     @CurrentUser() user: any,
   ) {
     const hasGlobalPerm = user.permissions.includes('event:manage_all');
-    return this.eventsService.removeOrganizer(id, targetUserId, user.id, hasGlobalPerm);
+    return this.eventsService.removeOrganizer(
+      id,
+      targetUserId,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Get(':id/stats')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('event:edit')
-  @ApiOperation({ summary: 'Get event statistics (requires event:edit and organizer role unless global admin)' })
-  async getStats(
-    @Param('id') id: string,
-    @CurrentUser() user: any,
-  ) {
+  @ApiOperation({
+    summary:
+      'Get event statistics (requires event:edit and organizer role unless global admin)',
+  })
+  async getStats(@Param('id') id: string, @CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('event:manage_all');
     return this.eventsService.getStats(id, user.id, hasGlobalPerm);
   }

@@ -29,7 +29,19 @@ let ChatService = class ChatService {
                     include: {
                         members: {
                             include: {
-                                user: { select: { id: true, email: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+                                user: {
+                                    select: {
+                                        id: true,
+                                        email: true,
+                                        profile: {
+                                            select: {
+                                                firstName: true,
+                                                lastName: true,
+                                                avatarUrl: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                         messages: {
@@ -37,7 +49,12 @@ let ChatService = class ChatService {
                             take: 1,
                             where: { isDeleted: false },
                             include: {
-                                sender: { select: { id: true, profile: { select: { firstName: true, lastName: true } } } },
+                                sender: {
+                                    select: {
+                                        id: true,
+                                        profile: { select: { firstName: true, lastName: true } },
+                                    },
+                                },
                             },
                         },
                     },
@@ -45,7 +62,7 @@ let ChatService = class ChatService {
             },
             orderBy: { conversation: { updatedAt: 'desc' } },
         });
-        return memberships.map(m => ({
+        return memberships.map((m) => ({
             ...m.conversation,
             lastReadAt: m.lastReadAt,
             lastMessage: m.conversation.messages[0] || null,
@@ -58,7 +75,7 @@ let ChatService = class ChatService {
             if (memberIds.length !== 2) {
                 throw new common_1.BadRequestException('DIRECT conversation requires exactly 2 members');
             }
-            const otherId = memberIds.find(id => id !== creatorId);
+            const otherId = memberIds.find((id) => id !== creatorId);
             const existing = await this.prisma.conversation.findFirst({
                 where: {
                     type: 'DIRECT',
@@ -79,7 +96,7 @@ let ChatService = class ChatService {
                 type: dto.type,
                 name: dto.name,
                 members: {
-                    create: memberIds.map(uid => ({
+                    create: memberIds.map((uid) => ({
                         userId: uid,
                         role: uid === creatorId ? 'ADMIN' : 'MEMBER',
                     })),
@@ -87,7 +104,17 @@ let ChatService = class ChatService {
             },
             include: {
                 members: {
-                    include: { user: { select: { id: true, email: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } } },
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                                profile: {
+                                    select: { firstName: true, lastName: true, avatarUrl: true },
+                                },
+                            },
+                        },
+                    },
                 },
             },
         });
@@ -98,7 +125,16 @@ let ChatService = class ChatService {
             include: {
                 members: {
                     include: {
-                        user: { select: { id: true, email: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+                        user: {
+                            select: {
+                                id: true,
+                                email: true,
+                                registrationNumber: true,
+                                profile: {
+                                    select: { firstName: true, lastName: true, avatarUrl: true },
+                                },
+                            },
+                        },
                     },
                 },
             },
@@ -112,7 +148,14 @@ let ChatService = class ChatService {
         await this.assertMember(conversationId, userId);
         const limit = Math.min(query.limit ?? 30, 100);
         const cursorCondition = query.before
-            ? { createdAt: { lt: (await this.prisma.message.findUnique({ where: { id: query.before }, select: { createdAt: true } }))?.createdAt } }
+            ? {
+                createdAt: {
+                    lt: (await this.prisma.message.findUnique({
+                        where: { id: query.before },
+                        select: { createdAt: true },
+                    }))?.createdAt,
+                },
+            }
             : {};
         const messages = await this.prisma.message.findMany({
             where: {
@@ -123,13 +166,30 @@ let ChatService = class ChatService {
             orderBy: { createdAt: 'desc' },
             take: limit,
             include: {
-                sender: { select: { id: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+                sender: {
+                    select: {
+                        id: true,
+                        profile: {
+                            select: { firstName: true, lastName: true, avatarUrl: true },
+                        },
+                    },
+                },
                 replyTo: {
-                    select: { id: true, content: true, sender: { select: { id: true, profile: { select: { firstName: true } } } } },
+                    select: {
+                        id: true,
+                        content: true,
+                        sender: {
+                            select: { id: true, profile: { select: { firstName: true } } },
+                        },
+                    },
                 },
                 attachments: true,
                 reactions: {
-                    include: { user: { select: { id: true, profile: { select: { firstName: true } } } } },
+                    include: {
+                        user: {
+                            select: { id: true, profile: { select: { firstName: true } } },
+                        },
+                    },
                 },
             },
         });
@@ -153,17 +213,33 @@ let ChatService = class ChatService {
                 type: dto.type ?? 'TEXT',
                 replyToId: dto.replyToId ?? null,
                 attachments: dto.attachments
-                    ? { create: dto.attachments.map(a => ({ fileUrl: a.fileUrl, fileType: a.fileType, fileSize: a.fileSize })) }
+                    ? {
+                        create: dto.attachments.map((a) => ({
+                            fileUrl: a.fileUrl,
+                            fileType: a.fileType,
+                            fileSize: a.fileSize,
+                        })),
+                    }
                     : undefined,
             },
             include: {
-                sender: { select: { id: true, profile: { select: { firstName: true, lastName: true, avatarUrl: true } } } },
+                sender: {
+                    select: {
+                        id: true,
+                        profile: {
+                            select: { firstName: true, lastName: true, avatarUrl: true },
+                        },
+                    },
+                },
                 replyTo: { select: { id: true, content: true, senderId: true } },
                 attachments: true,
                 reactions: true,
             },
         });
-        await this.prisma.conversation.update({ where: { id: conversationId }, data: { updatedAt: new Date() } });
+        await this.prisma.conversation.update({
+            where: { id: conversationId },
+            data: { updatedAt: new Date() },
+        });
         this.eventEmitter.emit('chat.message.new', { conversationId, message });
         return message;
     }
@@ -173,7 +249,10 @@ let ChatService = class ChatService {
             where: { id: messageId },
             data: { content: dto.content },
         });
-        this.eventEmitter.emit('chat.message.updated', { conversationId: msg.conversationId, message: updated });
+        this.eventEmitter.emit('chat.message.updated', {
+            conversationId: msg.conversationId,
+            message: updated,
+        });
         return updated;
     }
     async deleteMessage(messageId, userId) {
@@ -182,20 +261,33 @@ let ChatService = class ChatService {
             where: { id: messageId },
             data: { isDeleted: true, content: null },
         });
-        this.eventEmitter.emit('chat.message.deleted', { conversationId: msg.conversationId, messageId });
+        this.eventEmitter.emit('chat.message.deleted', {
+            conversationId: msg.conversationId,
+            messageId,
+        });
         return { message: 'Message deleted' };
     }
     async addReaction(messageId, userId, emoji) {
-        const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+        const msg = await this.prisma.message.findUnique({
+            where: { id: messageId },
+        });
         if (!msg || msg.isDeleted)
             throw new common_1.NotFoundException('Message not found');
         await this.assertMember(msg.conversationId, userId);
         try {
             const reaction = await this.prisma.messageReaction.create({
                 data: { messageId, userId, emoji },
-                include: { user: { select: { id: true, profile: { select: { firstName: true } } } } },
+                include: {
+                    user: {
+                        select: { id: true, profile: { select: { firstName: true } } },
+                    },
+                },
             });
-            this.eventEmitter.emit('chat.reaction.added', { conversationId: msg.conversationId, messageId, reaction });
+            this.eventEmitter.emit('chat.reaction.added', {
+                conversationId: msg.conversationId,
+                messageId,
+                reaction,
+            });
             return reaction;
         }
         catch (e) {
@@ -205,7 +297,9 @@ let ChatService = class ChatService {
         }
     }
     async removeReaction(messageId, userId, emoji) {
-        const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+        const msg = await this.prisma.message.findUnique({
+            where: { id: messageId },
+        });
         if (!msg)
             throw new common_1.NotFoundException('Message not found');
         const reaction = await this.prisma.messageReaction.findFirst({
@@ -214,7 +308,12 @@ let ChatService = class ChatService {
         if (!reaction)
             throw new common_1.NotFoundException('Reaction not found');
         await this.prisma.messageReaction.delete({ where: { id: reaction.id } });
-        this.eventEmitter.emit('chat.reaction.removed', { conversationId: msg.conversationId, messageId, userId, emoji });
+        this.eventEmitter.emit('chat.reaction.removed', {
+            conversationId: msg.conversationId,
+            messageId,
+            userId,
+            emoji,
+        });
         return { message: 'Reaction removed' };
     }
     async markAsRead(conversationId, userId) {
@@ -223,7 +322,11 @@ let ChatService = class ChatService {
             where: { conversationId_userId: { conversationId, userId } },
             data: { lastReadAt: new Date() },
         });
-        this.eventEmitter.emit('chat.read', { conversationId, userId, readAt: new Date() });
+        this.eventEmitter.emit('chat.read', {
+            conversationId,
+            userId,
+            readAt: new Date(),
+        });
         return { message: 'Marked as read' };
     }
     async assertMember(conversationId, userId) {
@@ -235,7 +338,9 @@ let ChatService = class ChatService {
         return membership;
     }
     async assertMessageOwner(messageId, userId) {
-        const msg = await this.prisma.message.findUnique({ where: { id: messageId } });
+        const msg = await this.prisma.message.findUnique({
+            where: { id: messageId },
+        });
         if (!msg || msg.isDeleted)
             throw new common_1.NotFoundException('Message not found');
         if (msg.senderId !== userId)

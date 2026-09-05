@@ -45,7 +45,9 @@ let OrganizationsController = class OrganizationsController {
 exports.OrganizationsController = OrganizationsController;
 __decorate([
     (0, common_1.Get)(),
-    (0, swagger_1.ApiOperation)({ summary: 'List all organizations with colleges and branches' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'List all organizations with colleges and branches',
+    }),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
@@ -83,7 +85,9 @@ __decorate([
     (0, common_1.Put)(':id/reg-format'),
     (0, common_1.UseGuards)(permissions_guard_1.PermissionsGuard),
     (0, permissions_decorator_1.RequirePermissions)('settings:manage'),
-    (0, swagger_1.ApiOperation)({ summary: 'Set registration number format (requires settings:manage)' }),
+    (0, swagger_1.ApiOperation)({
+        summary: 'Set registration number format (requires settings:manage)',
+    }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),

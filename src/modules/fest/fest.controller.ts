@@ -65,7 +65,9 @@ export class FestController {
   @Put(':id/guidelines')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('guidelines:manage')
-  @ApiOperation({ summary: 'Update fest guidelines (requires guidelines:manage)' })
+  @ApiOperation({
+    summary: 'Update fest guidelines (requires guidelines:manage)',
+  })
   async updateGuidelines(
     @Param('id') id: string,
     @Body() dto: UpdateGuidelinesDto,

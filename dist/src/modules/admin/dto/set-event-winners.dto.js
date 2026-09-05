@@ -27,14 +27,20 @@ __decorate([
     __metadata("design:type", String)
 ], WinnerEntryDto.prototype, "userId", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ description: 'Position (1 = 1st place, 2 = 2nd, etc.)', example: 1 }),
+    (0, swagger_1.ApiProperty)({
+        description: 'Position (1 = 1st place, 2 = 2nd, etc.)',
+        example: 1,
+    }),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
 ], WinnerEntryDto.prototype, "position", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Prize description', example: 'Cash Prize ₹5000' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Prize description',
+        example: 'Cash Prize ₹5000',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -50,7 +56,10 @@ class SetEventWinnersDto {
 }
 exports.SetEventWinnersDto = SetEventWinnersDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ type: [WinnerEntryDto], description: 'Array of winners. Replaces existing winners for this event.' }),
+    (0, swagger_1.ApiProperty)({
+        type: [WinnerEntryDto],
+        description: 'Array of winners. Replaces existing winners for this event.',
+    }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.ValidateNested)({ each: true }),
     (0, class_transformer_1.Type)(() => WinnerEntryDto),

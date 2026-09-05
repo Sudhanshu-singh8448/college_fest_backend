@@ -26,14 +26,19 @@ export class ChatController {
   // ── Conversations ──────────────────────────────────
 
   @Get('conversations')
-  @ApiOperation({ summary: 'List all my conversations (sorted by latest message)' })
+  @ApiOperation({
+    summary: 'List all my conversations (sorted by latest message)',
+  })
   getMyConversations(@CurrentUser() user: any) {
     return this.chatService.getMyConversations(user.id);
   }
 
   @Post('conversations')
   @ApiOperation({ summary: 'Create a DIRECT or GROUP conversation' })
-  createConversation(@Body() dto: CreateConversationDto, @CurrentUser() user: any) {
+  createConversation(
+    @Body() dto: CreateConversationDto,
+    @CurrentUser() user: any,
+  ) {
     return this.chatService.createConversation(dto, user.id);
   }
 
@@ -46,7 +51,10 @@ export class ChatController {
   // ── Messages ───────────────────────────────────────
 
   @Get('conversations/:id/messages')
-  @ApiOperation({ summary: 'Get messages with cursor-based pagination (oldest first, newest page)' })
+  @ApiOperation({
+    summary:
+      'Get messages with cursor-based pagination (oldest first, newest page)',
+  })
   getMessages(
     @Param('id') id: string,
     @Query() query: MessageQueryDto,
@@ -56,7 +64,10 @@ export class ChatController {
   }
 
   @Post('conversations/:id/messages')
-  @ApiOperation({ summary: 'Send a message via REST (WebSocket is preferred for real-time delivery)' })
+  @ApiOperation({
+    summary:
+      'Send a message via REST (WebSocket is preferred for real-time delivery)',
+  })
   sendMessage(
     @Param('id') id: string,
     @Body() dto: SendMessageDto,
@@ -106,7 +117,9 @@ export class ChatController {
   // ── Read Receipts ──────────────────────────────────
 
   @Post('conversations/:id/read')
-  @ApiOperation({ summary: 'Mark all messages in a conversation as read up to now' })
+  @ApiOperation({
+    summary: 'Mark all messages in a conversation as read up to now',
+  })
   markAsRead(@Param('id') id: string, @CurrentUser() user: any) {
     return this.chatService.markAsRead(id, user.id);
   }

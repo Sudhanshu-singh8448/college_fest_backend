@@ -16,7 +16,10 @@ export class CreateConversationDto {
   @IsOptional()
   name?: string;
 
-  @ApiPropertyOptional({ description: 'Array of user IDs to add (required for DIRECT)', example: ['uuid-of-user'] })
+  @ApiPropertyOptional({
+    description: 'Array of user IDs to add (required for DIRECT)',
+    example: ['uuid-of-user'],
+  })
   @IsOptional()
   memberIds?: string[];
 }

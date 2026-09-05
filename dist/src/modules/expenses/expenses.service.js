@@ -18,17 +18,23 @@ let ExpensesService = class ExpensesService {
         this.prisma = prisma;
     }
     async createExpense(userId, dto) {
-        const category = await this.prisma.expenseCategory.findUnique({ where: { id: dto.categoryId } });
+        const category = await this.prisma.expenseCategory.findUnique({
+            where: { id: dto.categoryId },
+        });
         if (!category)
             throw new common_1.NotFoundException('Expense category not found');
         if (dto.eventId) {
-            const event = await this.prisma.event.findUnique({ where: { id: dto.eventId } });
+            const event = await this.prisma.event.findUnique({
+                where: { id: dto.eventId },
+            });
             if (!event)
                 throw new common_1.NotFoundException('Event not found');
         }
         let receiptUrl;
         if (dto.receiptFileId) {
-            const file = await this.prisma.file.findUnique({ where: { id: dto.receiptFileId } });
+            const file = await this.prisma.file.findUnique({
+                where: { id: dto.receiptFileId },
+            });
             if (!file || file.uploaderId !== userId)
                 throw new common_1.BadRequestException('Invalid receipt file');
             if (file.status !== 'CONFIRMED')
@@ -48,7 +54,9 @@ let ExpensesService = class ExpensesService {
             include: {
                 category: true,
                 event: { select: { id: true, name: true } },
-                submitter: { select: { id: true, registrationNumber: true, profile: true } },
+                submitter: {
+                    select: { id: true, registrationNumber: true, profile: true },
+                },
             },
         });
     }
@@ -73,12 +81,21 @@ let ExpensesService = class ExpensesService {
                 include: {
                     category: true,
                     event: { select: { id: true, name: true } },
-                    submitter: { select: { id: true, registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                    submitter: {
+                        select: {
+                            id: true,
+                            registrationNumber: true,
+                            profile: { select: { firstName: true, lastName: true } },
+                        },
+                    },
                 },
             }),
             this.prisma.expense.count({ where }),
         ]);
-        return { items, meta: { total, page, limit, totalPages: Math.ceil(total / limit) } };
+        return {
+            items,
+            meta: { total, page, limit, totalPages: Math.ceil(total / limit) },
+        };
     }
     async listCategories() {
         return this.prisma.expenseCategory.findMany({ orderBy: { name: 'asc' } });
@@ -89,7 +106,9 @@ let ExpensesService = class ExpensesService {
             include: {
                 category: true,
                 event: { select: { id: true, name: true } },
-                submitter: { select: { id: true, registrationNumber: true, profile: true } },
+                submitter: {
+                    select: { id: true, registrationNumber: true, profile: true },
+                },
             },
         });
         if (!expense)
@@ -154,12 +173,25 @@ let ExpensesService = class ExpensesService {
             }),
         ]);
         const categories = await this.prisma.expenseCategory.findMany();
-        const catMap = Object.fromEntries(categories.map(c => [c.id, c.name]));
+        const catMap = Object.fromEntries(categories.map((c) => [c.id, c.name]));
         return {
             grandTotal: { approved: total._sum.amount ?? 0, count: total._count.id },
-            byStatus: byStatus.map(r => ({ status: r.status, total: r._sum.amount ?? 0, count: r._count.id })),
-            byCategory: byCategory.map(r => ({ categoryId: r.categoryId, categoryName: catMap[r.categoryId] ?? 'Unknown', total: r._sum.amount ?? 0, count: r._count.id })),
-            topEventsBySpend: byEvent.map(r => ({ eventId: r.eventId, total: r._sum.amount ?? 0, count: r._count.id })),
+            byStatus: byStatus.map((r) => ({
+                status: r.status,
+                total: r._sum.amount ?? 0,
+                count: r._count.id,
+            })),
+            byCategory: byCategory.map((r) => ({
+                categoryId: r.categoryId,
+                categoryName: catMap[r.categoryId] ?? 'Unknown',
+                total: r._sum.amount ?? 0,
+                count: r._count.id,
+            })),
+            topEventsBySpend: byEvent.map((r) => ({
+                eventId: r.eventId,
+                total: r._sum.amount ?? 0,
+                count: r._count.id,
+            })),
         };
     }
     async exportExpenses(hasGlobalPerm) {
@@ -170,10 +202,15 @@ let ExpensesService = class ExpensesService {
             include: {
                 category: true,
                 event: { select: { id: true, name: true } },
-                submitter: { select: { registrationNumber: true, profile: { select: { firstName: true, lastName: true } } } },
+                submitter: {
+                    select: {
+                        registrationNumber: true,
+                        profile: { select: { firstName: true, lastName: true } },
+                    },
+                },
             },
         });
-        return expenses.map(e => ({
+        return expenses.map((e) => ({
             id: e.id,
             submitter: `${e.submitter.profile?.firstName ?? ''} ${e.submitter.profile?.lastName ?? ''}`.trim(),
             registrationNumber: e.submitter.registrationNumber,

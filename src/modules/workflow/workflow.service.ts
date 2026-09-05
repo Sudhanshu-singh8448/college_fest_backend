@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
 import { UpdateWorkflowDto } from './dto/update-workflow.dto';
@@ -53,7 +58,9 @@ export class WorkflowService {
 
   // ── PATCH /workflows/:id ────────────────────────
   async updateWorkflow(id: string, dto: UpdateWorkflowDto) {
-    const workflow = await this.prisma.workflowDefinition.findUnique({ where: { id } });
+    const workflow = await this.prisma.workflowDefinition.findUnique({
+      where: { id },
+    });
     if (!workflow) throw new NotFoundException('Workflow not found');
 
     if (dto.name) {
@@ -66,7 +73,9 @@ export class WorkflowService {
     if (dto.stages) {
       // In a real system, updating stages of an active workflow requires complex migration.
       // Here, we simply replace them for simplicity.
-      await this.prisma.workflowStage.deleteMany({ where: { definitionId: id } });
+      await this.prisma.workflowStage.deleteMany({
+        where: { definitionId: id },
+      });
       await this.prisma.workflowDefinition.update({
         where: { id },
         data: {
@@ -85,7 +94,11 @@ export class WorkflowService {
   }
 
   // ── INTERNAL: Start Workflow Instance ───────────
-  async startWorkflowInstance(definitionId: string, entityType: string, entityId: string) {
+  async startWorkflowInstance(
+    definitionId: string,
+    entityType: string,
+    entityId: string,
+  ) {
     const definition = await this.prisma.workflowDefinition.findUnique({
       where: { id: definitionId },
       include: { stages: { orderBy: { orderIndex: 'asc' } } },
@@ -109,7 +122,12 @@ export class WorkflowService {
   }
 
   // ── POST /workflow-instances/:id/action ─────────
-  async executeAction(instanceId: string, dto: WorkflowActionDto, actorId: string, hasGlobalPerm: boolean) {
+  async executeAction(
+    instanceId: string,
+    dto: WorkflowActionDto,
+    actorId: string,
+    hasGlobalPerm: boolean,
+  ) {
     const instance = await this.prisma.workflowInstance.findUnique({
       where: { id: instanceId },
       include: {
@@ -137,14 +155,23 @@ export class WorkflowService {
           where: { id: instance.entityId },
           select: { eventId: true },
         });
-        if (!registration) throw new NotFoundException('Related registration not found');
+        if (!registration)
+          throw new NotFoundException('Related registration not found');
 
         const org = await this.prisma.eventOrganizer.findUnique({
-          where: { eventId_userId: { eventId: registration.eventId, userId: actorId } },
+          where: {
+            eventId_userId: { eventId: registration.eventId, userId: actorId },
+          },
         });
 
-        if (!org || (instance.currentStage.approverRole && org.role !== instance.currentStage.approverRole)) {
-           throw new ForbiddenException(`You do not have the required role: ${instance.currentStage.approverRole}`);
+        if (
+          !org ||
+          (instance.currentStage.approverRole &&
+            org.role !== instance.currentStage.approverRole)
+        ) {
+          throw new ForbiddenException(
+            `You do not have the required role: ${instance.currentStage.approverRole}`,
+          );
         }
       }
     }
@@ -155,8 +182,10 @@ export class WorkflowService {
 
     if (dto.action === 'APPROVE') {
       const currentIndex = instance.currentStage.orderIndex;
-      const nextStage = instance.definition.stages.find(s => s.orderIndex > currentIndex);
-      
+      const nextStage = instance.definition.stages.find(
+        (s) => s.orderIndex > currentIndex,
+      );
+
       if (nextStage) {
         nextStageId = nextStage.id;
       } else {
@@ -165,10 +194,10 @@ export class WorkflowService {
         newStatus = 'COMPLETED';
         // Auto-approve the underlying registration
         if (instance.entityType === 'REGISTRATION') {
-            await this.prisma.eventRegistration.update({
-                where: { id: instance.entityId },
-                data: { status: 'APPROVED' },
-            });
+          await this.prisma.eventRegistration.update({
+            where: { id: instance.entityId },
+            data: { status: 'APPROVED' },
+          });
         }
       }
     } else if (dto.action === 'REJECT') {
@@ -176,38 +205,44 @@ export class WorkflowService {
       newStatus = 'CANCELLED';
       // Auto-reject the underlying registration
       if (instance.entityType === 'REGISTRATION') {
-          await this.prisma.eventRegistration.update({
-              where: { id: instance.entityId },
-              data: { status: 'REJECTED', rejectionReason: dto.comments },
-          });
+        await this.prisma.eventRegistration.update({
+          where: { id: instance.entityId },
+          data: { status: 'REJECTED', rejectionReason: dto.comments },
+        });
       }
     } else if (dto.action === 'RETURN') {
-        // Find previous stage
-        const currentIndex = instance.currentStage.orderIndex;
-        // In this implementation, a stage might have orderIndex 0, 1, 2...
-        // Finding strictly smaller orderIndex, picking the largest among them.
-        const prevStages = instance.definition.stages.filter(s => s.orderIndex < currentIndex);
-        if (prevStages.length > 0) {
-             const prevStage = prevStages.reduce((prev, current) => (prev.orderIndex > current.orderIndex) ? prev : current);
-             nextStageId = prevStage.id;
-        } else {
-             throw new BadRequestException('Cannot RETURN from the first stage');
-        }
+      // Find previous stage
+      const currentIndex = instance.currentStage.orderIndex;
+      // In this implementation, a stage might have orderIndex 0, 1, 2...
+      // Finding strictly smaller orderIndex, picking the largest among them.
+      const prevStages = instance.definition.stages.filter(
+        (s) => s.orderIndex < currentIndex,
+      );
+      if (prevStages.length > 0) {
+        const prevStage = prevStages.reduce((prev, current) =>
+          prev.orderIndex > current.orderIndex ? prev : current,
+        );
+        nextStageId = prevStage.id;
+      } else {
+        throw new BadRequestException('Cannot RETURN from the first stage');
+      }
     } else if (dto.action === 'SKIP') {
-        const currentIndex = instance.currentStage.orderIndex;
-        const nextStage = instance.definition.stages.find(s => s.orderIndex > currentIndex);
-        if(nextStage) {
-             nextStageId = nextStage.id;
-        } else {
-             nextStageId = null;
-             newStatus = 'COMPLETED';
-             if (instance.entityType === 'REGISTRATION') {
-                await this.prisma.eventRegistration.update({
-                    where: { id: instance.entityId },
-                    data: { status: 'APPROVED' },
-                });
-             }
+      const currentIndex = instance.currentStage.orderIndex;
+      const nextStage = instance.definition.stages.find(
+        (s) => s.orderIndex > currentIndex,
+      );
+      if (nextStage) {
+        nextStageId = nextStage.id;
+      } else {
+        nextStageId = null;
+        newStatus = 'COMPLETED';
+        if (instance.entityType === 'REGISTRATION') {
+          await this.prisma.eventRegistration.update({
+            where: { id: instance.entityId },
+            data: { status: 'APPROVED' },
+          });
         }
+      }
     }
     // ESCALATE could mean assigning to a specific person, left simple for now.
 
@@ -232,7 +267,11 @@ export class WorkflowService {
   }
 
   // ── GET /workflow-instances/:id/history ─────────
-  async getWorkflowHistory(instanceId: string, userId: string, hasGlobalPerm: boolean) {
+  async getWorkflowHistory(
+    instanceId: string,
+    userId: string,
+    hasGlobalPerm: boolean,
+  ) {
     const instance = await this.prisma.workflowInstance.findUnique({
       where: { id: instanceId },
     });
@@ -244,7 +283,12 @@ export class WorkflowService {
     const actions = await this.prisma.workflowAction.findMany({
       where: { instanceId },
       include: {
-        actor: { select: { id: true, profile: { select: { firstName: true, lastName: true } } } },
+        actor: {
+          select: {
+            id: true,
+            profile: { select: { firstName: true, lastName: true } },
+          },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });

@@ -29,7 +29,9 @@ __decorate([
     __metadata("design:type", String)
 ], CreateExpenseDto.prototype, "categoryId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Event this expense belongs to (optional)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Event this expense belongs to (optional)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
@@ -48,13 +50,18 @@ __decorate([
     __metadata("design:type", String)
 ], CreateExpenseDto.prototype, "description", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'File ID of uploaded receipt (from /files/confirm)' }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'File ID of uploaded receipt (from /files/confirm)',
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateExpenseDto.prototype, "receiptFileId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Submit immediately to PENDING (default: save as DRAFT)', default: false }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Submit immediately to PENDING (default: save as DRAFT)',
+        default: false,
+    }),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Boolean)
 ], CreateExpenseDto.prototype, "submit", void 0);

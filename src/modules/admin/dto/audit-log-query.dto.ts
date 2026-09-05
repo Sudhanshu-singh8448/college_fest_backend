@@ -8,12 +8,16 @@ export class AuditLogQueryDto {
   @IsOptional()
   actorId?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by action (e.g. UPDATE_EXPENSE_STATUS)' })
+  @ApiPropertyOptional({
+    description: 'Filter by action (e.g. UPDATE_EXPENSE_STATUS)',
+  })
   @IsString()
   @IsOptional()
   action?: string;
 
-  @ApiPropertyOptional({ description: 'Filter by resource type (e.g. Expense, EventRegistration)' })
+  @ApiPropertyOptional({
+    description: 'Filter by resource type (e.g. Expense, EventRegistration)',
+  })
   @IsString()
   @IsOptional()
   resourceType?: string;
@@ -23,12 +27,18 @@ export class AuditLogQueryDto {
   @IsOptional()
   resourceId?: string;
 
-  @ApiPropertyOptional({ description: 'From date (ISO 8601)', example: '2025-01-01T00:00:00Z' })
+  @ApiPropertyOptional({
+    description: 'From date (ISO 8601)',
+    example: '2025-01-01T00:00:00Z',
+  })
   @IsString()
   @IsOptional()
   from?: string;
 
-  @ApiPropertyOptional({ description: 'To date (ISO 8601)', example: '2025-12-31T23:59:59Z' })
+  @ApiPropertyOptional({
+    description: 'To date (ISO 8601)',
+    example: '2025-12-31T23:59:59Z',
+  })
   @IsString()
   @IsOptional()
   to?: string;

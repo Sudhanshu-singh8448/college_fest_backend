@@ -18,7 +18,10 @@ class WorkflowActionDto {
 }
 exports.WorkflowActionDto = WorkflowActionDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'APPROVE', enum: ['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP'] }),
+    (0, swagger_1.ApiProperty)({
+        example: 'APPROVE',
+        enum: ['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP'],
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsIn)(['APPROVE', 'REJECT', 'RETURN', 'ESCALATE', 'SKIP']),
     __metadata("design:type", String)

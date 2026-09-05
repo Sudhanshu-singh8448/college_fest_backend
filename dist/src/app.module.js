@@ -65,7 +65,7 @@ exports.AppModule = AppModule = __decorate([
                     connection: {
                         host: config.get('redis.host', 'localhost'),
                         port: config.get('redis.port', 6379),
-                        password: config.get('redis.password'),
+                        password: config.get('redis.password', ''),
                     },
                 }),
             }),

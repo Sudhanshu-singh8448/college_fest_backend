@@ -76,7 +76,10 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
                 client.join(`conv:${m.conversationId}`);
             }
             this.broadcastPresence(userId, 'ONLINE');
-            client.emit('authenticated', { userId, joinedRooms: memberships.length + 1 });
+            client.emit('authenticated', {
+                userId,
+                joinedRooms: memberships.length + 1,
+            });
             this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
         }
         catch {
@@ -95,7 +98,9 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
                 replyToId: data.replyToId,
                 attachments: data.attachments,
             });
-            this.server.to(`conv:${data.conversationId}`).emit('message:new', { message });
+            this.server
+                .to(`conv:${data.conversationId}`)
+                .emit('message:new', { message });
         }
         catch (e) {
             client.emit('error', { message: e.message });
@@ -129,29 +134,41 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         this.broadcastPresence(userId, data.status);
     }
     handleChatMessageNew(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:new', { message: payload.message });
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:new', { message: payload.message });
     }
     handleChatMessageUpdated(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:updated', { message: payload.message });
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:updated', { message: payload.message });
     }
     handleChatMessageDeleted(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:deleted', { messageId: payload.messageId });
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:deleted', { messageId: payload.messageId });
     }
     handleReactionAdded(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:reaction_added', {
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:reaction_added', {
             messageId: payload.messageId,
             reaction: payload.reaction,
         });
     }
     handleReactionRemoved(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:reaction_removed', {
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:reaction_removed', {
             messageId: payload.messageId,
             userId: payload.userId,
             emoji: payload.emoji,
         });
     }
     handleChatRead(payload) {
-        this.server.to(`conv:${payload.conversationId}`).emit('message:read', payload);
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:read', payload);
     }
     async broadcastPresence(userId, status) {
         const memberships = await this.prisma.conversationMember.findMany({
@@ -160,7 +177,9 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         });
         const payload = { userId, status, lastSeen: new Date() };
         for (const m of memberships) {
-            this.server.to(`conv:${m.conversationId}`).emit('presence:changed', payload);
+            this.server
+                .to(`conv:${m.conversationId}`)
+                .emit('presence:changed', payload);
         }
     }
     joinConversationRoom(userId, conversationId) {

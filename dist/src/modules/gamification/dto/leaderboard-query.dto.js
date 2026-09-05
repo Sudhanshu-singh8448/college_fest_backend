@@ -19,7 +19,11 @@ class LeaderboardQueryDto {
 }
 exports.LeaderboardQueryDto = LeaderboardQueryDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Number of top users to return', default: 50, maximum: 100 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Number of top users to return',
+        default: 50,
+        maximum: 100,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),
@@ -28,7 +32,10 @@ __decorate([
     __metadata("design:type", Number)
 ], LeaderboardQueryDto.prototype, "limit", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Pagination page (1-indexed)', default: 1 }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Pagination page (1-indexed)',
+        default: 1,
+    }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
     (0, class_validator_1.Min)(1),

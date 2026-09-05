@@ -23,7 +23,9 @@ export class OrganizationsController {
   constructor(private readonly organizationsService: OrganizationsService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all organizations with colleges and branches' })
+  @ApiOperation({
+    summary: 'List all organizations with colleges and branches',
+  })
   async findAll() {
     return this.organizationsService.findAll();
   }
@@ -53,7 +55,9 @@ export class OrganizationsController {
   @Put(':id/reg-format')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('settings:manage')
-  @ApiOperation({ summary: 'Set registration number format (requires settings:manage)' })
+  @ApiOperation({
+    summary: 'Set registration number format (requires settings:manage)',
+  })
   async setRegFormat(@Param('id') id: string, @Body() dto: SetRegFormatDto) {
     return this.organizationsService.setRegFormat(id, dto);
   }

@@ -85,7 +85,24 @@ __decorate([
     __metadata("design:type", String)
 ], FormFieldDto.prototype, "label", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'text', enum: ['text', 'number', 'email', 'phone', 'dropdown', 'radio', 'checkbox', 'date', 'file', 'image', 'textarea', 'url', 'team_member'] }),
+    (0, swagger_1.ApiProperty)({
+        example: 'text',
+        enum: [
+            'text',
+            'number',
+            'email',
+            'phone',
+            'dropdown',
+            'radio',
+            'checkbox',
+            'date',
+            'file',
+            'image',
+            'textarea',
+            'url',
+            'team_member',
+        ],
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsNotEmpty)(),
     __metadata("design:type", String)

@@ -23,7 +23,8 @@ export const BADGE_DEFINITIONS = [
   },
   {
     name: 'Sharpshooter',
-    description: 'Register AND attend an event within 10 minutes of it going live',
+    description:
+      'Register AND attend an event within 10 minutes of it going live',
     iconUrl: '🎯',
     condition: 'FAST_REGISTER',
     xpReward: 75,

@@ -17,7 +17,10 @@ class MarkReadDto {
 }
 exports.MarkReadDto = MarkReadDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Array of notification IDs to mark read. Omit to mark ALL as read.', type: [String] }),
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Array of notification IDs to mark read. Omit to mark ALL as read.',
+        type: [String],
+    }),
     (0, class_validator_1.IsArray)(),
     (0, class_validator_1.IsString)({ each: true }),
     (0, class_validator_1.IsOptional)(),

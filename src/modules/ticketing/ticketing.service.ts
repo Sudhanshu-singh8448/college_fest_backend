@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,12 +20,20 @@ export class TicketingService {
     const tickets = await this.prisma.ticket.findMany({
       where: { userId },
       include: {
-        fest: { select: { id: true, name: true, year: true, startDate: true, endDate: true } },
+        fest: {
+          select: {
+            id: true,
+            name: true,
+            year: true,
+            startDate: true,
+            endDate: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
 
-    return tickets.map(t => {
+    return tickets.map((t) => {
       const { qrSecret, ...safeTicket } = t;
       return safeTicket;
     });
@@ -31,8 +44,23 @@ export class TicketingService {
     const ticket = await this.prisma.ticket.findUnique({
       where: { id },
       include: {
-        fest: { select: { id: true, name: true, year: true, startDate: true, endDate: true } },
-        user: { select: { id: true, email: true, registrationNumber: true, profile: true } },
+        fest: {
+          select: {
+            id: true,
+            name: true,
+            year: true,
+            startDate: true,
+            endDate: true,
+          },
+        },
+        user: {
+          select: {
+            id: true,
+            email: true,
+            registrationNumber: true,
+            profile: true,
+          },
+        },
       },
     });
 
@@ -50,12 +78,20 @@ export class TicketingService {
         event: { festId: ticket.festId },
       },
       include: {
-        event: { select: { id: true, name: true, category: true, startDate: true, venue: true } },
+        event: {
+          select: {
+            id: true,
+            name: true,
+            category: true,
+            startDate: true,
+            venue: true,
+          },
+        },
       },
     });
 
     const { qrSecret, ...safeTicket } = ticket;
-    return { ...safeTicket, approvedEvents: registrations.map(r => r.event) };
+    return { ...safeTicket, approvedEvents: registrations.map((r) => r.event) };
   }
 
   // ── POST /tickets/:id/refresh-qr ────────────────
@@ -88,7 +124,7 @@ export class TicketingService {
   async verifyQrToken(qrToken: string) {
     try {
       // Decode without verification first to get the ticket ID
-      const decoded = this.jwtService.decode(qrToken) as any;
+      const decoded = this.jwtService.decode(qrToken);
       if (!decoded || !decoded.tid) {
         throw new UnauthorizedException('Invalid QR format');
       }

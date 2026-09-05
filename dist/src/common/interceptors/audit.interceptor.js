@@ -26,8 +26,8 @@ let AuditInterceptor = class AuditInterceptor {
         }
         const user = request.user;
         const url = request.url;
-        const ip = request.ip || request.connection?.remoteAddress;
-        const userAgent = request.headers['user-agent'];
+        const ip = request.ip || '';
+        const userAgent = request.headers['user-agent'] || '';
         return next.handle().pipe((0, rxjs_1.tap)(async (responseData) => {
             try {
                 await this.prisma.auditLog.create({
@@ -36,7 +36,9 @@ let AuditInterceptor = class AuditInterceptor {
                         action: `${method} ${url}`,
                         resourceType: this.extractResourceType(url),
                         resourceId: this.extractResourceId(url),
-                        newValue: responseData ? JSON.parse(JSON.stringify(responseData)) : null,
+                        newValue: responseData
+                            ? JSON.parse(JSON.stringify(responseData))
+                            : null,
                         ipAddress: ip,
                         userAgent: userAgent,
                     },

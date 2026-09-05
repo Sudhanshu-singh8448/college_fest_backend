@@ -29,7 +29,10 @@ export class FeedbackController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'List feedback — admin sees all, user sees their own non-anonymous submissions' })
+  @ApiOperation({
+    summary:
+      'List feedback — admin sees all, user sees their own non-anonymous submissions',
+  })
   list(
     @Query('status') status?: string,
     @Query('category') category?: string,
@@ -38,11 +41,19 @@ export class FeedbackController {
     @CurrentUser() user?: any,
   ) {
     const hasGlobalPerm = user.permissions.includes('feedback:manage');
-    return this.feedbackService.listFeedback(user.id, hasGlobalPerm, { status, category, page, limit });
+    return this.feedbackService.listFeedback(user.id, hasGlobalPerm, {
+      status,
+      category,
+      page,
+      limit,
+    });
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Admin: respond to feedback or update its status (REVIEWED/RESOLVED/DISMISSED)' })
+  @ApiOperation({
+    summary:
+      'Admin: respond to feedback or update its status (REVIEWED/RESOLVED/DISMISSED)',
+  })
   update(
     @Param('id') id: string,
     @Body() dto: UpdateFeedbackDto,

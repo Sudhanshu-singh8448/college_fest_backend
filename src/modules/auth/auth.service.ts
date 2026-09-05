@@ -89,13 +89,21 @@ export class AuthService {
 
     // Auto-register for active fest + generate ticket (non-blocking)
     this.festService.autoRegisterForActiveFest(user.id).catch((err) => {
-      console.warn(`Auto-fest-registration failed for ${user.id}:`, err.message);
+      console.warn(
+        `Auto-fest-registration failed for ${user.id}:`,
+        err.message,
+      );
     });
 
     // Auto-assign to matching SYSTEM groups based on reg number (non-blocking)
-    this.groupsService.autoAssignGroups(user.id, dto.registrationNumber).catch((err) => {
-      console.warn(`Auto-group-assignment failed for ${user.id}:`, err.message);
-    });
+    this.groupsService
+      .autoAssignGroups(user.id, dto.registrationNumber)
+      .catch((err) => {
+        console.warn(
+          `Auto-group-assignment failed for ${user.id}:`,
+          err.message,
+        );
+      });
 
     return this.generateTokens(user.id);
   }
@@ -107,10 +115,15 @@ export class AuthService {
     });
 
     if (!user || user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('Invalid credentials or account inactive');
+      throw new UnauthorizedException(
+        'Invalid credentials or account inactive',
+      );
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.password,
+      user.passwordHash,
+    );
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
@@ -158,7 +171,9 @@ export class AuthService {
         where: { familyId: storedToken.familyId },
         data: { isRevoked: true },
       });
-      throw new UnauthorizedException('Refresh token reuse detected — all sessions revoked');
+      throw new UnauthorizedException(
+        'Refresh token reuse detected — all sessions revoked',
+      );
     }
 
     // Check expiry
@@ -186,7 +201,10 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.currentPassword, user.passwordHash);
+    const isPasswordValid = await bcrypt.compare(
+      dto.currentPassword,
+      user.passwordHash,
+    );
     if (!isPasswordValid) {
       throw new BadRequestException('Current password is incorrect');
     }
@@ -215,7 +233,10 @@ export class AuthService {
 
     // Always return success to prevent user enumeration
     if (!user || !user.email) {
-      return { message: 'If the account exists and has an email, a reset link has been sent.' };
+      return {
+        message:
+          'If the account exists and has an email, a reset link has been sent.',
+      };
     }
 
     // Generate a reset token (store hashed, send plain to user)
@@ -235,9 +256,14 @@ export class AuthService {
 
     // TODO: Send email via Resend with the resetToken
     // In development, log it
-    console.log(`[DEV] Password reset token for ${user.registrationNumber}: ${resetToken}`);
+    console.log(
+      `[DEV] Password reset token for ${user.registrationNumber}: ${resetToken}`,
+    );
 
-    return { message: 'If the account exists and has an email, a reset link has been sent.' };
+    return {
+      message:
+        'If the account exists and has an email, a reset link has been sent.',
+    };
   }
 
   // ── Reset Password ────────────────────────────
@@ -248,7 +274,11 @@ export class AuthService {
       where: { tokenHash },
     });
 
-    if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
+    if (
+      !storedToken ||
+      storedToken.isRevoked ||
+      storedToken.expiresAt < new Date()
+    ) {
       throw new BadRequestException('Invalid or expired reset token');
     }
 
@@ -293,7 +323,11 @@ export class AuthService {
       where: { tokenHash },
     });
 
-    if (!storedToken || storedToken.isRevoked || storedToken.expiresAt < new Date()) {
+    if (
+      !storedToken ||
+      storedToken.isRevoked ||
+      storedToken.expiresAt < new Date()
+    ) {
       throw new BadRequestException('Invalid or expired verification token');
     }
 
@@ -313,7 +347,9 @@ export class AuthService {
       data: { isRevoked: true },
     });
 
-    return { message: 'Email verified successfully. Your account is now active.' };
+    return {
+      message: 'Email verified successfully. Your account is now active.',
+    };
   }
 
   // ── Resend Verification Email ──────────────────
@@ -330,7 +366,9 @@ export class AuthService {
     }
 
     if (!user.email) {
-      throw new BadRequestException('No email address on file. Please update your profile first.');
+      throw new BadRequestException(
+        'No email address on file. Please update your profile first.',
+      );
     }
 
     // Generate a verification token (store hashed, send plain to user)
@@ -359,7 +397,9 @@ export class AuthService {
 
     // TODO: Send email via Resend with the verifyToken link
     // In development, log it
-    console.log(`[DEV] Email verification token for ${user.registrationNumber}: ${verifyToken}`);
+    console.log(
+      `[DEV] Email verification token for ${user.registrationNumber}: ${verifyToken}`,
+    );
 
     return { message: 'Verification email sent. Please check your inbox.' };
   }
@@ -378,13 +418,16 @@ export class AuthService {
       }),
       this.jwtService.signAsync(payload, {
         secret: this.configService.get<string>('jwt.refreshSecret'),
-        expiresIn: this.configService.get<string>('jwt.refreshExpiresIn') as any,
+        expiresIn: this.configService.get<string>(
+          'jwt.refreshExpiresIn',
+        ) as any,
       }),
     ]);
 
     // Persist refresh token hash in DB for rotation & revocation tracking
     const refreshTokenHash = this.hashToken(refreshToken);
-    const refreshExpiresIn = this.configService.get<string>('jwt.refreshExpiresIn') || '7d';
+    const refreshExpiresIn =
+      this.configService.get<string>('jwt.refreshExpiresIn') || '7d';
     const expiresMs = this.parseExpiry(refreshExpiresIn);
 
     await this.prisma.refreshToken.create({
@@ -412,11 +455,16 @@ export class AuthService {
     const value = parseInt(match[1], 10);
     const unit = match[2];
     switch (unit) {
-      case 's': return value * 1000;
-      case 'm': return value * 60 * 1000;
-      case 'h': return value * 60 * 60 * 1000;
-      case 'd': return value * 24 * 60 * 60 * 1000;
-      default: return 7 * 24 * 60 * 60 * 1000;
+      case 's':
+        return value * 1000;
+      case 'm':
+        return value * 60 * 1000;
+      case 'h':
+        return value * 60 * 60 * 1000;
+      case 'd':
+        return value * 24 * 60 * 60 * 1000;
+      default:
+        return 7 * 24 * 60 * 60 * 1000;
     }
   }
 }

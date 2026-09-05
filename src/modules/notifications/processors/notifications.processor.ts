@@ -1,7 +1,10 @@
 import { Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
-import { NotificationsService, SendNotificationPayload } from '../notifications.service';
+import {
+  NotificationsService,
+  SendNotificationPayload,
+} from '../notifications.service';
 import { Resend } from 'resend';
 import { ConfigService } from '@nestjs/config';
 
@@ -31,19 +34,27 @@ export class NotificationsProcessor extends WorkerHost {
     super();
     const resendKey = configService.get<string>('RESEND_API_KEY');
     this.resend = resendKey ? new Resend(resendKey) : null;
-    this.emailFrom = configService.get<string>('EMAIL_FROM', 'TechGram <no-reply@techgram.app>');
+    this.emailFrom = configService.get<string>(
+      'EMAIL_FROM',
+      'TechGram <no-reply@techgram.app>',
+    );
   }
 
   async process(job: Job<SendNotificationPayload>) {
     const payload = job.data;
-    this.logger.debug(`Processing notification [${payload.type}] for user ${payload.userId}`);
+    this.logger.debug(
+      `Processing notification [${payload.type}] for user ${payload.userId}`,
+    );
 
     try {
       // 1. Always: create in-app notification
       await this.notificationsService.createInAppNotification(payload);
 
       // 2. Get user preferences for this type
-      const prefs = await this.notificationsService.getPreferenceForType(payload.userId, payload.type);
+      const prefs = await this.notificationsService.getPreferenceForType(
+        payload.userId,
+        payload.type,
+      );
 
       // 3. FCM push notification
       if (prefs.pushEnabled) {
@@ -56,12 +67,23 @@ export class NotificationsProcessor extends WorkerHost {
       }
 
       // 4. Email (only for important notification types)
-      const emailTypes = ['REGISTRATION_APPROVED', 'REGISTRATION_REJECTED', 'ANNOUNCEMENT'];
-      if (prefs.emailEnabled && emailTypes.includes(payload.type) && this.resend) {
+      const emailTypes = [
+        'REGISTRATION_APPROVED',
+        'REGISTRATION_REJECTED',
+        'ANNOUNCEMENT',
+      ];
+      if (
+        prefs.emailEnabled &&
+        emailTypes.includes(payload.type) &&
+        this.resend
+      ) {
         await this.sendEmail(payload);
       }
     } catch (error) {
-      this.logger.error(`Notification processing failed for job ${job.id}:`, error);
+      this.logger.error(
+        `Notification processing failed for job ${job.id}:`,
+        error,
+      );
       throw error; // Re-throw for BullMQ retry
     }
   }

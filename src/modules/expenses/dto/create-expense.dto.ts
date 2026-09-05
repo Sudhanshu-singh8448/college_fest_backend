@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsOptional, IsIn, IsNumber, Min } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsOptional,
+  IsIn,
+  IsNumber,
+  Min,
+} from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
@@ -8,7 +15,9 @@ export class CreateExpenseDto {
   @IsNotEmpty()
   categoryId: string;
 
-  @ApiPropertyOptional({ description: 'Event this expense belongs to (optional)' })
+  @ApiPropertyOptional({
+    description: 'Event this expense belongs to (optional)',
+  })
   @IsString()
   @IsOptional()
   eventId?: string;
@@ -24,12 +33,17 @@ export class CreateExpenseDto {
   @IsNotEmpty()
   description: string;
 
-  @ApiPropertyOptional({ description: 'File ID of uploaded receipt (from /files/confirm)' })
+  @ApiPropertyOptional({
+    description: 'File ID of uploaded receipt (from /files/confirm)',
+  })
   @IsString()
   @IsOptional()
   receiptFileId?: string;
 
-  @ApiPropertyOptional({ description: 'Submit immediately to PENDING (default: save as DRAFT)', default: false })
+  @ApiPropertyOptional({
+    description: 'Submit immediately to PENDING (default: save as DRAFT)',
+    default: false,
+  })
   @IsOptional()
   submit?: boolean;
 }

@@ -35,10 +35,19 @@ export class RegistrationsController {
   @Get('events/:id/registrations')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('registration:view')
-  @ApiOperation({ summary: 'Get all registrations for an event (organizers only)' })
-  async getEventRegistrations(@Param('id') eventId: string, @CurrentUser() user: any) {
+  @ApiOperation({
+    summary: 'Get all registrations for an event (organizers only)',
+  })
+  async getEventRegistrations(
+    @Param('id') eventId: string,
+    @CurrentUser() user: any,
+  ) {
     const hasGlobalPerm = user.permissions.includes('registration:manage_all');
-    return this.registrationsService.getEventRegistrations(eventId, user.id, hasGlobalPerm);
+    return this.registrationsService.getEventRegistrations(
+      eventId,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Get('registrations/my')
@@ -51,7 +60,11 @@ export class RegistrationsController {
   @ApiOperation({ summary: 'Get registration by ID (owner or organizer)' })
   async getRegistrationById(@Param('id') id: string, @CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('registration:manage_all');
-    return this.registrationsService.getRegistrationById(id, user.id, hasGlobalPerm);
+    return this.registrationsService.getRegistrationById(
+      id,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Patch('registrations/:id/status')
@@ -64,16 +77,27 @@ export class RegistrationsController {
     @CurrentUser() user: any,
   ) {
     const hasGlobalPerm = user.permissions.includes('registration:manage_all');
-    return this.registrationsService.updateStatus(id, dto, user.id, hasGlobalPerm);
+    return this.registrationsService.updateStatus(
+      id,
+      dto,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Post('events/:id/registrations/approve-all')
   @UseGuards(PermissionsGuard)
   @RequirePermissions('registration:approve')
-  @ApiOperation({ summary: 'Bulk approve pending registrations (organizers only)' })
+  @ApiOperation({
+    summary: 'Bulk approve pending registrations (organizers only)',
+  })
   async approveAll(@Param('id') eventId: string, @CurrentUser() user: any) {
     const hasGlobalPerm = user.permissions.includes('registration:manage_all');
-    return this.registrationsService.approveAll(eventId, user.id, hasGlobalPerm);
+    return this.registrationsService.approveAll(
+      eventId,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 
   @Delete('registrations/:id')
@@ -86,8 +110,15 @@ export class RegistrationsController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('registration:view')
   @ApiOperation({ summary: 'Export registrations (organizers only)' })
-  async exportRegistrations(@Param('id') eventId: string, @CurrentUser() user: any) {
+  async exportRegistrations(
+    @Param('id') eventId: string,
+    @CurrentUser() user: any,
+  ) {
     const hasGlobalPerm = user.permissions.includes('registration:manage_all');
-    return this.registrationsService.exportRegistrations(eventId, user.id, hasGlobalPerm);
+    return this.registrationsService.exportRegistrations(
+      eventId,
+      user.id,
+      hasGlobalPerm,
+    );
   }
 }

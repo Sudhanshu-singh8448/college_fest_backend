@@ -1,10 +1,23 @@
-import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+  BadRequestException,
+} from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { ConfigService } from '@nestjs/config';
-import { S3Client, PutObjectCommand, GetObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  HeadObjectCommand,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { v4 as uuidv4 } from 'uuid';
-import { RequestUploadUrlDto, UPLOAD_LIMITS_MB } from './dto/request-upload-url.dto';
+import {
+  RequestUploadUrlDto,
+  UPLOAD_LIMITS_MB,
+} from './dto/request-upload-url.dto';
 import { ConfirmUploadDto } from './dto/confirm-upload.dto';
 
 @Injectable()
@@ -87,16 +100,23 @@ export class FilesService {
    * Backend verifies the object exists in the bucket, then marks the file CONFIRMED.
    */
   async confirmUpload(userId: string, dto: ConfirmUploadDto) {
-    const file = await this.prisma.file.findUnique({ where: { id: dto.fileId } });
+    const file = await this.prisma.file.findUnique({
+      where: { id: dto.fileId },
+    });
     if (!file) throw new NotFoundException('File record not found');
-    if (file.uploaderId !== userId) throw new ForbiddenException('You did not initiate this upload');
+    if (file.uploaderId !== userId)
+      throw new ForbiddenException('You did not initiate this upload');
     if (file.status === 'CONFIRMED') return file; // Idempotent
 
     // Verify object actually exists in storage
     try {
-      await this.s3.send(new HeadObjectCommand({ Bucket: this.bucket, Key: file.key }));
+      await this.s3.send(
+        new HeadObjectCommand({ Bucket: this.bucket, Key: file.key }),
+      );
     } catch {
-      throw new BadRequestException('File not found in storage. Upload may have failed — please try again.');
+      throw new BadRequestException(
+        'File not found in storage. Upload may have failed — please try again.',
+      );
     }
 
     return this.prisma.file.update({
@@ -112,11 +132,17 @@ export class FilesService {
   async getDownloadUrl(id: string, userId: string) {
     const file = await this.prisma.file.findUnique({ where: { id } });
     if (!file) throw new NotFoundException('File not found');
-    if (file.status !== 'CONFIRMED') throw new BadRequestException('File upload is not complete');
+    if (file.status !== 'CONFIRMED')
+      throw new BadRequestException('File upload is not complete');
 
     // Allow uploader OR any authenticated user (adjust per access policy)
-    const command = new GetObjectCommand({ Bucket: this.bucket, Key: file.key });
-    const downloadUrl = await getSignedUrl(this.s3, command, { expiresIn: 300 }); // 5 min
+    const command = new GetObjectCommand({
+      Bucket: this.bucket,
+      Key: file.key,
+    });
+    const downloadUrl = await getSignedUrl(this.s3, command, {
+      expiresIn: 300,
+    }); // 5 min
 
     return {
       fileId: file.id,
@@ -131,7 +157,10 @@ export class FilesService {
   // ─────────────────────────────────────────────────────
 
   private publicBaseUrl(): string {
-    return this.config.get<string>('storage.publicBaseUrl', `https://${this.bucket}.s3.amazonaws.com`);
+    return this.config.get<string>(
+      'storage.publicBaseUrl',
+      `https://${this.bucket}.s3.amazonaws.com`,
+    );
   }
 
   private extensionFromMime(mimeType: string): string {
@@ -143,8 +172,10 @@ export class FilesService {
       'video/mp4': '.mp4',
       'video/webm': '.webm',
       'application/pdf': '.pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': '.docx',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': '.xlsx',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+        '.docx',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet':
+        '.xlsx',
     };
     return map[mimeType] ?? '';
   }

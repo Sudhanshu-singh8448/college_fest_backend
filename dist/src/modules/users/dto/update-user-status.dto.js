@@ -17,7 +17,10 @@ class UpdateUserStatusDto {
 }
 exports.UpdateUserStatusDto = UpdateUserStatusDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'SUSPENDED', enum: ['ACTIVE', 'SUSPENDED', 'BANNED'] }),
+    (0, swagger_1.ApiProperty)({
+        example: 'SUSPENDED',
+        enum: ['ACTIVE', 'SUSPENDED', 'BANNED'],
+    }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsIn)(['ACTIVE', 'SUSPENDED', 'BANNED']),
     __metadata("design:type", String)

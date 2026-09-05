@@ -35,7 +35,6 @@ import { GamificationModule } from './modules/gamification/gamification.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuditModule } from './modules/audit/audit.module';
 
-
 @Module({
   imports: [
     // Global config from .env
@@ -47,13 +46,13 @@ import { AuditModule } from './modules/audit/audit.module';
     ThrottlerModule.forRoot([
       {
         name: 'short',
-        ttl: 1000,   // 1 second
-        limit: 10,   // 10 requests per second
+        ttl: 1000, // 1 second
+        limit: 10, // 10 requests per second
       },
       {
         name: 'medium',
-        ttl: 60000,  // 1 minute
-        limit: 100,  // 100 requests per minute
+        ttl: 60000, // 1 minute
+        limit: 100, // 100 requests per minute
       },
     ]),
     // BullMQ — global Redis connection for all queues
@@ -61,9 +60,9 @@ import { AuditModule } from './modules/audit/audit.module';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
         connection: {
-          host: config.get('redis.host', 'localhost'),
-          port: config.get('redis.port', 6379),
-          password: config.get('redis.password'),
+          host: config.get<string>('redis.host', 'localhost'),
+          port: config.get<number>('redis.port', 6379),
+          password: config.get<string>('redis.password', ''),
         },
       }),
     }),

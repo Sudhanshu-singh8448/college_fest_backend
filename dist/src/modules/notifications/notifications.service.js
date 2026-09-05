@@ -97,7 +97,13 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
         ]);
         return {
             items,
-            meta: { total, page, limit, totalPages: Math.ceil(total / limit), unreadCount },
+            meta: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit),
+                unreadCount,
+            },
         };
     }
     async markRead(userId, dto) {
@@ -116,28 +122,47 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
             where: { userId },
         });
         const allTypes = [
-            'REGISTRATION_APPROVED', 'REGISTRATION_REJECTED', 'EVENT_REMINDER', 'EVENT_UPDATED',
-            'EXPENSE_APPROVED', 'EXPENSE_REJECTED', 'ANNOUNCEMENT', 'CHAT_MESSAGE',
-            'BADGE_EARNED', 'LEVEL_UP', 'WORKFLOW_ACTION_REQUIRED', 'TICKET_GENERATED',
+            'REGISTRATION_APPROVED',
+            'REGISTRATION_REJECTED',
+            'EVENT_REMINDER',
+            'EVENT_UPDATED',
+            'EXPENSE_APPROVED',
+            'EXPENSE_REJECTED',
+            'ANNOUNCEMENT',
+            'CHAT_MESSAGE',
+            'BADGE_EARNED',
+            'LEVEL_UP',
+            'WORKFLOW_ACTION_REQUIRED',
+            'TICKET_GENERATED',
         ];
-        return allTypes.map(type => {
-            const pref = stored.find(p => p.type === type);
-            return pref ?? {
+        return allTypes.map((type) => {
+            const pref = stored.find((p) => p.type === type);
+            return (pref ?? {
                 userId,
                 type,
                 inAppEnabled: true,
                 pushEnabled: type !== 'CHAT_MESSAGE',
-                emailEnabled: ['REGISTRATION_APPROVED', 'REGISTRATION_REJECTED', 'ANNOUNCEMENT'].includes(type),
-            };
+                emailEnabled: [
+                    'REGISTRATION_APPROVED',
+                    'REGISTRATION_REJECTED',
+                    'ANNOUNCEMENT',
+                ].includes(type),
+            });
         });
     }
     async updatePreferences(userId, dto) {
-        const upserts = dto.preferences.map(pref => this.prisma.notificationPreference.upsert({
+        const upserts = dto.preferences.map((pref) => this.prisma.notificationPreference.upsert({
             where: { userId_type: { userId, type: pref.type } },
             update: {
-                ...(pref.inAppEnabled !== undefined && { inAppEnabled: pref.inAppEnabled }),
-                ...(pref.pushEnabled !== undefined && { pushEnabled: pref.pushEnabled }),
-                ...(pref.emailEnabled !== undefined && { emailEnabled: pref.emailEnabled }),
+                ...(pref.inAppEnabled !== undefined && {
+                    inAppEnabled: pref.inAppEnabled,
+                }),
+                ...(pref.pushEnabled !== undefined && {
+                    pushEnabled: pref.pushEnabled,
+                }),
+                ...(pref.emailEnabled !== undefined && {
+                    emailEnabled: pref.emailEnabled,
+                }),
             },
             create: {
                 userId,
@@ -187,13 +212,17 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
             this.logger.debug('FCM not initialized — skipping push');
             return;
         }
-        const tokens = await this.prisma.deviceToken.findMany({ where: { userId } });
+        const tokens = await this.prisma.deviceToken.findMany({
+            where: { userId },
+        });
         if (tokens.length === 0)
             return;
-        const messages = tokens.map(t => ({
+        const messages = tokens.map((t) => ({
             token: t.token,
             notification: { title, body },
-            data: data ? Object.fromEntries(Object.entries(data).map(([k, v]) => [k, String(v)])) : undefined,
+            data: data
+                ? Object.fromEntries(Object.entries(data).map(([k, v]) => [k, String(v)]))
+                : undefined,
             android: { priority: 'high' },
             apns: { payload: { aps: { sound: 'default' } } },
         }));
@@ -201,10 +230,15 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
             const response = await admin.messaging().sendEach(messages);
             this.logger.log(`FCM: sent=${response.successCount} failed=${response.failureCount}`);
             const invalidTokenIds = response.responses
-                .map((r, i) => (!r.success && r.error?.code === 'messaging/registration-token-not-registered') ? tokens[i].id : null)
+                .map((r, i) => !r.success &&
+                r.error?.code === 'messaging/registration-token-not-registered'
+                ? tokens[i].id
+                : null)
                 .filter(Boolean);
             if (invalidTokenIds.length > 0) {
-                await this.prisma.deviceToken.deleteMany({ where: { id: { in: invalidTokenIds } } });
+                await this.prisma.deviceToken.deleteMany({
+                    where: { id: { in: invalidTokenIds } },
+                });
                 this.logger.log(`Removed ${invalidTokenIds.length} invalid FCM tokens`);
             }
         }
