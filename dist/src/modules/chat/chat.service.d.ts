@@ -24,11 +24,11 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         };
         unreadCount: number;
         membersCount: number;
@@ -45,11 +45,11 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         }) | null;
         messages: ({
             sender: {
@@ -64,11 +64,11 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         })[];
         members: ({
             user: {
@@ -83,24 +83,24 @@ export declare class ChatService {
         } & {
             role: string;
             userId: string;
-            conversationId: string;
             joinedAt: Date;
+            conversationId: string;
             lastReadAt: Date;
         })[];
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }[]>;
     createConversation(dto: CreateConversationDto, creatorId: string): Promise<{
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }>;
     getConversationById(id: string, userId: string): Promise<{
         currentUserRole: string;
@@ -118,11 +118,11 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         }) | null;
         members: ({
             user: {
@@ -138,27 +138,19 @@ export declare class ChatService {
         } & {
             role: string;
             userId: string;
-            conversationId: string;
             joinedAt: Date;
+            conversationId: string;
             lastReadAt: Date;
         })[];
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }>;
     getMessages(conversationId: string, userId: string, query: MessageQueryDto): Promise<{
         messages: ({
-            attachments: {
-                id: string;
-                createdAt: Date;
-                fileUrl: string;
-                fileType: string;
-                fileSize: number;
-                messageId: string;
-            }[];
             sender: {
                 id: string;
                 profile: {
@@ -177,6 +169,14 @@ export declare class ChatService {
                     } | null;
                 };
             } | null;
+            attachments: {
+                id: string;
+                createdAt: Date;
+                fileUrl: string;
+                fileType: string;
+                fileSize: number;
+                messageId: string;
+            }[];
             reactions: ({
                 user: {
                     id: string;
@@ -196,23 +196,15 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         })[];
         nextCursor: string | null;
     }>;
     sendMessage(conversationId: string, senderId: string, dto: SendMessageDto): Promise<{
-        attachments: {
-            id: string;
-            createdAt: Date;
-            fileUrl: string;
-            fileType: string;
-            fileSize: number;
-            messageId: string;
-        }[];
         sender: {
             id: string;
             profile: {
@@ -226,6 +218,14 @@ export declare class ChatService {
             content: string | null;
             senderId: string;
         } | null;
+        attachments: {
+            id: string;
+            createdAt: Date;
+            fileUrl: string;
+            fileType: string;
+            fileSize: number;
+            messageId: string;
+        }[];
         reactions: {
             id: string;
             createdAt: Date;
@@ -238,22 +238,22 @@ export declare class ChatService {
         createdAt: Date;
         updatedAt: Date;
         type: string;
-        content: string | null;
-        replyToId: string | null;
         conversationId: string;
+        content: string | null;
         isDeleted: boolean;
         senderId: string;
+        replyToId: string | null;
     }>;
     updateMessage(messageId: string, userId: string, dto: UpdateMessageDto): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         type: string;
-        content: string | null;
-        replyToId: string | null;
         conversationId: string;
+        content: string | null;
         isDeleted: boolean;
         senderId: string;
+        replyToId: string | null;
     }>;
     deleteMessage(messageId: string, userId: string): Promise<{
         message: string;
@@ -308,11 +308,11 @@ export declare class ChatService {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         };
     }>;
     unpinMessage(conversationId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
@@ -331,11 +331,11 @@ export declare class ChatService {
         createdAt: Date;
         updatedAt: Date;
         type: string;
-        content: string | null;
-        replyToId: string | null;
         conversationId: string;
+        content: string | null;
         isDeleted: boolean;
         senderId: string;
+        replyToId: string | null;
     }) | null>;
     moderateDeleteMessage(conversationId: string, messageId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
         message: string;
@@ -345,15 +345,15 @@ export declare class ChatService {
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }>;
     syncEventOrganizers(eventId: string): Promise<void>;
     addMemberToEventChat(eventId: string, userId: string, role?: 'ADMIN' | 'MEMBER'): Promise<{
         role: string;
         userId: string;
-        conversationId: string;
         joinedAt: Date;
+        conversationId: string;
         lastReadAt: Date;
     } | undefined>;
     removeMemberFromEventChat(eventId: string, userId: string): Promise<void>;

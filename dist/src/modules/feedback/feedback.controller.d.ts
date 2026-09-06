@@ -10,8 +10,8 @@ export declare class FeedbackController {
         updatedAt: Date;
         status: string;
         userId: string | null;
-        content: string;
         category: string;
+        content: string;
         adminResponse: string | null;
     }>;
     list(status?: string, category?: string, page?: number, limit?: number, user?: any): Promise<{
@@ -29,8 +29,8 @@ export declare class FeedbackController {
             updatedAt: Date;
             status: string;
             userId: string | null;
-            content: string;
             category: string;
+            content: string;
             adminResponse: string | null;
         }[];
         meta: {
@@ -46,8 +46,8 @@ export declare class FeedbackController {
         updatedAt: Date;
         status: string;
         userId: string | null;
-        content: string;
         category: string;
+        content: string;
         adminResponse: string | null;
     }>;
 }

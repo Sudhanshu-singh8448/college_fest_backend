@@ -126,15 +126,15 @@ export declare class AdminService {
             count: number;
         }[];
         pendingApprovals: ({
-            event: {
-                id: string;
-                name: string;
-            } | null;
             category: {
                 id: string;
                 name: string;
                 createdAt: Date;
             };
+            event: {
+                id: string;
+                name: string;
+            } | null;
             submitter: {
                 registrationNumber: string;
                 profile: {
@@ -149,9 +149,9 @@ export declare class AdminService {
             updatedAt: Date;
             status: string;
             eventId: string | null;
-            categoryId: string;
-            amount: number;
             receiptUrl: string | null;
+            amount: number;
+            categoryId: string;
             submitterId: string;
         })[];
     }>;
@@ -169,9 +169,9 @@ export declare class AdminService {
             id: string;
             createdAt: Date;
             action: string;
+            resourceId: string | null;
             actorId: string | null;
             resourceType: string;
-            resourceId: string | null;
             oldValue: import("@prisma/client/runtime/client").JsonValue | null;
             newValue: import("@prisma/client/runtime/client").JsonValue | null;
             ipAddress: string | null;
@@ -313,17 +313,17 @@ export declare class AdminService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     })[] | ({
-        event: {
-            name: string;
-        } | null;
         category: {
             id: string;
             name: string;
             createdAt: Date;
         };
+        event: {
+            name: string;
+        } | null;
         submitter: {
             registrationNumber: string;
             profile: {
@@ -338,9 +338,9 @@ export declare class AdminService {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     })[] | ({
         user: {
@@ -373,8 +373,8 @@ export declare class AdminService {
         updatedAt: Date;
         status: string;
         userId: string | null;
-        content: string;
         category: string;
+        content: string;
         adminResponse: string | null;
     })[]>;
 }

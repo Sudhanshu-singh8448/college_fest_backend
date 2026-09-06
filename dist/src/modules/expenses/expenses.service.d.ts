@@ -6,15 +6,15 @@ export declare class ExpensesService {
     private readonly prisma;
     constructor(prisma: PrismaService);
     createExpense(userId: string, dto: CreateExpenseDto): Promise<{
-        event: {
-            id: string;
-            name: string;
-        } | null;
         category: {
             id: string;
             name: string;
             createdAt: Date;
         };
+        event: {
+            id: string;
+            name: string;
+        } | null;
         submitter: {
             id: string;
             registrationNumber: string;
@@ -40,22 +40,22 @@ export declare class ExpensesService {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
     listExpenses(userId: string, hasGlobalPerm: boolean, query: ExpenseQueryDto): Promise<{
         items: ({
-            event: {
-                id: string;
-                name: string;
-            } | null;
             category: {
                 id: string;
                 name: string;
                 createdAt: Date;
             };
+            event: {
+                id: string;
+                name: string;
+            } | null;
             submitter: {
                 id: string;
                 registrationNumber: string;
@@ -71,9 +71,9 @@ export declare class ExpensesService {
             updatedAt: Date;
             status: string;
             eventId: string | null;
-            categoryId: string;
-            amount: number;
             receiptUrl: string | null;
+            amount: number;
+            categoryId: string;
             submitterId: string;
         })[];
         meta: {
@@ -89,15 +89,15 @@ export declare class ExpensesService {
         createdAt: Date;
     }[]>;
     getExpenseById(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
-        event: {
-            id: string;
-            name: string;
-        } | null;
         category: {
             id: string;
             name: string;
             createdAt: Date;
         };
+        event: {
+            id: string;
+            name: string;
+        } | null;
         submitter: {
             id: string;
             registrationNumber: string;
@@ -123,9 +123,9 @@ export declare class ExpensesService {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
     updateStatus(id: string, userId: string, hasGlobalPerm: boolean, dto: UpdateExpenseStatusDto): Promise<{
@@ -145,9 +145,9 @@ export declare class ExpensesService {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
     getReports(hasGlobalPerm: boolean, userId: string): Promise<{

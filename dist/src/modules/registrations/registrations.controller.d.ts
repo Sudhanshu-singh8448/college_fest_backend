@@ -11,8 +11,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     getEventRegistrations(eventId: string, user: any): Promise<({
         user: {
@@ -54,8 +54,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     })[]>;
     getMyRegistrations(user: any): Promise<({
         event: {
@@ -71,8 +71,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     })[]>;
     getRegistrationById(id: string, user: any): Promise<{
         user: {
@@ -133,8 +133,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     updateStatus(id: string, dto: UpdateRegistrationStatusDto, user: any): Promise<{
         id: string;
@@ -143,8 +143,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     approveAll(eventId: string, user: any): Promise<{
         message: string;

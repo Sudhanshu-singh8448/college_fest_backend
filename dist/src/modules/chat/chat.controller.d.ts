@@ -23,11 +23,11 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         };
         unreadCount: number;
         membersCount: number;
@@ -44,11 +44,11 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         }) | null;
         messages: ({
             sender: {
@@ -63,11 +63,11 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         })[];
         members: ({
             user: {
@@ -82,24 +82,24 @@ export declare class ChatController {
         } & {
             role: string;
             userId: string;
-            conversationId: string;
             joinedAt: Date;
+            conversationId: string;
             lastReadAt: Date;
         })[];
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }[]>;
     createConversation(dto: CreateConversationDto, user: any): Promise<{
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }>;
     getConversationById(id: string, user: any): Promise<{
         currentUserRole: string;
@@ -117,11 +117,11 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         }) | null;
         members: ({
             user: {
@@ -137,27 +137,19 @@ export declare class ChatController {
         } & {
             role: string;
             userId: string;
-            conversationId: string;
             joinedAt: Date;
+            conversationId: string;
             lastReadAt: Date;
         })[];
         id: string;
         name: string | null;
         createdAt: Date;
         updatedAt: Date;
-        type: string;
         eventId: string | null;
+        type: string;
     }>;
     getMessages(id: string, query: MessageQueryDto, user: any): Promise<{
         messages: ({
-            attachments: {
-                id: string;
-                createdAt: Date;
-                fileUrl: string;
-                fileType: string;
-                fileSize: number;
-                messageId: string;
-            }[];
             sender: {
                 id: string;
                 profile: {
@@ -176,6 +168,14 @@ export declare class ChatController {
                     } | null;
                 };
             } | null;
+            attachments: {
+                id: string;
+                createdAt: Date;
+                fileUrl: string;
+                fileType: string;
+                fileSize: number;
+                messageId: string;
+            }[];
             reactions: ({
                 user: {
                     id: string;
@@ -195,23 +195,15 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         })[];
         nextCursor: string | null;
     }>;
     sendMessage(id: string, dto: SendMessageDto, user: any): Promise<{
-        attachments: {
-            id: string;
-            createdAt: Date;
-            fileUrl: string;
-            fileType: string;
-            fileSize: number;
-            messageId: string;
-        }[];
         sender: {
             id: string;
             profile: {
@@ -225,6 +217,14 @@ export declare class ChatController {
             content: string | null;
             senderId: string;
         } | null;
+        attachments: {
+            id: string;
+            createdAt: Date;
+            fileUrl: string;
+            fileType: string;
+            fileSize: number;
+            messageId: string;
+        }[];
         reactions: {
             id: string;
             createdAt: Date;
@@ -237,22 +237,22 @@ export declare class ChatController {
         createdAt: Date;
         updatedAt: Date;
         type: string;
-        content: string | null;
-        replyToId: string | null;
         conversationId: string;
+        content: string | null;
         isDeleted: boolean;
         senderId: string;
+        replyToId: string | null;
     }>;
     updateMessage(id: string, dto: UpdateMessageDto, user: any): Promise<{
         id: string;
         createdAt: Date;
         updatedAt: Date;
         type: string;
-        content: string | null;
-        replyToId: string | null;
         conversationId: string;
+        content: string | null;
         isDeleted: boolean;
         senderId: string;
+        replyToId: string | null;
     }>;
     deleteMessage(id: string, user: any): Promise<{
         message: string;
@@ -302,11 +302,11 @@ export declare class ChatController {
             createdAt: Date;
             updatedAt: Date;
             type: string;
-            content: string | null;
-            replyToId: string | null;
             conversationId: string;
+            content: string | null;
             isDeleted: boolean;
             senderId: string;
+            replyToId: string | null;
         };
     }>;
     unpinMessage(conversationId: string, user: any): Promise<{

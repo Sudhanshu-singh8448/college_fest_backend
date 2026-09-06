@@ -16,8 +16,8 @@ export declare class FilesController {
         createdAt: Date;
         updatedAt: Date;
         status: string;
-        key: string;
         type: string;
+        key: string;
         size: number;
         uploaderId: string;
     }>;

@@ -6,15 +6,15 @@ export declare class ExpensesController {
     private readonly expensesService;
     constructor(expensesService: ExpensesService);
     create(dto: CreateExpenseDto, user: any): Promise<{
-        event: {
-            id: string;
-            name: string;
-        } | null;
         category: {
             id: string;
             name: string;
             createdAt: Date;
         };
+        event: {
+            id: string;
+            name: string;
+        } | null;
         submitter: {
             id: string;
             registrationNumber: string;
@@ -40,9 +40,9 @@ export declare class ExpensesController {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
     listCategories(): Promise<{
@@ -86,15 +86,15 @@ export declare class ExpensesController {
     }[]>;
     list(query: ExpenseQueryDto, user: any): Promise<{
         items: ({
-            event: {
-                id: string;
-                name: string;
-            } | null;
             category: {
                 id: string;
                 name: string;
                 createdAt: Date;
             };
+            event: {
+                id: string;
+                name: string;
+            } | null;
             submitter: {
                 id: string;
                 registrationNumber: string;
@@ -110,9 +110,9 @@ export declare class ExpensesController {
             updatedAt: Date;
             status: string;
             eventId: string | null;
-            categoryId: string;
-            amount: number;
             receiptUrl: string | null;
+            amount: number;
+            categoryId: string;
             submitterId: string;
         })[];
         meta: {
@@ -123,15 +123,15 @@ export declare class ExpensesController {
         };
     }>;
     getById(id: string, user: any): Promise<{
-        event: {
-            id: string;
-            name: string;
-        } | null;
         category: {
             id: string;
             name: string;
             createdAt: Date;
         };
+        event: {
+            id: string;
+            name: string;
+        } | null;
         submitter: {
             id: string;
             registrationNumber: string;
@@ -157,9 +157,9 @@ export declare class ExpensesController {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
     updateStatus(id: string, dto: UpdateExpenseStatusDto, user: any): Promise<{
@@ -179,9 +179,9 @@ export declare class ExpensesController {
         updatedAt: Date;
         status: string;
         eventId: string | null;
-        categoryId: string;
-        amount: number;
         receiptUrl: string | null;
+        amount: number;
+        categoryId: string;
         submitterId: string;
     }>;
 }

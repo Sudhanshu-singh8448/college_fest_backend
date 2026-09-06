@@ -18,8 +18,8 @@ export declare class OrganizationsController {
             id: string;
             name: string;
             createdAt: Date;
-            organizationId: string;
             code: string;
+            organizationId: string;
         })[];
     } & {
         id: string;
@@ -41,8 +41,8 @@ export declare class OrganizationsController {
             id: string;
             name: string;
             createdAt: Date;
-            organizationId: string;
             code: string;
+            organizationId: string;
         })[];
     } & {
         id: string;

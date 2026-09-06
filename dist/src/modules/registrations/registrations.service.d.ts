@@ -13,8 +13,8 @@ export declare class RegistrationsService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     getEventRegistrations(eventId: string, userId: string, hasGlobalPerm: boolean): Promise<({
         user: {
@@ -56,8 +56,8 @@ export declare class RegistrationsService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     })[]>;
     getRegistrationById(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
         user: {
@@ -118,8 +118,8 @@ export declare class RegistrationsService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     updateStatus(id: string, dto: UpdateRegistrationStatusDto, actorId: string, hasGlobalPerm: boolean): Promise<{
         id: string;
@@ -128,8 +128,8 @@ export declare class RegistrationsService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     }>;
     approveAll(eventId: string, actorId: string, hasGlobalPerm: boolean): Promise<{
         message: string;
@@ -148,8 +148,8 @@ export declare class RegistrationsService {
         status: string;
         userId: string;
         eventId: string;
-        rejectionReason: string | null;
         submissionId: string | null;
+        rejectionReason: string | null;
     })[]>;
     remove(id: string, userId: string): Promise<{
         message: string;

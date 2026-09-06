@@ -10,8 +10,8 @@ export declare class FeedbackService {
         updatedAt: Date;
         status: string;
         userId: string | null;
-        content: string;
         category: string;
+        content: string;
         adminResponse: string | null;
     }>;
     listFeedback(userId: string, hasGlobalPerm: boolean, query: {
@@ -34,8 +34,8 @@ export declare class FeedbackService {
             updatedAt: Date;
             status: string;
             userId: string | null;
-            content: string;
             category: string;
+            content: string;
             adminResponse: string | null;
         }[];
         meta: {
@@ -51,8 +51,8 @@ export declare class FeedbackService {
         updatedAt: Date;
         status: string;
         userId: string | null;
-        content: string;
         category: string;
+        content: string;
         adminResponse: string | null;
     }>;
 }

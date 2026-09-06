@@ -21,8 +21,8 @@ export declare class FilesService {
         createdAt: Date;
         updatedAt: Date;
         status: string;
-        key: string;
         type: string;
+        key: string;
         size: number;
         uploaderId: string;
     }>;

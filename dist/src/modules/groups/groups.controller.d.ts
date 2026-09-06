@@ -77,8 +77,8 @@ export declare class GroupsController {
         };
     } & {
         userId: string;
-        joinedAt: Date;
         groupId: string;
+        joinedAt: Date;
     })[]>;
     addMember(id: string, dto: AddMemberDto, user: any): Promise<{
         message: string;

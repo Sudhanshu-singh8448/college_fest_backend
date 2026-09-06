@@ -77,8 +77,8 @@ export declare class GroupsService {
         };
     } & {
         userId: string;
-        joinedAt: Date;
         groupId: string;
+        joinedAt: Date;
     })[]>;
     addMember(groupId: string, targetUserId: string, actorId: string): Promise<{
         message: string;
