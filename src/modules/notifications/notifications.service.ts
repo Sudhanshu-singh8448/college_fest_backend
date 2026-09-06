@@ -13,6 +13,7 @@ import { MarkReadDto } from './dto/mark-read.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { RegisterDeviceTokenDto } from './dto/register-device-token.dto';
 import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 
 // -----------------------------------------------------------------
 // Notification types catalogue
@@ -52,19 +53,35 @@ export class NotificationsService implements OnModuleInit {
 
   onModuleInit() {
     // Initialize Firebase Admin SDK lazily (only if credentials provided)
-    const serviceAccountJson = this.configService.get<string>(
-      'FCM_SERVICE_ACCOUNT_JSON',
-    );
-    if (serviceAccountJson && admin.apps.length === 0) {
+    const rawJson = this.configService.get<string>('FCM_SERVICE_ACCOUNT_JSON');
+    const filePath = this.configService.get<string>('FCM_SERVICE_ACCOUNT_PATH');
+
+    if (admin.apps.length === 0 && (rawJson || filePath)) {
       try {
-        admin.initializeApp({
-          credential: admin.credential.cert(JSON.parse(serviceAccountJson)),
-        });
-        this.fcmInitialized = true;
-        this.logger.log('Firebase Admin SDK initialized');
+        let certData: any = null;
+        if (filePath && fs.existsSync(filePath)) {
+          certData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        } else if (rawJson) {
+          const trimmed = rawJson.trim();
+          if (trimmed.startsWith('{')) {
+            certData = JSON.parse(trimmed);
+          } else if (fs.existsSync(trimmed)) {
+            certData = JSON.parse(fs.readFileSync(trimmed, 'utf-8'));
+          }
+        }
+
+        if (certData) {
+          admin.initializeApp({
+            credential: admin.credential.cert(certData),
+          });
+          this.fcmInitialized = true;
+          this.logger.log('✅ Firebase Admin SDK initialized successfully');
+        } else {
+          this.logger.warn('Firebase credentials file or JSON not found — push notifications disabled');
+        }
       } catch (e) {
         this.logger.warn(
-          'Firebase Admin init failed — push notifications disabled',
+          `Firebase Admin init failed (${e instanceof Error ? e.message : e}) — push notifications disabled`,
         );
       }
     }

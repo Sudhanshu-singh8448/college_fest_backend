@@ -53,6 +53,7 @@ const bullmq_1 = require("@nestjs/bullmq");
 const bullmq_2 = require("bullmq");
 const config_1 = require("@nestjs/config");
 const admin = __importStar(require("firebase-admin"));
+const fs = __importStar(require("fs"));
 let NotificationsService = NotificationsService_1 = class NotificationsService {
     prisma;
     configService;
@@ -65,17 +66,36 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
         this.notifQueue = notifQueue;
     }
     onModuleInit() {
-        const serviceAccountJson = this.configService.get('FCM_SERVICE_ACCOUNT_JSON');
-        if (serviceAccountJson && admin.apps.length === 0) {
+        const rawJson = this.configService.get('FCM_SERVICE_ACCOUNT_JSON');
+        const filePath = this.configService.get('FCM_SERVICE_ACCOUNT_PATH');
+        if (admin.apps.length === 0 && (rawJson || filePath)) {
             try {
-                admin.initializeApp({
-                    credential: admin.credential.cert(JSON.parse(serviceAccountJson)),
-                });
-                this.fcmInitialized = true;
-                this.logger.log('Firebase Admin SDK initialized');
+                let certData = null;
+                if (filePath && fs.existsSync(filePath)) {
+                    certData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+                }
+                else if (rawJson) {
+                    const trimmed = rawJson.trim();
+                    if (trimmed.startsWith('{')) {
+                        certData = JSON.parse(trimmed);
+                    }
+                    else if (fs.existsSync(trimmed)) {
+                        certData = JSON.parse(fs.readFileSync(trimmed, 'utf-8'));
+                    }
+                }
+                if (certData) {
+                    admin.initializeApp({
+                        credential: admin.credential.cert(certData),
+                    });
+                    this.fcmInitialized = true;
+                    this.logger.log('✅ Firebase Admin SDK initialized successfully');
+                }
+                else {
+                    this.logger.warn('Firebase credentials file or JSON not found — push notifications disabled');
+                }
             }
             catch (e) {
-                this.logger.warn('Firebase Admin init failed — push notifications disabled');
+                this.logger.warn(`Firebase Admin init failed (${e instanceof Error ? e.message : e}) — push notifications disabled`);
             }
         }
     }
