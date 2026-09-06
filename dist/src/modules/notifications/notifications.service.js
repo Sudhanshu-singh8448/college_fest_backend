@@ -84,6 +84,9 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
                     }
                 }
                 if (certData) {
+                    if (certData.private_key && typeof certData.private_key === 'string') {
+                        certData.private_key = certData.private_key.replace(/\\n/g, '\n');
+                    }
                     admin.initializeApp({
                         credential: admin.credential.cert(certData),
                     });
