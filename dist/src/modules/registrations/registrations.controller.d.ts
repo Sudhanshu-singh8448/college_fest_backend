@@ -11,8 +11,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     }>;
     getEventRegistrations(eventId: string, user: any): Promise<({
         user: {
@@ -54,8 +54,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     })[]>;
     getMyRegistrations(user: any): Promise<({
         event: {
@@ -71,8 +71,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     })[]>;
     getRegistrationById(id: string, user: any): Promise<{
         user: {
@@ -111,12 +111,12 @@ export declare class RegistrationsController {
             startDate: Date;
             endDate: Date;
             festId: string;
-            isPublic: boolean;
             category: string;
             venue: string | null;
             maxParticipants: number | null;
             minTeamSize: number;
             maxTeamSize: number;
+            isPublic: boolean;
             bannerUrl: string | null;
         };
         submission: {
@@ -133,8 +133,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     }>;
     updateStatus(id: string, dto: UpdateRegistrationStatusDto, user: any): Promise<{
         id: string;
@@ -143,8 +143,8 @@ export declare class RegistrationsController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     }>;
     approveAll(eventId: string, user: any): Promise<{
         message: string;

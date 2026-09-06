@@ -136,6 +136,23 @@ export class EventsService {
       },
     });
 
+    // Auto-create EVENT chat conversation with creator as ADMIN
+    await this.prisma.conversation.upsert({
+      where: { eventId: event.id },
+      update: { name: event.name },
+      create: {
+        type: 'EVENT',
+        name: event.name,
+        eventId: event.id,
+        members: {
+          create: {
+            userId: creatorId,
+            role: 'ADMIN',
+          },
+        },
+      },
+    });
+
     return event;
   }
 
@@ -240,6 +257,33 @@ export class EventsService {
       data: { eventId: id, userId: targetUserId, role },
     });
 
+    // Auto-promote organizer to ADMIN in the event's chat group
+    const eventObj = await this.prisma.event.findUnique({ where: { id } });
+    const conv = await this.prisma.conversation.upsert({
+      where: { eventId: id },
+      update: {},
+      create: {
+        type: 'EVENT',
+        name: eventObj?.name || 'Event Chat',
+        eventId: id,
+      },
+    });
+
+    await this.prisma.conversationMember.upsert({
+      where: {
+        conversationId_userId: {
+          conversationId: conv.id,
+          userId: targetUserId,
+        },
+      },
+      update: { role: 'ADMIN' },
+      create: {
+        conversationId: conv.id,
+        userId: targetUserId,
+        role: 'ADMIN',
+      },
+    });
+
     return { message: 'Organizer added successfully' };
   }
 
@@ -271,6 +315,30 @@ export class EventsService {
     await this.prisma.eventOrganizer.delete({
       where: { eventId_userId: { eventId: id, userId: targetUserId } },
     });
+
+    // Demote from chat ADMIN or remove from chat if not a participant
+    const conv = await this.prisma.conversation.findUnique({
+      where: { eventId: id },
+    });
+    if (conv) {
+      const isParticipant = await this.prisma.eventRegistration.findFirst({
+        where: {
+          eventId: id,
+          userId: targetUserId,
+          status: { not: 'CANCELLED' },
+        },
+      });
+      if (isParticipant) {
+        await this.prisma.conversationMember.updateMany({
+          where: { conversationId: conv.id, userId: targetUserId },
+          data: { role: 'MEMBER' },
+        });
+      } else {
+        await this.prisma.conversationMember.deleteMany({
+          where: { conversationId: conv.id, userId: targetUserId },
+        });
+      }
+    }
 
     return { message: 'Organizer removed successfully' };
   }

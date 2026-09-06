@@ -114,13 +114,86 @@ export class ChatController {
     return this.chatService.removeReaction(id, user.id, emoji);
   }
 
-  // ── Read Receipts ──────────────────────────────────
+  // ── Members & Moderation ──────────────────────────
 
-  @Post('conversations/:id/read')
-  @ApiOperation({
-    summary: 'Mark all messages in a conversation as read up to now',
-  })
-  markAsRead(@Param('id') id: string, @CurrentUser() user: any) {
-    return this.chatService.markAsRead(id, user.id);
+  @Get('conversations/:id/members')
+  @ApiOperation({ summary: 'Get list of members in a conversation with roles' })
+  getConversationMembers(
+    @Param('id') id: string,
+    @CurrentUser() user: any,
+  ) {
+    return this.chatService.getConversationMembers(id, user.id);
+  }
+
+  @Delete('conversations/:id/members/:userId')
+  @ApiOperation({ summary: 'Kick / remove a member from event and chat group (Organizer/Admin only)' })
+  kickMember(
+    @Param('id') conversationId: string,
+    @Param('userId') targetUserId: string,
+    @CurrentUser() user: any,
+  ) {
+    const hasGlobalPerm =
+      user.roles?.includes('super_admin') || user.roles?.includes('admin');
+    return this.chatService.kickMember(
+      conversationId,
+      targetUserId,
+      user.id,
+      hasGlobalPerm,
+    );
+  }
+
+  @Post('conversations/:id/pin/:messageId')
+  @ApiOperation({ summary: 'Pin a message in the conversation (Organizer/Admin only)' })
+  pinMessage(
+    @Param('id') conversationId: string,
+    @Param('messageId') messageId: string,
+    @CurrentUser() user: any,
+  ) {
+    const hasGlobalPerm =
+      user.roles?.includes('super_admin') || user.roles?.includes('admin');
+    return this.chatService.pinMessage(
+      conversationId,
+      messageId,
+      user.id,
+      hasGlobalPerm,
+    );
+  }
+
+  @Delete('conversations/:id/pin')
+  @ApiOperation({ summary: 'Unpin the currently pinned message (Organizer/Admin only)' })
+  unpinMessage(
+    @Param('id') conversationId: string,
+    @CurrentUser() user: any,
+  ) {
+    const hasGlobalPerm =
+      user.roles?.includes('super_admin') || user.roles?.includes('admin');
+    return this.chatService.unpinMessage(
+      conversationId,
+      user.id,
+      hasGlobalPerm,
+    );
+  }
+
+  @Delete('conversations/:id/messages/:messageId/moderate')
+  @ApiOperation({ summary: 'Moderate delete any message (Organizer/Admin only)' })
+  moderateDeleteMessage(
+    @Param('id') conversationId: string,
+    @Param('messageId') messageId: string,
+    @CurrentUser() user: any,
+  ) {
+    const hasGlobalPerm =
+      user.roles?.includes('super_admin') || user.roles?.includes('admin');
+    return this.chatService.moderateDeleteMessage(
+      conversationId,
+      messageId,
+      user.id,
+      hasGlobalPerm,
+    );
+  }
+
+  @Post('chat/sync-events')
+  @ApiOperation({ summary: 'Synchronize all existing events into chat conversations with organizers as ADMINs' })
+  syncAllEvents() {
+    return this.chatService.syncAllEvents();
   }
 }

@@ -288,12 +288,12 @@ export declare class AdminService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     })[] | ({
         user: {
@@ -313,8 +313,8 @@ export declare class AdminService {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     })[] | ({
         event: {
             name: string;

@@ -58,8 +58,71 @@ export class ChatGateway
     this.logger.log('ChatGateway initialized');
   }
 
-  handleConnection(client: Socket) {
+  private getJwtSecret(): string {
+    return (
+      this.configService.get<string>('jwt.accessSecret') ||
+      process.env.JWT_ACCESS_SECRET ||
+      'dev_access_secret_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6'
+    );
+  }
+
+  private async authenticateSocket(client: Socket, rawToken: string) {
+    let token = rawToken.trim();
+    if (token.startsWith('Bearer ')) {
+      token = token.slice(7).trim();
+    }
+    const secret = this.getJwtSecret();
+    const payload = this.jwtService.verify(token, { secret });
+    const userId = (payload.sub || payload.userId || payload.id) as string;
+    if (!userId) throw new Error('Invalid token payload');
+
+    (client as any).userId = userId;
+
+    // Track socket
+    if (!this.userSockets.has(userId)) {
+      this.userSockets.set(userId, new Set());
+    }
+    this.userSockets.get(userId)!.add(client.id);
+
+    // Join user-specific room
+    client.join(`user:${userId}`);
+
+    // Join all conversation rooms
+    const memberships = await this.prisma.conversationMember.findMany({
+      where: { userId },
+      select: { conversationId: true },
+    });
+    for (const m of memberships) {
+      client.join(`conv:${m.conversationId}`);
+    }
+
+    // Broadcast presence: ONLINE
+    this.broadcastPresence(userId, 'ONLINE');
+
+    client.emit('authenticated', {
+      userId,
+      joinedRooms: memberships.length + 1,
+    });
+    this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
+    return userId;
+  }
+
+  async handleConnection(client: Socket) {
     this.logger.debug(`Client connected: ${client.id}`);
+    const token =
+      client.handshake.auth?.token ||
+      client.handshake.headers?.authorization ||
+      (client.handshake.query?.token as string);
+
+    if (token) {
+      try {
+        await this.authenticateSocket(client, token);
+      } catch (err: any) {
+        this.logger.warn(
+          `Handshake token invalid on ${client.id}: ${err.message}`,
+        );
+      }
+    }
   }
 
   handleDisconnect(client: Socket) {
@@ -92,42 +155,38 @@ export class ChatGateway
     @MessageBody() data: { token: string },
   ) {
     try {
-      const payload = this.jwtService.verify(data.token, {
-        algorithms: ['RS256'],
-        publicKey: this.configService.get<string>('jwt.publicKey'),
-      });
-
-      const userId = payload.sub as string;
-      (client as any).userId = userId;
-
-      // Track socket
-      if (!this.userSockets.has(userId))
-        this.userSockets.set(userId, new Set());
-      this.userSockets.get(userId)!.add(client.id);
-
-      // Join user-specific room for direct notifications
-      client.join(`user:${userId}`);
-
-      // Join all conversation rooms
-      const memberships = await this.prisma.conversationMember.findMany({
-        where: { userId },
-        select: { conversationId: true },
-      });
-      for (const m of memberships) {
-        client.join(`conv:${m.conversationId}`);
-      }
-
-      // Broadcast presence: ONLINE
-      this.broadcastPresence(userId, 'ONLINE');
-
-      client.emit('authenticated', {
-        userId,
-        joinedRooms: memberships.length + 1,
-      });
-      this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
+      if (!data?.token) throw new Error('Token required');
+      await this.authenticateSocket(client, data.token);
     } catch {
       client.emit('error', { message: 'Authentication failed' });
       client.disconnect();
+    }
+  }
+
+  /**
+   * Client emits: conversation:join { conversationId }
+   */
+  @SubscribeMessage('conversation:join')
+  async handleJoinConversation(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { conversationId: string },
+  ) {
+    const userId = (client as any).userId as string | undefined;
+    if (!userId) return client.emit('error', { message: 'Not authenticated' });
+
+    const isMember = await this.prisma.conversationMember.findUnique({
+      where: {
+        conversationId_userId: {
+          conversationId: data.conversationId,
+          userId,
+        },
+      },
+    });
+    if (isMember) {
+      client.join(`conv:${data.conversationId}`);
+      client.emit('conversation:joined', {
+        conversationId: data.conversationId,
+      });
     }
   }
 
@@ -290,6 +349,42 @@ export class ChatGateway
     this.server
       .to(`conv:${payload.conversationId}`)
       .emit('message:read', payload);
+  }
+
+  @OnEvent('chat.message.pinned')
+  handleMessagePinned(payload: { conversationId: string; message: any }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:pinned', payload);
+  }
+
+  @OnEvent('chat.message.unpinned')
+  handleMessageUnpinned(payload: {
+    conversationId: string;
+    messageId: string;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('message:unpinned', payload);
+  }
+
+  @OnEvent('chat.member.removed')
+  handleMemberRemoved(payload: {
+    conversationId: string;
+    userId: string;
+    reason?: string;
+  }) {
+    this.server
+      .to(`conv:${payload.conversationId}`)
+      .emit('member:removed', payload);
+    const sockets = this.userSockets.get(payload.userId);
+    if (sockets) {
+      for (const sid of sockets) {
+        this.server.sockets.sockets
+          ?.get(sid)
+          ?.leave(`conv:${payload.conversationId}`);
+      }
+    }
   }
 
   // ─────────────────────────────────────────────────────

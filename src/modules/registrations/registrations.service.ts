@@ -67,6 +67,32 @@ export class RegistrationsService {
       },
     });
 
+    // Auto-join participant to the event's chat group immediately (no approval required)
+    const conv = await this.prisma.conversation.upsert({
+      where: { eventId },
+      update: {},
+      create: {
+        type: 'EVENT',
+        name: event.name,
+        eventId,
+      },
+    });
+
+    await this.prisma.conversationMember.upsert({
+      where: {
+        conversationId_userId: {
+          conversationId: conv.id,
+          userId,
+        },
+      },
+      update: {},
+      create: {
+        conversationId: conv.id,
+        userId,
+        role: 'MEMBER',
+      },
+    });
+
     // Attempt to start a workflow if a generic "Event Registration" workflow exists
     const defaultWorkflow = await this.prisma.workflowDefinition.findUnique({
       where: { name: 'Event Registration Approval' },
@@ -168,13 +194,36 @@ export class RegistrationsService {
       throw new BadRequestException('Rejection reason must be provided');
     }
 
-    return this.prisma.eventRegistration.update({
+    const updated = await this.prisma.eventRegistration.update({
       where: { id },
       data: {
         status: dto.status,
         rejectionReason: dto.status === 'REJECTED' ? dto.rejectionReason : null,
       },
     });
+
+    if (dto.status === 'REJECTED' || dto.status === 'CANCELLED') {
+      const conv = await this.prisma.conversation.findUnique({
+        where: { eventId: registration.eventId },
+      });
+      if (conv) {
+        const isOrg = await this.prisma.eventOrganizer.findUnique({
+          where: {
+            eventId_userId: {
+              eventId: registration.eventId,
+              userId: registration.userId,
+            },
+          },
+        });
+        if (!isOrg) {
+          await this.prisma.conversationMember.deleteMany({
+            where: { conversationId: conv.id, userId: registration.userId },
+          });
+        }
+      }
+    }
+
+    return updated;
   }
 
   // ── POST /registrations/approve-all ─────────────
@@ -224,11 +273,18 @@ export class RegistrationsService {
         'You can only delete your own registrations',
       );
 
-    // Soft delete or just cancel? The plan says "DELETE /api/v1/registrations/:id - Owner".
-    // Let's actually delete it for simplicity or mark as CANCELLED.
     await this.prisma.eventRegistration.delete({
       where: { id },
     });
+
+    const conv = await this.prisma.conversation.findUnique({
+      where: { eventId: registration.eventId },
+    });
+    if (conv) {
+      await this.prisma.conversationMember.deleteMany({
+        where: { conversationId: conv.id, userId },
+      });
+    }
 
     return { message: 'Registration deleted successfully' };
   }

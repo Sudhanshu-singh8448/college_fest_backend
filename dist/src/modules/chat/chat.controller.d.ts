@@ -8,6 +8,7 @@ export declare class ChatController {
     private readonly chatService;
     constructor(chatService: ChatService);
     getMyConversations(user: any): Promise<{
+        currentUserRole: string;
         lastReadAt: Date;
         lastMessage: {
             sender: {
@@ -29,6 +30,26 @@ export declare class ChatController {
             senderId: string;
         };
         unreadCount: number;
+        membersCount: number;
+        pinnedMessage: ({
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        }) | null;
         messages: ({
             sender: {
                 id: string;
@@ -81,6 +102,27 @@ export declare class ChatController {
         eventId: string | null;
     }>;
     getConversationById(id: string, user: any): Promise<{
+        currentUserRole: string;
+        membersCount: number;
+        pinnedMessage: ({
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        }) | null;
         members: ({
             user: {
                 id: string;
@@ -99,7 +141,6 @@ export declare class ChatController {
             joinedAt: Date;
             lastReadAt: Date;
         })[];
-    } & {
         id: string;
         name: string | null;
         createdAt: Date;
@@ -233,7 +274,48 @@ export declare class ChatController {
     removeReaction(id: string, emoji: string, user: any): Promise<{
         message: string;
     }>;
-    markAsRead(id: string, user: any): Promise<{
+    getConversationMembers(id: string, user: any): Promise<{
+        id: string;
+        userId: string;
+        role: string;
+        joinedAt: Date;
+        registrationNumber: string;
+        name: string;
+        avatarUrl: string | null;
+        isOrganizer: boolean;
+    }[]>;
+    kickMember(conversationId: string, targetUserId: string, user: any): Promise<{
+        message: string;
+    }>;
+    pinMessage(conversationId: string, messageId: string, user: any): Promise<{
+        message: string;
+        pinnedMessage: {
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        };
+    }>;
+    unpinMessage(conversationId: string, user: any): Promise<{
+        message: string;
+    }>;
+    moderateDeleteMessage(conversationId: string, messageId: string, user: any): Promise<{
+        message: string;
+    }>;
+    syncAllEvents(): Promise<{
         message: string;
     }>;
 }

@@ -9,6 +9,7 @@ export declare class ChatService {
     private readonly eventEmitter;
     constructor(prisma: PrismaService, eventEmitter: EventEmitter2);
     getMyConversations(userId: string): Promise<{
+        currentUserRole: string;
         lastReadAt: Date;
         lastMessage: {
             sender: {
@@ -30,6 +31,26 @@ export declare class ChatService {
             senderId: string;
         };
         unreadCount: number;
+        membersCount: number;
+        pinnedMessage: ({
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        }) | null;
         messages: ({
             sender: {
                 id: string;
@@ -82,6 +103,27 @@ export declare class ChatService {
         eventId: string | null;
     }>;
     getConversationById(id: string, userId: string): Promise<{
+        currentUserRole: string;
+        membersCount: number;
+        pinnedMessage: ({
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        }) | null;
         members: ({
             user: {
                 id: string;
@@ -100,7 +142,6 @@ export declare class ChatService {
             joinedAt: Date;
             lastReadAt: Date;
         })[];
-    } & {
         id: string;
         name: string | null;
         createdAt: Date;
@@ -239,4 +280,84 @@ export declare class ChatService {
     }>;
     private assertMember;
     private assertMessageOwner;
+    getConversationMembers(conversationId: string, userId: string): Promise<{
+        id: string;
+        userId: string;
+        role: string;
+        joinedAt: Date;
+        registrationNumber: string;
+        name: string;
+        avatarUrl: string | null;
+        isOrganizer: boolean;
+    }[]>;
+    kickMember(conversationId: string, targetUserId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
+        message: string;
+    }>;
+    pinMessage(conversationId: string, messageId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
+        message: string;
+        pinnedMessage: {
+            sender: {
+                id: string;
+                profile: {
+                    firstName: string;
+                    lastName: string;
+                } | null;
+            };
+        } & {
+            id: string;
+            createdAt: Date;
+            updatedAt: Date;
+            type: string;
+            content: string | null;
+            replyToId: string | null;
+            conversationId: string;
+            isDeleted: boolean;
+            senderId: string;
+        };
+    }>;
+    unpinMessage(conversationId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
+        message: string;
+    }>;
+    getPinnedMessage(conversationId: string): Promise<({
+        sender: {
+            id: string;
+            profile: {
+                firstName: string;
+                lastName: string;
+            } | null;
+        };
+    } & {
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string;
+        content: string | null;
+        replyToId: string | null;
+        conversationId: string;
+        isDeleted: boolean;
+        senderId: string;
+    }) | null>;
+    moderateDeleteMessage(conversationId: string, messageId: string, actorId: string, hasGlobalPerm?: boolean): Promise<{
+        message: string;
+    }>;
+    ensureEventConversation(eventId: string, eventName: string, creatorId?: string): Promise<{
+        id: string;
+        name: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        type: string;
+        eventId: string | null;
+    }>;
+    syncEventOrganizers(eventId: string): Promise<void>;
+    addMemberToEventChat(eventId: string, userId: string, role?: 'ADMIN' | 'MEMBER'): Promise<{
+        role: string;
+        userId: string;
+        conversationId: string;
+        joinedAt: Date;
+        lastReadAt: Date;
+    } | undefined>;
+    removeMemberFromEventChat(eventId: string, userId: string): Promise<void>;
+    syncAllEvents(): Promise<{
+        message: string;
+    }>;
 }

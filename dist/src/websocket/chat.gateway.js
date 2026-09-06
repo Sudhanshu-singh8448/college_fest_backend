@@ -39,8 +39,55 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
     afterInit(server) {
         this.logger.log('ChatGateway initialized');
     }
-    handleConnection(client) {
+    getJwtSecret() {
+        return (this.configService.get('jwt.accessSecret') ||
+            process.env.JWT_ACCESS_SECRET ||
+            'dev_access_secret_a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0u1v2w3x4y5z6');
+    }
+    async authenticateSocket(client, rawToken) {
+        let token = rawToken.trim();
+        if (token.startsWith('Bearer ')) {
+            token = token.slice(7).trim();
+        }
+        const secret = this.getJwtSecret();
+        const payload = this.jwtService.verify(token, { secret });
+        const userId = (payload.sub || payload.userId || payload.id);
+        if (!userId)
+            throw new Error('Invalid token payload');
+        client.userId = userId;
+        if (!this.userSockets.has(userId)) {
+            this.userSockets.set(userId, new Set());
+        }
+        this.userSockets.get(userId).add(client.id);
+        client.join(`user:${userId}`);
+        const memberships = await this.prisma.conversationMember.findMany({
+            where: { userId },
+            select: { conversationId: true },
+        });
+        for (const m of memberships) {
+            client.join(`conv:${m.conversationId}`);
+        }
+        this.broadcastPresence(userId, 'ONLINE');
+        client.emit('authenticated', {
+            userId,
+            joinedRooms: memberships.length + 1,
+        });
+        this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
+        return userId;
+    }
+    async handleConnection(client) {
         this.logger.debug(`Client connected: ${client.id}`);
+        const token = client.handshake.auth?.token ||
+            client.handshake.headers?.authorization ||
+            client.handshake.query?.token;
+        if (token) {
+            try {
+                await this.authenticateSocket(client, token);
+            }
+            catch (err) {
+                this.logger.warn(`Handshake token invalid on ${client.id}: ${err.message}`);
+            }
+        }
     }
     handleDisconnect(client) {
         const userId = client.userId;
@@ -58,33 +105,32 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
     }
     async handleAuthenticate(client, data) {
         try {
-            const payload = this.jwtService.verify(data.token, {
-                algorithms: ['RS256'],
-                publicKey: this.configService.get('jwt.publicKey'),
-            });
-            const userId = payload.sub;
-            client.userId = userId;
-            if (!this.userSockets.has(userId))
-                this.userSockets.set(userId, new Set());
-            this.userSockets.get(userId).add(client.id);
-            client.join(`user:${userId}`);
-            const memberships = await this.prisma.conversationMember.findMany({
-                where: { userId },
-                select: { conversationId: true },
-            });
-            for (const m of memberships) {
-                client.join(`conv:${m.conversationId}`);
-            }
-            this.broadcastPresence(userId, 'ONLINE');
-            client.emit('authenticated', {
-                userId,
-                joinedRooms: memberships.length + 1,
-            });
-            this.logger.log(`User ${userId} authenticated on socket ${client.id}`);
+            if (!data?.token)
+                throw new Error('Token required');
+            await this.authenticateSocket(client, data.token);
         }
         catch {
             client.emit('error', { message: 'Authentication failed' });
             client.disconnect();
+        }
+    }
+    async handleJoinConversation(client, data) {
+        const userId = client.userId;
+        if (!userId)
+            return client.emit('error', { message: 'Not authenticated' });
+        const isMember = await this.prisma.conversationMember.findUnique({
+            where: {
+                conversationId_userId: {
+                    conversationId: data.conversationId,
+                    userId,
+                },
+            },
+        });
+        if (isMember) {
+            client.join(`conv:${data.conversationId}`);
+            client.emit('conversation:joined', {
+                conversationId: data.conversationId,
+            });
         }
     }
     async handleMessageSend(client, data) {
@@ -170,6 +216,29 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
             .to(`conv:${payload.conversationId}`)
             .emit('message:read', payload);
     }
+    handleMessagePinned(payload) {
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:pinned', payload);
+    }
+    handleMessageUnpinned(payload) {
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('message:unpinned', payload);
+    }
+    handleMemberRemoved(payload) {
+        this.server
+            .to(`conv:${payload.conversationId}`)
+            .emit('member:removed', payload);
+        const sockets = this.userSockets.get(payload.userId);
+        if (sockets) {
+            for (const sid of sockets) {
+                this.server.sockets.sockets
+                    ?.get(sid)
+                    ?.leave(`conv:${payload.conversationId}`);
+            }
+        }
+    }
     async broadcastPresence(userId, status) {
         const memberships = await this.prisma.conversationMember.findMany({
             where: { userId },
@@ -205,6 +274,14 @@ __decorate([
     __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
     __metadata("design:returntype", Promise)
 ], ChatGateway.prototype, "handleAuthenticate", null);
+__decorate([
+    (0, websockets_1.SubscribeMessage)('conversation:join'),
+    __param(0, (0, websockets_1.ConnectedSocket)()),
+    __param(1, (0, websockets_1.MessageBody)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [socket_io_1.Socket, Object]),
+    __metadata("design:returntype", Promise)
+], ChatGateway.prototype, "handleJoinConversation", null);
 __decorate([
     (0, websockets_1.SubscribeMessage)('message:send'),
     __param(0, (0, websockets_1.ConnectedSocket)()),
@@ -273,6 +350,24 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], ChatGateway.prototype, "handleChatRead", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('chat.message.pinned'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ChatGateway.prototype, "handleMessagePinned", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('chat.message.unpinned'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ChatGateway.prototype, "handleMessageUnpinned", null);
+__decorate([
+    (0, event_emitter_1.OnEvent)('chat.member.removed'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], ChatGateway.prototype, "handleMemberRemoved", null);
 exports.ChatGateway = ChatGateway = ChatGateway_1 = __decorate([
     (0, websockets_1.WebSocketGateway)({
         cors: { origin: '*', credentials: true },

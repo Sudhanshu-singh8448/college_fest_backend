@@ -125,6 +125,21 @@ let EventsService = class EventsService {
                 },
             },
         });
+        await this.prisma.conversation.upsert({
+            where: { eventId: event.id },
+            update: { name: event.name },
+            create: {
+                type: 'EVENT',
+                name: event.name,
+                eventId: event.id,
+                members: {
+                    create: {
+                        userId: creatorId,
+                        role: 'ADMIN',
+                    },
+                },
+            },
+        });
         return event;
     }
     async update(id, dto, userId, hasGlobalPerm) {
@@ -198,6 +213,30 @@ let EventsService = class EventsService {
         await this.prisma.eventOrganizer.create({
             data: { eventId: id, userId: targetUserId, role },
         });
+        const eventObj = await this.prisma.event.findUnique({ where: { id } });
+        const conv = await this.prisma.conversation.upsert({
+            where: { eventId: id },
+            update: {},
+            create: {
+                type: 'EVENT',
+                name: eventObj?.name || 'Event Chat',
+                eventId: id,
+            },
+        });
+        await this.prisma.conversationMember.upsert({
+            where: {
+                conversationId_userId: {
+                    conversationId: conv.id,
+                    userId: targetUserId,
+                },
+            },
+            update: { role: 'ADMIN' },
+            create: {
+                conversationId: conv.id,
+                userId: targetUserId,
+                role: 'ADMIN',
+            },
+        });
         return { message: 'Organizer added successfully' };
     }
     async removeOrganizer(id, targetUserId, actorId, hasGlobalPerm) {
@@ -220,6 +259,29 @@ let EventsService = class EventsService {
         await this.prisma.eventOrganizer.delete({
             where: { eventId_userId: { eventId: id, userId: targetUserId } },
         });
+        const conv = await this.prisma.conversation.findUnique({
+            where: { eventId: id },
+        });
+        if (conv) {
+            const isParticipant = await this.prisma.eventRegistration.findFirst({
+                where: {
+                    eventId: id,
+                    userId: targetUserId,
+                    status: { not: 'CANCELLED' },
+                },
+            });
+            if (isParticipant) {
+                await this.prisma.conversationMember.updateMany({
+                    where: { conversationId: conv.id, userId: targetUserId },
+                    data: { role: 'MEMBER' },
+                });
+            }
+            else {
+                await this.prisma.conversationMember.deleteMany({
+                    where: { conversationId: conv.id, userId: targetUserId },
+                });
+            }
+        }
         return { message: 'Organizer removed successfully' };
     }
     async getStats(id, userId, hasGlobalPerm) {

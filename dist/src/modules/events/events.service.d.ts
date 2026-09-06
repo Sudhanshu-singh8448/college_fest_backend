@@ -26,12 +26,12 @@ export declare class EventsService {
             startDate: Date;
             endDate: Date;
             festId: string;
-            isPublic: boolean;
             category: string;
             venue: string | null;
             maxParticipants: number | null;
             minTeamSize: number;
             maxTeamSize: number;
+            isPublic: boolean;
             bannerUrl: string | null;
         })[];
         meta: {
@@ -91,12 +91,12 @@ export declare class EventsService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, creatorId: string): Promise<{
@@ -110,12 +110,12 @@ export declare class EventsService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, userId: string, hasGlobalPerm: boolean): Promise<{
@@ -129,12 +129,12 @@ export declare class EventsService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
@@ -148,12 +148,12 @@ export declare class EventsService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, status: string, userId: string, hasGlobalPerm: boolean): Promise<{
@@ -167,12 +167,12 @@ export declare class EventsService {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     getOrganizers(id: string, userId: string, hasGlobalPerm: boolean): Promise<{

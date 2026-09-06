@@ -15,11 +15,16 @@ export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, 
     private userSockets;
     constructor(jwtService: JwtService, configService: ConfigService, chatService: ChatService, prisma: PrismaService);
     afterInit(server: Server): void;
-    handleConnection(client: Socket): void;
+    private getJwtSecret;
+    private authenticateSocket;
+    handleConnection(client: Socket): Promise<void>;
     handleDisconnect(client: Socket): void;
     handleAuthenticate(client: Socket, data: {
         token: string;
     }): Promise<void>;
+    handleJoinConversation(client: Socket, data: {
+        conversationId: string;
+    }): Promise<boolean | undefined>;
     handleMessageSend(client: Socket, data: {
         conversationId: string;
     } & SendMessageDto): Promise<boolean | undefined>;
@@ -61,6 +66,19 @@ export declare class ChatGateway implements OnGatewayInit, OnGatewayConnection, 
         conversationId: string;
         userId: string;
         readAt: Date;
+    }): void;
+    handleMessagePinned(payload: {
+        conversationId: string;
+        message: any;
+    }): void;
+    handleMessageUnpinned(payload: {
+        conversationId: string;
+        messageId: string;
+    }): void;
+    handleMemberRemoved(payload: {
+        conversationId: string;
+        userId: string;
+        reason?: string;
     }): void;
     private broadcastPresence;
     joinConversationRoom(userId: string, conversationId: string): void;

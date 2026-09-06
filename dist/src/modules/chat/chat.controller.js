@@ -54,8 +54,27 @@ let ChatController = class ChatController {
     removeReaction(id, emoji, user) {
         return this.chatService.removeReaction(id, user.id, emoji);
     }
-    markAsRead(id, user) {
-        return this.chatService.markAsRead(id, user.id);
+    getConversationMembers(id, user) {
+        return this.chatService.getConversationMembers(id, user.id);
+    }
+    kickMember(conversationId, targetUserId, user) {
+        const hasGlobalPerm = user.roles?.includes('super_admin') || user.roles?.includes('admin');
+        return this.chatService.kickMember(conversationId, targetUserId, user.id, hasGlobalPerm);
+    }
+    pinMessage(conversationId, messageId, user) {
+        const hasGlobalPerm = user.roles?.includes('super_admin') || user.roles?.includes('admin');
+        return this.chatService.pinMessage(conversationId, messageId, user.id, hasGlobalPerm);
+    }
+    unpinMessage(conversationId, user) {
+        const hasGlobalPerm = user.roles?.includes('super_admin') || user.roles?.includes('admin');
+        return this.chatService.unpinMessage(conversationId, user.id, hasGlobalPerm);
+    }
+    moderateDeleteMessage(conversationId, messageId, user) {
+        const hasGlobalPerm = user.roles?.includes('super_admin') || user.roles?.includes('admin');
+        return this.chatService.moderateDeleteMessage(conversationId, messageId, user.id, hasGlobalPerm);
+    }
+    syncAllEvents() {
+        return this.chatService.syncAllEvents();
     }
 };
 exports.ChatController = ChatController;
@@ -151,16 +170,60 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ChatController.prototype, "removeReaction", null);
 __decorate([
-    (0, common_1.Post)('conversations/:id/read'),
-    (0, swagger_1.ApiOperation)({
-        summary: 'Mark all messages in a conversation as read up to now',
-    }),
+    (0, common_1.Get)('conversations/:id/members'),
+    (0, swagger_1.ApiOperation)({ summary: 'Get list of members in a conversation with roles' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
-], ChatController.prototype, "markAsRead", null);
+], ChatController.prototype, "getConversationMembers", null);
+__decorate([
+    (0, common_1.Delete)('conversations/:id/members/:userId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Kick / remove a member from event and chat group (Organizer/Admin only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('userId')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "kickMember", null);
+__decorate([
+    (0, common_1.Post)('conversations/:id/pin/:messageId'),
+    (0, swagger_1.ApiOperation)({ summary: 'Pin a message in the conversation (Organizer/Admin only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('messageId')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "pinMessage", null);
+__decorate([
+    (0, common_1.Delete)('conversations/:id/pin'),
+    (0, swagger_1.ApiOperation)({ summary: 'Unpin the currently pinned message (Organizer/Admin only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "unpinMessage", null);
+__decorate([
+    (0, common_1.Delete)('conversations/:id/messages/:messageId/moderate'),
+    (0, swagger_1.ApiOperation)({ summary: 'Moderate delete any message (Organizer/Admin only)' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Param)('messageId')),
+    __param(2, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String, Object]),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "moderateDeleteMessage", null);
+__decorate([
+    (0, common_1.Post)('chat/sync-events'),
+    (0, swagger_1.ApiOperation)({ summary: 'Synchronize all existing events into chat conversations with organizers as ADMINs' }),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ChatController.prototype, "syncAllEvents", null);
 exports.ChatController = ChatController = __decorate([
     (0, swagger_1.ApiTags)('Chat'),
     (0, swagger_1.ApiBearerAuth)(),

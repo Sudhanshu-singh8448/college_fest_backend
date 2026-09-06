@@ -59,6 +59,29 @@ let RegistrationsService = class RegistrationsService {
                 status: 'PENDING',
             },
         });
+        const conv = await this.prisma.conversation.upsert({
+            where: { eventId },
+            update: {},
+            create: {
+                type: 'EVENT',
+                name: event.name,
+                eventId,
+            },
+        });
+        await this.prisma.conversationMember.upsert({
+            where: {
+                conversationId_userId: {
+                    conversationId: conv.id,
+                    userId,
+                },
+            },
+            update: {},
+            create: {
+                conversationId: conv.id,
+                userId,
+                role: 'MEMBER',
+            },
+        });
         const defaultWorkflow = await this.prisma.workflowDefinition.findUnique({
             where: { name: 'Event Registration Approval' },
         });
@@ -127,13 +150,34 @@ let RegistrationsService = class RegistrationsService {
         if (dto.status === 'REJECTED' && !dto.rejectionReason) {
             throw new common_1.BadRequestException('Rejection reason must be provided');
         }
-        return this.prisma.eventRegistration.update({
+        const updated = await this.prisma.eventRegistration.update({
             where: { id },
             data: {
                 status: dto.status,
                 rejectionReason: dto.status === 'REJECTED' ? dto.rejectionReason : null,
             },
         });
+        if (dto.status === 'REJECTED' || dto.status === 'CANCELLED') {
+            const conv = await this.prisma.conversation.findUnique({
+                where: { eventId: registration.eventId },
+            });
+            if (conv) {
+                const isOrg = await this.prisma.eventOrganizer.findUnique({
+                    where: {
+                        eventId_userId: {
+                            eventId: registration.eventId,
+                            userId: registration.userId,
+                        },
+                    },
+                });
+                if (!isOrg) {
+                    await this.prisma.conversationMember.deleteMany({
+                        where: { conversationId: conv.id, userId: registration.userId },
+                    });
+                }
+            }
+        }
+        return updated;
     }
     async approveAll(eventId, actorId, hasGlobalPerm) {
         const event = await this.prisma.event.findUnique({
@@ -176,6 +220,14 @@ let RegistrationsService = class RegistrationsService {
         await this.prisma.eventRegistration.delete({
             where: { id },
         });
+        const conv = await this.prisma.conversation.findUnique({
+            where: { eventId: registration.eventId },
+        });
+        if (conv) {
+            await this.prisma.conversationMember.deleteMany({
+                where: { conversationId: conv.id, userId },
+            });
+        }
         return { message: 'Registration deleted successfully' };
     }
     async exportRegistrations(eventId, userId, hasGlobalPerm) {

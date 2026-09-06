@@ -284,12 +284,12 @@ export declare class AdminController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     })[] | ({
         user: {
@@ -309,8 +309,8 @@ export declare class AdminController {
         status: string;
         userId: string;
         eventId: string;
-        submissionId: string | null;
         rejectionReason: string | null;
+        submissionId: string | null;
     })[] | ({
         event: {
             name: string;

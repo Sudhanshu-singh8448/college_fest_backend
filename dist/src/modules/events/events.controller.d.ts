@@ -28,12 +28,12 @@ export declare class EventsController {
             startDate: Date;
             endDate: Date;
             festId: string;
-            isPublic: boolean;
             category: string;
             venue: string | null;
             maxParticipants: number | null;
             minTeamSize: number;
             maxTeamSize: number;
+            isPublic: boolean;
             bannerUrl: string | null;
         })[];
         meta: {
@@ -93,12 +93,12 @@ export declare class EventsController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, user: any): Promise<{
@@ -112,12 +112,12 @@ export declare class EventsController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, user: any): Promise<{
@@ -131,12 +131,12 @@ export declare class EventsController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
@@ -150,12 +150,12 @@ export declare class EventsController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, dto: UpdateEventStatusDto, user: any): Promise<{
@@ -169,12 +169,12 @@ export declare class EventsController {
         startDate: Date;
         endDate: Date;
         festId: string;
-        isPublic: boolean;
         category: string;
         venue: string | null;
         maxParticipants: number | null;
         minTeamSize: number;
         maxTeamSize: number;
+        isPublic: boolean;
         bannerUrl: string | null;
     }>;
     getOrganizers(id: string, user: any): Promise<{
