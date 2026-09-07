@@ -195,7 +195,7 @@ async function main() {
   const orgHash = await bcrypt.hash('Organizer@2026', saltRounds);
   const studentHash = await bcrypt.hash('Student@2026', saltRounds);
 
-  // Helper to upsert user with profile and role
+  // Helper to upsert user with profile and role (safely handles existing email or reg)
   async function upsertDemoUser(params: {
     reg: string;
     email: string;
@@ -206,29 +206,68 @@ async function main() {
     bio?: string;
     branchId?: string;
   }) {
-    const user = await prisma.user.upsert({
-      where: { registrationNumber: params.reg },
-      update: {
-        passwordHash: params.passwordHash,
-        status: 'ACTIVE',
-      },
-      create: {
-        registrationNumber: params.reg,
-        email: params.email,
-        passwordHash: params.passwordHash,
-        status: 'ACTIVE',
-        profile: {
-          create: {
-            firstName: params.firstName,
-            lastName: params.lastName,
-            bio: params.bio ?? 'TechGram Enthusiast',
-            collegeId: college.id,
-            branchId: params.branchId ?? cseBranch.id,
-            batchId: batch2026.id,
-          },
-        },
+    // Check if user already exists by registrationNumber OR email
+    const existing = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { registrationNumber: params.reg },
+          { email: params.email },
+        ],
       },
     });
+
+    let user;
+    if (existing) {
+      user = await prisma.user.update({
+        where: { id: existing.id },
+        data: {
+          registrationNumber: params.reg,
+          email: params.email,
+          passwordHash: params.passwordHash,
+          status: 'ACTIVE',
+        },
+      });
+
+      await prisma.profile.upsert({
+        where: { userId: user.id },
+        update: {
+          firstName: params.firstName,
+          lastName: params.lastName,
+          bio: params.bio ?? 'TechGram Enthusiast',
+          collegeId: college.id,
+          branchId: params.branchId ?? cseBranch.id,
+          batchId: batch2026.id,
+        },
+        create: {
+          userId: user.id,
+          firstName: params.firstName,
+          lastName: params.lastName,
+          bio: params.bio ?? 'TechGram Enthusiast',
+          collegeId: college.id,
+          branchId: params.branchId ?? cseBranch.id,
+          batchId: batch2026.id,
+        },
+      });
+    } else {
+      user = await prisma.user.create({
+        data: {
+          registrationNumber: params.reg,
+          email: params.email,
+          passwordHash: params.passwordHash,
+          status: 'ACTIVE',
+          profile: {
+            create: {
+              firstName: params.firstName,
+              lastName: params.lastName,
+              bio: params.bio ?? 'TechGram Enthusiast',
+              collegeId: college.id,
+              branchId: params.branchId ?? cseBranch.id,
+              batchId: batch2026.id,
+            },
+          },
+        },
+      });
+    }
 
     const role = roles[params.roleName];
     if (role) {
@@ -505,17 +544,38 @@ async function main() {
       create: { festId: fest.id, userId: item.user.id, status: 'REGISTERED' },
     });
 
-    await prisma.ticket.upsert({
-      where: { festId_userId: { festId: fest.id, userId: item.user.id } },
-      update: {},
-      create: {
-        festId: fest.id,
-        userId: item.user.id,
-        ticketNumber: `TG-2026-${item.num}`,
-        qrSecret: item.secret,
-        isActive: true,
+    const ticketNumber = `TG-2026-PASS-${item.num}`;
+    const existingTicket = await prisma.ticket.findFirst({
+      where: {
+        OR: [
+          { festId: fest.id, userId: item.user.id },
+          { ticketNumber },
+        ],
       },
     });
+
+    if (existingTicket) {
+      await prisma.ticket.update({
+        where: { id: existingTicket.id },
+        data: {
+          festId: fest.id,
+          userId: item.user.id,
+          ticketNumber,
+          qrSecret: item.secret,
+          isActive: true,
+        },
+      });
+    } else {
+      await prisma.ticket.create({
+        data: {
+          festId: fest.id,
+          userId: item.user.id,
+          ticketNumber,
+          qrSecret: item.secret,
+          isActive: true,
+        },
+      });
+    }
   }
   console.log(`   ✅ 7 Scannable Fest Tickets generated (TG-2026-0001 through 0007)`);
 

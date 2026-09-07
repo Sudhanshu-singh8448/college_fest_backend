@@ -27,8 +27,8 @@ export declare class NotificationsService implements OnModuleInit {
             id: string;
             createdAt: Date;
             userId: string;
-            type: string;
             data: import("@prisma/client/runtime/client").JsonValue | null;
+            type: string;
             title: string;
             body: string;
             isRead: boolean;
@@ -82,8 +82,8 @@ export declare class NotificationsService implements OnModuleInit {
         id: string;
         createdAt: Date;
         userId: string;
-        type: string;
         data: import("@prisma/client/runtime/client").JsonValue | null;
+        type: string;
         title: string;
         body: string;
         isRead: boolean;
