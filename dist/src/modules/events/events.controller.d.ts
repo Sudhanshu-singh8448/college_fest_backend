@@ -9,13 +9,13 @@ export declare class EventsController {
     constructor(eventsService: EventsService);
     findAll(query: EventQueryDto): Promise<{
         items: ({
+            _count: {
+                registrations: number;
+            };
             fest: {
                 id: string;
                 name: string;
                 year: number;
-            };
-            _count: {
-                registrations: number;
             };
         } & {
             id: string;

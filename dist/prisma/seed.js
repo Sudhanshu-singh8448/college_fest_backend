@@ -237,7 +237,7 @@ async function main() {
         return user;
     }
     const adminUser = await upsertDemoUser({
-        reg: 'ADMIN001',
+        reg: '01234567890',
         email: 'admin@techgram.app',
         passwordHash: adminHash,
         firstName: 'Super',
@@ -246,7 +246,7 @@ async function main() {
         bio: 'Chief Festival Administrator',
     });
     const financeUser = await upsertDemoUser({
-        reg: 'FIN001',
+        reg: '01234567891',
         email: 'finance@techgram.app',
         passwordHash: adminHash,
         firstName: 'Vikram',
@@ -255,7 +255,7 @@ async function main() {
         bio: 'Finance & Treasury Head',
     });
     const organizerUser = await upsertDemoUser({
-        reg: 'ORG001',
+        reg: '01234567892',
         email: 'organizer@techgram.app',
         passwordHash: orgHash,
         firstName: 'Sarah',
@@ -264,7 +264,7 @@ async function main() {
         bio: 'Head of Technical Events & Hackathons',
     });
     const staffUser = await upsertDemoUser({
-        reg: 'STAFF001',
+        reg: '01234567893',
         email: 'staff@techgram.app',
         passwordHash: orgHash,
         firstName: 'Alex',
@@ -273,7 +273,7 @@ async function main() {
         bio: 'Lead Check-in Coordinator & Scanner Staff',
     });
     const participant1 = await upsertDemoUser({
-        reg: 'PART001',
+        reg: '01234567894',
         email: 'rahul.sharma@techgram.app',
         passwordHash: studentHash,
         firstName: 'Rahul',
@@ -283,7 +283,7 @@ async function main() {
         branchId: cseBranch.id,
     });
     const participant2 = await upsertDemoUser({
-        reg: 'PART002',
+        reg: '01234567895',
         email: 'priya.patel@techgram.app',
         passwordHash: studentHash,
         firstName: 'Priya',
@@ -293,7 +293,7 @@ async function main() {
         branchId: eceBranch.id,
     });
     const participant3 = await upsertDemoUser({
-        reg: 'PART003',
+        reg: '01234567896',
         email: 'aarav.mehta@techgram.app',
         passwordHash: studentHash,
         firstName: 'Aarav',
@@ -302,7 +302,7 @@ async function main() {
         bio: 'Gaming enthusiast & UI designer',
         branchId: cseBranch.id,
     });
-    console.log(`   ✅ 7 Users seeded (ADMIN001, FIN001, ORG001, STAFF001, PART001, PART002, PART003)`);
+    console.log(`   ✅ 7 Users seeded with 11-digit numbers (01234567890 to 01234567896)`);
     console.log('5️⃣  Seeding Diverse Events Across Categories...');
     const hackathon = await prisma.event.upsert({
         where: { id: 'event-hackathon-2026' },
@@ -440,55 +440,34 @@ async function main() {
     });
     console.log(`   ✅ 5 Events seeded with dynamic form schemas & organizer assignments`);
     console.log('6️⃣  Seeding Fest Registrations & Digital QR Tickets...');
-    await prisma.festRegistration.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant1.id } },
-        update: {},
-        create: { festId: fest.id, userId: participant1.id, status: 'REGISTERED' },
-    });
-    await prisma.ticket.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant1.id } },
-        update: {},
-        create: {
-            festId: fest.id,
-            userId: participant1.id,
-            ticketNumber: 'TG-2026-0001',
-            qrSecret: 'SEC_RAHUL_TG2026_0001',
-            isActive: true,
-        },
-    });
-    await prisma.festRegistration.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant2.id } },
-        update: {},
-        create: { festId: fest.id, userId: participant2.id, status: 'REGISTERED' },
-    });
-    await prisma.ticket.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant2.id } },
-        update: {},
-        create: {
-            festId: fest.id,
-            userId: participant2.id,
-            ticketNumber: 'TG-2026-0002',
-            qrSecret: 'SEC_PRIYA_TG2026_0002',
-            isActive: true,
-        },
-    });
-    await prisma.festRegistration.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant3.id } },
-        update: {},
-        create: { festId: fest.id, userId: participant3.id, status: 'REGISTERED' },
-    });
-    await prisma.ticket.upsert({
-        where: { festId_userId: { festId: fest.id, userId: participant3.id } },
-        update: {},
-        create: {
-            festId: fest.id,
-            userId: participant3.id,
-            ticketNumber: 'TG-2026-0003',
-            qrSecret: 'SEC_AARAV_TG2026_0003',
-            isActive: true,
-        },
-    });
-    console.log(`   ✅ 3 Scannable Fest Tickets generated (TG-2026-0001, 0002, 0003)`);
+    const allDemoUsers = [
+        { user: adminUser, num: '0001', secret: 'SEC_ADMIN_TG2026_0001' },
+        { user: financeUser, num: '0002', secret: 'SEC_FIN_TG2026_0002' },
+        { user: organizerUser, num: '0003', secret: 'SEC_ORG_TG2026_0003' },
+        { user: staffUser, num: '0004', secret: 'SEC_STAFF_TG2026_0004' },
+        { user: participant1, num: '0005', secret: 'SEC_RAHUL_TG2026_0005' },
+        { user: participant2, num: '0006', secret: 'SEC_PRIYA_TG2026_0006' },
+        { user: participant3, num: '0007', secret: 'SEC_AARAV_TG2026_0007' },
+    ];
+    for (const item of allDemoUsers) {
+        await prisma.festRegistration.upsert({
+            where: { festId_userId: { festId: fest.id, userId: item.user.id } },
+            update: {},
+            create: { festId: fest.id, userId: item.user.id, status: 'REGISTERED' },
+        });
+        await prisma.ticket.upsert({
+            where: { festId_userId: { festId: fest.id, userId: item.user.id } },
+            update: {},
+            create: {
+                festId: fest.id,
+                userId: item.user.id,
+                ticketNumber: `TG-2026-${item.num}`,
+                qrSecret: item.secret,
+                isActive: true,
+            },
+        });
+    }
+    console.log(`   ✅ 7 Scannable Fest Tickets generated (TG-2026-0001 through 0007)`);
     console.log('7️⃣  Seeding Event Registrations & Live Attendance...');
     await prisma.eventRegistration.upsert({
         where: { eventId_userId: { eventId: hackathon.id, userId: participant1.id } },
@@ -843,7 +822,7 @@ async function main() {
                 action: 'role:assign',
                 resourceType: 'UserRole',
                 resourceId: organizerUser.id,
-                newValue: { role: 'organizer', user: 'ORG001' },
+                newValue: { role: 'organizer', user: '01234567892' },
             },
             {
                 actorId: organizerUser.id,
@@ -865,28 +844,30 @@ async function main() {
     console.log('\n═══════════════════════════════════════════════════════════════');
     console.log('🎉 COMPLETE TECHGRAM DEMO DATABASE SEEDING FINISHED!');
     console.log('═══════════════════════════════════════════════════════════════\n');
-    console.log('📋 DEMO LOGIN CREDENTIALS CHEATSHEET:');
+    console.log('📋 DEMO LOGIN CREDENTIALS CHEATSHEET (11-Digit Numbers):');
     console.log('───────────────────────────────────────────────────────────────');
     console.log('1. 📱 PARTICIPANT APP (college_fest_app):');
-    console.log('   • Reg No:   PART001');
+    console.log('   • Reg No:   01234567894 (Rahul Sharma)');
     console.log('   • Password: Student@2026');
-    console.log('   • Features: Active Ticket QR (TG-2026-0001), 3 Registrations,');
+    console.log('   • Features: Active Ticket QR (TG-2026-0005), 3 Registrations,');
     console.log('               Level 4 (850 XP), 3 Groups, Hackathon Chat Room');
-    console.log('   • (Alt #1): PART002 / Student@2026 (Leaderboard #1, Level 6)');
+    console.log('   • (Alt #1): 01234567895 / Student@2026 (Priya Patel, Leaderboard #1)');
+    console.log('   • (Alt #2): 01234567896 / Student@2026 (Aarav Mehta)');
     console.log('───────────────────────────────────────────────────────────────');
     console.log('2. 📱 ORGANIZER APP (techgram_organizer):');
-    console.log('   • Reg No:   ORG001');
+    console.log('   • Reg No:   01234567892 (Sarah Jenkins, Lead Organizer)');
     console.log('   • Password: Organizer@2026');
     console.log('   • Features: 3 Managed Events (Hackathon, RoboWars, Valorant),');
     console.log('               Pending Registrations to Approve/Reject,');
     console.log('               Expense Tracking, Chat Group ADMIN');
-    console.log('   • (Staff):  STAFF001 / Organizer@2026 (QR Scanner & Check-in)');
+    console.log('   • (Staff):  01234567893 / Organizer@2026 (Alex Rivera, Scanner Staff)');
     console.log('───────────────────────────────────────────────────────────────');
     console.log('3. 📱 ADMIN APP (techgram_admin):');
-    console.log('   • Reg No:   ADMIN001');
+    console.log('   • Reg No:   01234567890 (Super Admin)');
     console.log('   • Password: Admin@2026');
     console.log('   • Features: Full System Access, Role Assignment, Fest Config,');
     console.log('               Expense Approvals, Audit Logs, Analytics & Export');
+    console.log('   • (Finance):01234567891 / Admin@2026 (Vikram Singhania, Finance Head)');
     console.log('═══════════════════════════════════════════════════════════════\n');
 }
 main()

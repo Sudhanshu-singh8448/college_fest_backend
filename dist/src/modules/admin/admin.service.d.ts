@@ -270,12 +270,12 @@ export declare class AdminService {
             };
         }[];
     }[] | ({
-        fest: {
-            name: string;
-        };
         _count: {
             attendances: number;
             registrations: number;
+        };
+        fest: {
+            name: string;
         };
     } & {
         id: string;

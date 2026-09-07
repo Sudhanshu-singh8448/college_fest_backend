@@ -3,6 +3,8 @@ export declare class TicketingController {
     private readonly ticketingService;
     constructor(ticketingService: TicketingService);
     getMyTickets(user: any): Promise<{
+        currentQr: string;
+        qrSecret: string;
         fest: {
             id: string;
             name: string;
@@ -18,6 +20,24 @@ export declare class TicketingController {
         festId: string;
         ticketNumber: string;
     }[]>;
+    generateTicket(user: any): Promise<{
+        currentQr: string;
+        qrSecret: string;
+        fest: {
+            id: string;
+            name: string;
+            year: number;
+            startDate: Date;
+            endDate: Date;
+        };
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        isActive: boolean;
+        festId: string;
+        ticketNumber: string;
+    }>;
     getTicketById(id: string, user: any): Promise<{
         approvedEvents: {
             id: string;

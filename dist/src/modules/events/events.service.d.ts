@@ -7,13 +7,13 @@ export declare class EventsService {
     constructor(prisma: PrismaService);
     findAll(query: EventQueryDto): Promise<{
         items: ({
+            _count: {
+                registrations: number;
+            };
             fest: {
                 id: string;
                 name: string;
                 year: number;
-            };
-            _count: {
-                registrations: number;
             };
         } & {
             id: string;

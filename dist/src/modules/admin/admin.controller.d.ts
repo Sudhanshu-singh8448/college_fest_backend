@@ -266,12 +266,12 @@ export declare class AdminController {
             };
         }[];
     }[] | ({
-        fest: {
-            name: string;
-        };
         _count: {
             attendances: number;
             registrations: number;
+        };
+        fest: {
+            name: string;
         };
     } & {
         id: string;

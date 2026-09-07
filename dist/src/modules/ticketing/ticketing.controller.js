@@ -25,6 +25,9 @@ let TicketingController = class TicketingController {
     async getMyTickets(user) {
         return this.ticketingService.getMyTickets(user.id);
     }
+    async generateTicket(user) {
+        return this.ticketingService.generateTicketForUser(user.id);
+    }
     async getTicketById(id, user) {
         const hasGlobalPerm = user.permissions.includes('ticket:manage_all');
         return this.ticketingService.getTicketById(id, user.id, hasGlobalPerm);
@@ -43,6 +46,14 @@ __decorate([
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
 ], TicketingController.prototype, "getMyTickets", null);
+__decorate([
+    (0, common_1.Post)('generate'),
+    (0, swagger_1.ApiOperation)({ summary: 'Generate or get active ticket for current user' }),
+    __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], TicketingController.prototype, "generateTicket", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get ticket details (owner or admin)' }),

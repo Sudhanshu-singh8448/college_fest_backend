@@ -15,6 +15,12 @@ export class TicketingController {
     return this.ticketingService.getMyTickets(user.id);
   }
 
+  @Post('generate')
+  @ApiOperation({ summary: 'Generate or get active ticket for current user' })
+  async generateTicket(@CurrentUser() user: any) {
+    return this.ticketingService.generateTicketForUser(user.id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get ticket details (owner or admin)' })
   async getTicketById(@Param('id') id: string, @CurrentUser() user: any) {

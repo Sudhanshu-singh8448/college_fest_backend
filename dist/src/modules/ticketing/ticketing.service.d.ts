@@ -5,6 +5,8 @@ export declare class TicketingService {
     private readonly jwtService;
     constructor(prisma: PrismaService, jwtService: JwtService);
     getMyTickets(userId: string): Promise<{
+        currentQr: string;
+        qrSecret: string;
         fest: {
             id: string;
             name: string;
@@ -20,6 +22,24 @@ export declare class TicketingService {
         festId: string;
         ticketNumber: string;
     }[]>;
+    generateTicketForUser(userId: string): Promise<{
+        currentQr: string;
+        qrSecret: string;
+        fest: {
+            id: string;
+            name: string;
+            year: number;
+            startDate: Date;
+            endDate: Date;
+        };
+        id: string;
+        createdAt: Date;
+        updatedAt: Date;
+        userId: string;
+        isActive: boolean;
+        festId: string;
+        ticketNumber: string;
+    }>;
     getTicketById(id: string, userId: string, hasGlobalPerm: boolean): Promise<{
         approvedEvents: {
             id: string;

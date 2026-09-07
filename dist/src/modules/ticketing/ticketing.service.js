@@ -22,7 +22,7 @@ let TicketingService = class TicketingService {
         this.jwtService = jwtService;
     }
     async getMyTickets(userId) {
-        const tickets = await this.prisma.ticket.findMany({
+        let tickets = await this.prisma.ticket.findMany({
             where: { userId },
             include: {
                 fest: {
@@ -37,10 +37,74 @@ let TicketingService = class TicketingService {
             },
             orderBy: { createdAt: 'desc' },
         });
+        if (tickets.length === 0) {
+            const activeFest = await this.prisma.fest.findFirst({
+                where: { isActive: true },
+            });
+            if (activeFest) {
+                await this.prisma.festRegistration.upsert({
+                    where: {
+                        festId_userId: { festId: activeFest.id, userId },
+                    },
+                    update: {},
+                    create: {
+                        festId: activeFest.id,
+                        userId,
+                        status: 'REGISTERED',
+                    },
+                });
+                const ticketCount = await this.prisma.ticket.count({
+                    where: { festId: activeFest.id },
+                });
+                const ticketNumber = `TECHGRAM-${activeFest.year}-${String(ticketCount + 1).padStart(5, '0')}`;
+                const qrSecret = `SEC_${userId.substring(0, 8)}_${Date.now()}`;
+                const createdTicket = await this.prisma.ticket.create({
+                    data: {
+                        ticketNumber,
+                        festId: activeFest.id,
+                        userId,
+                        qrSecret,
+                        isActive: true,
+                    },
+                    include: {
+                        fest: {
+                            select: {
+                                id: true,
+                                name: true,
+                                year: true,
+                                startDate: true,
+                                endDate: true,
+                            },
+                        },
+                    },
+                });
+                tickets = [createdTicket];
+            }
+        }
         return tickets.map((t) => {
+            const payload = {
+                sub: t.userId,
+                tid: t.id,
+                fid: t.festId,
+                tnum: t.ticketNumber,
+            };
+            const currentQr = this.jwtService.sign(payload, {
+                secret: t.qrSecret,
+                expiresIn: '24h',
+            });
             const { qrSecret, ...safeTicket } = t;
-            return safeTicket;
+            return {
+                ...safeTicket,
+                currentQr,
+                qrSecret: currentQr,
+            };
         });
+    }
+    async generateTicketForUser(userId) {
+        const list = await this.getMyTickets(userId);
+        if (list.length > 0)
+            return list[0];
+        throw new common_1.NotFoundException('Could not generate ticket (no active fest)');
     }
     async getTicketById(id, userId, hasGlobalPerm) {
         const ticket = await this.prisma.ticket.findUnique({
