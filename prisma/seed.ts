@@ -69,7 +69,7 @@ async function main() {
     content_manager: ['event:create', 'event:edit', 'event:view', 'guidelines:manage', 'notification:broadcast'],
     committee_member: ['event:create', 'event:edit', 'event:view', 'registration:view', 'registration:approve'],
     event_coordinator: ['event:create', 'event:edit', 'event:view', 'registration:view', 'registration:approve', 'attendance:manage'],
-    organizer: ['event:edit', 'event:view', 'registration:view', 'registration:approve', 'attendance:manage', 'ticket:scan'],
+    organizer: ['event:create', 'event:edit', 'event:delete', 'event:view', 'registration:view', 'registration:approve', 'attendance:manage', 'ticket:scan', 'notification:broadcast', 'chat:moderate'],
     moderator: ['chat:moderate', 'feedback:manage'],
     check_in_staff: ['ticket:scan', 'attendance:manage'],
     volunteer: ['ticket:scan'],
