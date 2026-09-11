@@ -96,6 +96,7 @@ let EventsService = class EventsService {
                 maxTeamSize: dto.maxTeamSize,
                 isPublic: dto.isPublic ?? true,
                 bannerUrl: dto.bannerUrl,
+                status: 'REGISTRATION_OPEN',
                 organizers: {
                     create: {
                         userId: creatorId,

@@ -17,12 +17,12 @@ class CreateRegistrationDto {
 }
 exports.CreateRegistrationDto = CreateRegistrationDto;
 __decorate([
-    (0, swagger_1.ApiProperty)({
+    (0, swagger_1.ApiPropertyOptional)({
         description: 'JSON object containing form answers',
         example: { team_name: 'TechTitans', members: ['A', 'B'] },
     }),
     (0, class_validator_1.IsObject)(),
-    (0, class_validator_1.IsNotEmpty)(),
+    (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], CreateRegistrationDto.prototype, "answers", void 0);
 //# sourceMappingURL=create-registration.dto.js.map

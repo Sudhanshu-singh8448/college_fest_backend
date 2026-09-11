@@ -25,7 +25,7 @@ export class RegistrationsService {
     });
     if (!event) throw new NotFoundException('Event not found');
 
-    if (event.status !== 'REGISTRATION_OPEN') {
+    if (event.status !== 'REGISTRATION_OPEN' && event.status !== 'PUBLISHED') {
       throw new BadRequestException('Registration is not open for this event');
     }
 
@@ -47,14 +47,23 @@ export class RegistrationsService {
       throw new ConflictException('You are already registered for this event');
     }
 
-    // TODO: Validate dto.answers against event.form.schema
+    // Ensure event has an EventForm to attach submissions to
+    let form = event.form;
+    if (!form) {
+      form = await this.prisma.eventForm.create({
+        data: {
+          eventId,
+          schema: [],
+        },
+      });
+    }
 
     // Create submission and registration
     const submission = await this.prisma.eventFormSubmission.create({
       data: {
-        formId: event.form?.id || '', // Form should exist for the event
+        formId: form.id,
         userId,
-        answers: dto.answers,
+        answers: dto.answers ?? {},
       },
     });
 

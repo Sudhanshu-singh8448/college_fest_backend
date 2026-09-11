@@ -27,7 +27,7 @@ let RegistrationsService = class RegistrationsService {
         });
         if (!event)
             throw new common_1.NotFoundException('Event not found');
-        if (event.status !== 'REGISTRATION_OPEN') {
+        if (event.status !== 'REGISTRATION_OPEN' && event.status !== 'PUBLISHED') {
             throw new common_1.BadRequestException('Registration is not open for this event');
         }
         if (event.maxParticipants) {
@@ -44,11 +44,20 @@ let RegistrationsService = class RegistrationsService {
         if (existing) {
             throw new common_1.ConflictException('You are already registered for this event');
         }
+        let form = event.form;
+        if (!form) {
+            form = await this.prisma.eventForm.create({
+                data: {
+                    eventId,
+                    schema: [],
+                },
+            });
+        }
         const submission = await this.prisma.eventFormSubmission.create({
             data: {
-                formId: event.form?.id || '',
+                formId: form.id,
                 userId,
-                answers: dto.answers,
+                answers: dto.answers ?? {},
             },
         });
         const registration = await this.prisma.eventRegistration.create({
