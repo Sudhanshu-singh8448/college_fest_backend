@@ -138,15 +138,12 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         if (!userId)
             return client.emit('error', { message: 'Not authenticated' });
         try {
-            const message = await this.chatService.sendMessage(data.conversationId, userId, {
+            await this.chatService.sendMessage(data.conversationId, userId, {
                 content: data.content,
                 type: data.type,
                 replyToId: data.replyToId,
                 attachments: data.attachments,
             });
-            this.server
-                .to(`conv:${data.conversationId}`)
-                .emit('message:new', { message });
         }
         catch (e) {
             client.emit('error', { message: e.message });
@@ -167,11 +164,6 @@ let ChatGateway = ChatGateway_1 = class ChatGateway {
         if (!userId)
             return;
         await this.chatService.markAsRead(data.conversationId, userId);
-        this.server.to(`conv:${data.conversationId}`).emit('message:read', {
-            conversationId: data.conversationId,
-            userId,
-            messageId: data.messageId,
-        });
     }
     async handlePresenceUpdate(client, data) {
         const userId = client.userId;

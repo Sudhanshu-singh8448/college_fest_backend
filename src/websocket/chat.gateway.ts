@@ -203,7 +203,7 @@ export class ChatGateway
     if (!userId) return client.emit('error', { message: 'Not authenticated' });
 
     try {
-      const message = await this.chatService.sendMessage(
+      await this.chatService.sendMessage(
         data.conversationId,
         userId,
         {
@@ -213,11 +213,7 @@ export class ChatGateway
           attachments: data.attachments,
         },
       );
-
-      // Broadcast to entire conversation room (including sender for confirmation)
-      this.server
-        .to(`conv:${data.conversationId}`)
-        .emit('message:new', { message });
+      // ChatService.sendMessage emits 'chat.message.new' which handleChatMessageNew() broadcasts to the room.
     } catch (e: any) {
       client.emit('error', { message: e.message });
     }
@@ -256,12 +252,7 @@ export class ChatGateway
     if (!userId) return;
 
     await this.chatService.markAsRead(data.conversationId, userId);
-    // Broadcast read event to the room (so other clients can update read indicators)
-    this.server.to(`conv:${data.conversationId}`).emit('message:read', {
-      conversationId: data.conversationId,
-      userId,
-      messageId: data.messageId,
-    });
+    // ChatService.markAsRead emits 'chat.read' which handleChatRead() broadcasts to the room.
   }
 
   /**
