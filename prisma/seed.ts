@@ -607,11 +607,11 @@ async function main() {
 
   await prisma.eventRegistration.upsert({
     where: { eventId_userId: { eventId: roboWars.id, userId: participant1.id } },
-    update: { status: 'PENDING' },
+    update: { status: 'APPROVED' },
     create: {
       eventId: roboWars.id,
       userId: participant1.id,
-      status: 'PENDING',
+      status: 'APPROVED',
     },
   });
 
