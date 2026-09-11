@@ -47,6 +47,96 @@ export class RegistrationsService {
       throw new ConflictException('You are already registered for this event');
     }
 
+    // Fetch user for leader registration number
+    const leaderUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, registrationNumber: true },
+    });
+    if (!leaderUser) throw new NotFoundException('User not found');
+
+    // Determine team details
+    const isTeamEvent =
+      (event.maxTeamSize && event.maxTeamSize > 1) ||
+      (event.minTeamSize && event.minTeamSize > 1);
+    const answers = (dto.answers ?? {}) as Record<string, any>;
+    const teamName = (answers.team_name ?? answers.teamName)?.toString()?.trim();
+
+    let rawMembers: string[] = [];
+    if (answers.members) {
+      if (Array.isArray(answers.members)) {
+        rawMembers = answers.members
+          .map((m: any) => m?.toString()?.trim() ?? '')
+          .filter(Boolean);
+      } else if (typeof answers.members === 'string') {
+        rawMembers = answers.members
+          .split(/[,;\s]+/)
+          .map((s: string) => s.trim())
+          .filter(Boolean);
+      }
+    }
+
+    // Teammates excluding the leader itself
+    const teammateRegNumbers = Array.from(
+      new Set(
+        rawMembers.filter((reg) => reg !== leaderUser.registrationNumber),
+      ),
+    );
+
+    let teammateUsers: { id: string; registrationNumber: string }[] = [];
+
+    if (isTeamEvent || teamName || teammateRegNumbers.length > 0) {
+      if (teammateRegNumbers.length > 0) {
+        teammateUsers = await this.prisma.user.findMany({
+          where: { registrationNumber: { in: teammateRegNumbers } },
+          select: { id: true, registrationNumber: true },
+        });
+
+        const foundRegs = new Set(
+          teammateUsers.map((u) => u.registrationNumber),
+        );
+        const missingRegs = teammateRegNumbers.filter(
+          (r) => !foundRegs.has(r),
+        );
+        if (missingRegs.length > 0) {
+          throw new BadRequestException(
+            `Student(s) with registration number(s) not found: ${missingRegs.join(', ')}. Please verify their 11-digit numbers.`,
+          );
+        }
+
+        // Check if any teammate is already registered for this event
+        const existingTeammateRegs =
+          await this.prisma.eventRegistration.findMany({
+            where: {
+              eventId,
+              userId: { in: teammateUsers.map((u) => u.id) },
+              status: { notIn: ['REJECTED', 'CANCELLED'] },
+            },
+            include: { user: { select: { registrationNumber: true } } },
+          });
+
+        if (existingTeammateRegs.length > 0) {
+          const conflictList = existingTeammateRegs
+            .map((r) => r.user.registrationNumber)
+            .join(', ');
+          throw new ConflictException(
+            `The following teammate(s) are already registered for this event: ${conflictList}`,
+          );
+        }
+      }
+
+      const totalTeamSize = 1 + teammateUsers.length;
+      if (event.minTeamSize && totalTeamSize < event.minTeamSize) {
+        throw new BadRequestException(
+          `This team event requires a minimum of ${event.minTeamSize} members. Current team size is ${totalTeamSize}.`,
+        );
+      }
+      if (event.maxTeamSize && totalTeamSize > event.maxTeamSize) {
+        throw new BadRequestException(
+          `This team event allows a maximum of ${event.maxTeamSize} members. Current team size is ${totalTeamSize}.`,
+        );
+      }
+    }
+
     // Ensure event has an EventForm to attach submissions to
     let form = event.form;
     if (!form) {
@@ -58,12 +148,24 @@ export class RegistrationsService {
       });
     }
 
-    // Create submission and registration
-    const submission = await this.prisma.eventFormSubmission.create({
+    const allTeamRegNumbers = [
+      leaderUser.registrationNumber,
+      ...teammateUsers.map((u) => u.registrationNumber),
+    ];
+
+    // Create submission and registration for Leader (auto-APPROVED for open fest)
+    const leaderSubmission = await this.prisma.eventFormSubmission.create({
       data: {
         formId: form.id,
         userId,
-        answers: dto.answers ?? {},
+        answers: {
+          ...answers,
+          team_name: teamName || undefined,
+          team_leader_id: userId,
+          team_leader_reg: leaderUser.registrationNumber,
+          is_team_leader: true,
+          members: allTeamRegNumbers,
+        },
       },
     });
 
@@ -71,12 +173,40 @@ export class RegistrationsService {
       data: {
         eventId,
         userId,
-        submissionId: submission.id,
-        status: 'PENDING',
+        submissionId: leaderSubmission.id,
+        status: 'APPROVED',
       },
     });
 
-    // Auto-join participant to the event's chat group immediately (no approval required)
+    // Auto-create submissions and registrations for all teammates
+    for (const teammate of teammateUsers) {
+      const teammateSubmission =
+        await this.prisma.eventFormSubmission.create({
+          data: {
+            formId: form.id,
+            userId: teammate.id,
+            answers: {
+              ...answers,
+              team_name: teamName || undefined,
+              team_leader_id: userId,
+              team_leader_reg: leaderUser.registrationNumber,
+              is_team_leader: false,
+              members: allTeamRegNumbers,
+            },
+          },
+        });
+
+      await this.prisma.eventRegistration.create({
+        data: {
+          eventId,
+          userId: teammate.id,
+          submissionId: teammateSubmission.id,
+          status: 'APPROVED',
+        },
+      });
+    }
+
+    // Auto-join all participants to the event community chat
     const conv = await this.prisma.conversation.upsert({
       where: { eventId },
       update: {},
@@ -87,32 +217,47 @@ export class RegistrationsService {
       },
     });
 
-    await this.prisma.conversationMember.upsert({
-      where: {
-        conversationId_userId: {
-          conversationId: conv.id,
-          userId,
+    const allParticipantIds = [userId, ...teammateUsers.map((u) => u.id)];
+    for (const pId of allParticipantIds) {
+      await this.prisma.conversationMember.upsert({
+        where: {
+          conversationId_userId: {
+            conversationId: conv.id,
+            userId: pId,
+          },
         },
-      },
-      update: {},
-      create: {
-        conversationId: conv.id,
-        userId,
-        role: 'MEMBER',
-      },
-    });
+        update: {},
+        create: {
+          conversationId: conv.id,
+          userId: pId,
+          role: 'MEMBER',
+        },
+      });
+    }
 
-    // Attempt to start a workflow if a generic "Event Registration" workflow exists
-    const defaultWorkflow = await this.prisma.workflowDefinition.findUnique({
-      where: { name: 'Event Registration Approval' },
-    });
+    // Create private Team Chat if teamName is given and there are teammates
+    if (teamName && allParticipantIds.length > 1) {
+      try {
+        const teamConv = await this.prisma.conversation.create({
+          data: {
+            type: 'CUSTOM',
+            name: `Team: ${teamName} (${event.name})`,
+            eventId,
+          },
+        });
 
-    if (defaultWorkflow) {
-      await this.workflowService.startWorkflowInstance(
-        defaultWorkflow.id,
-        'REGISTRATION',
-        registration.id,
-      );
+        for (const pId of allParticipantIds) {
+          await this.prisma.conversationMember.create({
+            data: {
+              conversationId: teamConv.id,
+              userId: pId,
+              role: pId === userId ? 'ADMIN' : 'MEMBER',
+            },
+          });
+        }
+      } catch {
+        // Silently continue if team chat creation hits any duplicate
+      }
     }
 
     return registration;
