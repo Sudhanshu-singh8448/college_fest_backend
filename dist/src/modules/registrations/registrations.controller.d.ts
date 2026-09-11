@@ -64,6 +64,13 @@ export declare class RegistrationsController {
             status: string;
             startDate: Date;
         };
+        submission: {
+            id: string;
+            createdAt: Date;
+            userId: string;
+            answers: import("@prisma/client/runtime/client").JsonValue;
+            formId: string;
+        } | null;
     } & {
         id: string;
         createdAt: Date;

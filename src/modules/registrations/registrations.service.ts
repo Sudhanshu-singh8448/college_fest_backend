@@ -266,6 +266,7 @@ export class RegistrationsService {
         event: {
           select: { id: true, name: true, startDate: true, status: true },
         },
+        submission: true,
       },
       orderBy: { createdAt: 'desc' },
     });
