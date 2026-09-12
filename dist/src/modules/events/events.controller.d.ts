@@ -7,7 +7,7 @@ import { EventQueryDto } from './dto/event-query.dto';
 export declare class EventsController {
     private readonly eventsService;
     constructor(eventsService: EventsService);
-    findAll(query: EventQueryDto): Promise<{
+    findAll(query: EventQueryDto, user?: any): Promise<{
         items: ({
             _count: {
                 registrations: number;
@@ -34,6 +34,7 @@ export declare class EventsController {
             minTeamSize: number;
             maxTeamSize: number;
             isPublic: boolean;
+            registrationDeadline: Date | null;
             bannerUrl: string | null;
         })[];
         meta: {
@@ -99,6 +100,7 @@ export declare class EventsController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, user: any): Promise<{
@@ -118,6 +120,7 @@ export declare class EventsController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, user: any): Promise<{
@@ -137,6 +140,7 @@ export declare class EventsController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
@@ -156,6 +160,7 @@ export declare class EventsController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, dto: UpdateEventStatusDto, user: any): Promise<{
@@ -175,6 +180,7 @@ export declare class EventsController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     getOrganizers(id: string, user: any): Promise<{

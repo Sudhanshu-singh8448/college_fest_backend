@@ -29,6 +29,10 @@ export class RegistrationsService {
       throw new BadRequestException('Registration is not open for this event');
     }
 
+    if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) {
+      throw new BadRequestException('Registration deadline for this event has passed');
+    }
+
     // Check capacity
     if (event.maxParticipants) {
       const currentRegs = await this.prisma.eventRegistration.count({

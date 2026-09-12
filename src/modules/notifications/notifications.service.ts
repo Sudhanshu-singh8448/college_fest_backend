@@ -15,6 +15,9 @@ import { RegisterDeviceTokenDto } from './dto/register-device-token.dto';
 import * as admin from 'firebase-admin';
 import * as fs from 'fs';
 
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BroadcastDto } from './dto/broadcast.dto';
+
 // -----------------------------------------------------------------
 // Notification types catalogue
 // -----------------------------------------------------------------
@@ -48,6 +51,7 @@ export class NotificationsService implements OnModuleInit {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService,
+    private readonly eventEmitter: EventEmitter2,
     @InjectQueue('notifications') private readonly notifQueue: Queue,
   ) {}
 
@@ -351,5 +355,148 @@ export class NotificationsService implements OnModuleInit {
       pushEnabled: pref?.pushEnabled ?? true,
       emailEnabled: pref?.emailEnabled ?? false,
     };
+  }
+
+  /**
+   * Broadcast an announcement to club/event group chats and registered students.
+   * High-scale implementation for 2,000+ students.
+   */
+  async broadcast(actorId: string, dto: BroadcastDto) {
+    // 1. Identify target events
+    let targetEvents: { id: string; name: string }[] = [];
+
+    if (dto.eventId) {
+      const event = await this.prisma.event.findUnique({
+        where: { id: dto.eventId },
+        select: { id: true, name: true },
+      });
+      if (event) targetEvents = [event];
+    } else if (dto.category) {
+      targetEvents = await this.prisma.event.findMany({
+        where: { category: dto.category, deletedAt: null },
+        select: { id: true, name: true },
+      });
+    } else {
+      // Find all events this user organizes
+      targetEvents = await this.prisma.event.findMany({
+        where: {
+          organizers: { some: { userId: actorId } },
+          deletedAt: null,
+        },
+        select: { id: true, name: true },
+      });
+
+      // If user is a superadmin or has no assigned events, target all active events
+      if (targetEvents.length === 0) {
+        targetEvents = await this.prisma.event.findMany({
+          where: { status: { in: ['PUBLISHED', 'REGISTRATION_OPEN', 'STARTED', 'ONGOING'] }, deletedAt: null },
+          select: { id: true, name: true },
+          take: 20,
+        });
+      }
+    }
+
+    if (targetEvents.length === 0) {
+      throw new NotFoundException('No target events found for broadcast');
+    }
+
+    const eventIds = targetEvents.map((e) => e.id);
+
+    // 2. Post announcement into each target event's group chat
+    const conversations = await this.prisma.conversation.findMany({
+      where: { eventId: { in: eventIds } },
+      select: { id: true, eventId: true },
+    });
+
+    for (const conv of conversations) {
+      try {
+        const msg = await this.prisma.message.create({
+          data: {
+            conversationId: conv.id,
+            senderId: actorId,
+            content: `📢 [BROADCAST: ${dto.priority || 'NORMAL'}]\n\n**${dto.title}**\n\n${dto.message}`,
+            type: 'TEXT',
+          },
+        });
+        this.eventEmitter.emit('chat.message.new', {
+          conversationId: conv.id,
+          message: msg,
+        });
+      } catch (err) {
+        this.logger.warn(`Failed to inject broadcast message into conv ${conv.id}: ${err}`);
+      }
+    }
+
+    // 3. Batch notify all approved participants for these events
+    const registrations = await this.prisma.eventRegistration.findMany({
+      where: {
+        eventId: { in: eventIds },
+        status: { in: ['APPROVED', 'CHECKED_IN'] },
+      },
+      select: { userId: true },
+      distinct: ['userId'],
+    });
+
+    if (registrations.length > 0) {
+      // Create in-app notifications in batch
+      await this.prisma.notification.createMany({
+        data: registrations.map((r) => ({
+          userId: r.userId,
+          type: 'ANNOUNCEMENT',
+          title: `📢 ${dto.title}`,
+          body: dto.message,
+          data: {
+            priority: dto.priority || 'NORMAL',
+            eventIds,
+          },
+        })),
+        skipDuplicates: true,
+      });
+
+      // Trigger FCM push in background chunked
+      const userIds = registrations.map((r) => r.userId);
+      this.sendBatchPush(userIds, `📢 ${dto.title}`, dto.message, {
+        priority: dto.priority || 'NORMAL',
+      }).catch((e) => this.logger.error('Background batch push failed', e));
+    }
+
+    return {
+      success: true,
+      message: 'Broadcast sent successfully',
+      targetEventsCount: targetEvents.length,
+      notifiedUsersCount: registrations.length,
+      events: targetEvents,
+    };
+  }
+
+  private async sendBatchPush(
+    userIds: string[],
+    title: string,
+    body: string,
+    data?: Record<string, any>,
+  ) {
+    if (!this.fcmInitialized) return;
+    const tokens = await this.prisma.deviceToken.findMany({
+      where: { userId: { in: userIds } },
+      select: { token: true, id: true },
+    });
+    if (tokens.length === 0) return;
+
+    // Chunk in batches of 500 for scale
+    for (let i = 0; i < tokens.length; i += 500) {
+      const slice = tokens.slice(i, i + 500);
+      const messages: admin.messaging.Message[] = slice.map((t) => ({
+        token: t.token,
+        notification: { title, body },
+        data: data
+          ? Object.fromEntries(Object.entries(data).map(([k, v]) => [k, String(v)]))
+          : undefined,
+      }));
+      try {
+        await admin.messaging().sendEach(messages);
+      } catch (e) {
+        this.logger.error('FCM chunk send error', e);
+      }
+    }
   }
 }

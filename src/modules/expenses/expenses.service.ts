@@ -18,38 +18,50 @@ export class ExpensesService {
    * Create an expense (DRAFT or immediately PENDING if submit=true).
    */
   async createExpense(userId: string, dto: CreateExpenseDto) {
-    // Validate category exists
-    const category = await this.prisma.expenseCategory.findUnique({
-      where: { id: dto.categoryId },
+    // Validate category exists (by id or name, or fallback to first/create)
+    let category = await this.prisma.expenseCategory.findFirst({
+      where: {
+        OR: [
+          { id: dto.categoryId },
+          { name: { equals: dto.categoryId, mode: 'insensitive' } },
+        ],
+      },
     });
-    if (!category) throw new NotFoundException('Expense category not found');
-
-    // If eventId provided, validate event exists
-    if (dto.eventId) {
-      const event = await this.prisma.event.findUnique({
-        where: { id: dto.eventId },
-      });
-      if (!event) throw new NotFoundException('Event not found');
+    if (!category) {
+      // Find or create default category
+      category = await this.prisma.expenseCategory.findFirst();
+      if (!category) {
+        category = await this.prisma.expenseCategory.create({
+          data: { name: dto.categoryId || 'General' },
+        });
+      }
     }
 
-    // If a receipt file ID is provided, resolve its URL and validate ownership
-    let receiptUrl: string | undefined;
+    // If eventId provided, validate event exists
+    let effectiveEventId = dto.eventId;
+    if (effectiveEventId) {
+      const event = await this.prisma.event.findUnique({
+        where: { id: effectiveEventId },
+      });
+      if (!event) effectiveEventId = undefined;
+    }
+
+    // If a receipt file ID or direct URL is provided
+    let receiptUrl: string | undefined = dto.receiptUrl;
     if (dto.receiptFileId) {
       const file = await this.prisma.file.findUnique({
         where: { id: dto.receiptFileId },
       });
-      if (!file || file.uploaderId !== userId)
-        throw new BadRequestException('Invalid receipt file');
-      if (file.status !== 'CONFIRMED')
-        throw new BadRequestException('Receipt file upload is not confirmed');
-      receiptUrl = file.url;
+      if (file && file.status === 'CONFIRMED') {
+        receiptUrl = file.url;
+      }
     }
 
     return this.prisma.expense.create({
       data: {
         submitterId: userId,
-        categoryId: dto.categoryId,
-        eventId: dto.eventId,
+        categoryId: category.id,
+        eventId: effectiveEventId,
         amount: dto.amount,
         description: dto.description,
         receiptUrl,

@@ -290,6 +290,7 @@ export declare class AdminController {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     })[] | ({
         user: {

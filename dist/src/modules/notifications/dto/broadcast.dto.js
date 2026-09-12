@@ -9,52 +9,45 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.EventQueryDto = void 0;
+exports.BroadcastDto = void 0;
 const class_validator_1 = require("class-validator");
 const swagger_1 = require("@nestjs/swagger");
-const pagination_dto_1 = require("../../../common/dto/pagination.dto");
-class EventQueryDto extends pagination_dto_1.PaginationDto {
+class BroadcastDto {
+    title;
+    message;
+    priority;
+    eventId;
     category;
-    status;
-    search;
-    festId;
-    organizerId;
-    myEvents;
 }
-exports.EventQueryDto = EventQueryDto;
+exports.BroadcastDto = BroadcastDto;
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by category' }),
+    (0, swagger_1.ApiProperty)({ description: 'Broadcast announcement title' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BroadcastDto.prototype, "title", void 0);
+__decorate([
+    (0, swagger_1.ApiProperty)({ description: 'Broadcast announcement body message' }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsNotEmpty)(),
+    __metadata("design:type", String)
+], BroadcastDto.prototype, "message", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Priority: LOW, NORMAL, HIGH, URGENT', default: 'NORMAL' }),
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsIn)(['LOW', 'NORMAL', 'HIGH', 'URGENT']),
+    __metadata("design:type", String)
+], BroadcastDto.prototype, "priority", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Optional specific event ID to target; if omitted, targets all events organized by the caller' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], EventQueryDto.prototype, "category", void 0);
+], BroadcastDto.prototype, "eventId", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by status' }),
+    (0, swagger_1.ApiPropertyOptional)({ description: 'Optional target club / category name' }),
     (0, class_validator_1.IsString)(),
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
-], EventQueryDto.prototype, "status", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Search by event name or description' }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], EventQueryDto.prototype, "search", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by fest ID' }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], EventQueryDto.prototype, "festId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by organizer user ID' }),
-    (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", String)
-], EventQueryDto.prototype, "organizerId", void 0);
-__decorate([
-    (0, swagger_1.ApiPropertyOptional)({ description: 'Filter by currently logged-in user events' }),
-    (0, class_validator_1.IsOptional)(),
-    __metadata("design:type", Object)
-], EventQueryDto.prototype, "myEvents", void 0);
-//# sourceMappingURL=event-query.dto.js.map
+], BroadcastDto.prototype, "category", void 0);
+//# sourceMappingURL=broadcast.dto.js.map

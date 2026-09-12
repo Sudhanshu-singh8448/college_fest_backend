@@ -35,6 +35,11 @@ export class UpdateEventDto {
   @IsOptional()
   endDate?: string;
 
+  @ApiPropertyOptional({ example: '2026-10-15T08:00:00Z' })
+  @IsDateString()
+  @IsOptional()
+  registrationDeadline?: string;
+
   @ApiPropertyOptional({ example: 'Main Auditorium' })
   @IsString()
   @IsOptional()

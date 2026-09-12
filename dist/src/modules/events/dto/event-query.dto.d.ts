@@ -4,4 +4,6 @@ export declare class EventQueryDto extends PaginationDto {
     status?: string;
     search?: string;
     festId?: string;
+    organizerId?: string;
+    myEvents?: boolean | string;
 }

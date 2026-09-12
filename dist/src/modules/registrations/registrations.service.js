@@ -30,6 +30,9 @@ let RegistrationsService = class RegistrationsService {
         if (event.status !== 'REGISTRATION_OPEN' && event.status !== 'PUBLISHED') {
             throw new common_1.BadRequestException('Registration is not open for this event');
         }
+        if (event.registrationDeadline && new Date() > new Date(event.registrationDeadline)) {
+            throw new common_1.BadRequestException('Registration deadline for this event has passed');
+        }
         if (event.maxParticipants) {
             const currentRegs = await this.prisma.eventRegistration.count({
                 where: { eventId, status: { notIn: ['REJECTED', 'CANCELLED'] } },

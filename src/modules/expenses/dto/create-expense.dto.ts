@@ -41,6 +41,13 @@ export class CreateExpenseDto {
   receiptFileId?: string;
 
   @ApiPropertyOptional({
+    description: 'Direct receipt image URL or base64 data URI',
+  })
+  @IsString()
+  @IsOptional()
+  receiptUrl?: string;
+
+  @ApiPropertyOptional({
     description: 'Submit immediately to PENDING (default: save as DRAFT)',
     default: false,
   })

@@ -17,8 +17,8 @@ let EventsService = class EventsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll(query) {
-        const { page = 1, limit = 10, search, category, status, festId } = query;
+    async findAll(query, currentUserId) {
+        const { page = 1, limit = 10, search, category, status, festId, organizerId, myEvents } = query;
         const skip = (page - 1) * limit;
         const where = { deletedAt: null };
         if (search) {
@@ -33,6 +33,12 @@ let EventsService = class EventsService {
             where.status = status;
         if (festId)
             where.festId = festId;
+        const targetOrgId = organizerId || ((myEvents === true || myEvents === 'true') ? currentUserId : undefined);
+        if (targetOrgId) {
+            where.organizers = {
+                some: { userId: targetOrgId },
+            };
+        }
         const [events, total] = await Promise.all([
             this.prisma.event.findMany({
                 where,
@@ -90,6 +96,7 @@ let EventsService = class EventsService {
                 category: dto.category,
                 startDate: new Date(dto.startDate),
                 endDate: new Date(dto.endDate),
+                registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
                 venue: dto.venue,
                 maxParticipants: dto.maxParticipants,
                 minTeamSize: dto.minTeamSize,
@@ -157,6 +164,9 @@ let EventsService = class EventsService {
                     startDate: new Date(dto.startDate),
                 }),
                 ...(dto.endDate !== undefined && { endDate: new Date(dto.endDate) }),
+                ...(dto.registrationDeadline !== undefined && {
+                    registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
+                }),
                 ...(dto.venue !== undefined && { venue: dto.venue }),
                 ...(dto.maxParticipants !== undefined && {
                     maxParticipants: dto.maxParticipants,

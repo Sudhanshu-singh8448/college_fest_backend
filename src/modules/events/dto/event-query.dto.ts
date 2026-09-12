@@ -22,4 +22,13 @@ export class EventQueryDto extends PaginationDto {
   @IsString()
   @IsOptional()
   festId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by organizer user ID' })
+  @IsString()
+  @IsOptional()
+  organizerId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter by currently logged-in user events' })
+  @IsOptional()
+  myEvents?: boolean | string;
 }

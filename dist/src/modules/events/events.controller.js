@@ -29,8 +29,8 @@ let EventsController = class EventsController {
     constructor(eventsService) {
         this.eventsService = eventsService;
     }
-    async findAll(query) {
-        return this.eventsService.findAll(query);
+    async findAll(query, user) {
+        return this.eventsService.findAll(query, user?.id);
     }
     async findOne(id) {
         return this.eventsService.findOne(id);
@@ -71,8 +71,9 @@ __decorate([
     (0, common_1.Get)(),
     (0, swagger_1.ApiOperation)({ summary: 'List events with filters and pagination' }),
     __param(0, (0, common_1.Query)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [event_query_dto_1.EventQueryDto]),
+    __metadata("design:paramtypes", [event_query_dto_1.EventQueryDto, Object]),
     __metadata("design:returntype", Promise)
 ], EventsController.prototype, "findAll", null);
 __decorate([

@@ -4,5 +4,6 @@ export declare class CreateExpenseDto {
     amount: number;
     description: string;
     receiptFileId?: string;
+    receiptUrl?: string;
     submit?: boolean;
 }

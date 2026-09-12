@@ -294,6 +294,7 @@ export declare class AdminService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     })[] | ({
         user: {

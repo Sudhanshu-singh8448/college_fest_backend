@@ -19,6 +19,7 @@ class UpdateEventDto {
     category;
     startDate;
     endDate;
+    registrationDeadline;
     venue;
     maxParticipants;
     minTeamSize;
@@ -57,6 +58,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], UpdateEventDto.prototype, "endDate", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({ example: '2026-10-15T08:00:00Z' }),
+    (0, class_validator_1.IsDateString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateEventDto.prototype, "registrationDeadline", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: 'Main Auditorium' }),
     (0, class_validator_1.IsString)(),

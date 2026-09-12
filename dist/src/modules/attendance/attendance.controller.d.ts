@@ -22,7 +22,9 @@ export declare class AttendanceController {
     checkIn(dto: CheckInDto, user: any): Promise<{
         status: string;
         userName: string;
+        registrationNumber: string;
         eventName: string;
+        eventCategory: string;
         scannedAt: Date;
     }>;
     getEventAttendance(eventId: string, user: any): Promise<({

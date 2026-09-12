@@ -5,7 +5,7 @@ import { EventQueryDto } from './dto/event-query.dto';
 export declare class EventsService {
     private readonly prisma;
     constructor(prisma: PrismaService);
-    findAll(query: EventQueryDto): Promise<{
+    findAll(query: EventQueryDto, currentUserId?: string): Promise<{
         items: ({
             _count: {
                 registrations: number;
@@ -32,6 +32,7 @@ export declare class EventsService {
             minTeamSize: number;
             maxTeamSize: number;
             isPublic: boolean;
+            registrationDeadline: Date | null;
             bannerUrl: string | null;
         })[];
         meta: {
@@ -97,6 +98,7 @@ export declare class EventsService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     create(dto: CreateEventDto, creatorId: string): Promise<{
@@ -116,6 +118,7 @@ export declare class EventsService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     update(id: string, dto: UpdateEventDto, userId: string, hasGlobalPerm: boolean): Promise<{
@@ -135,6 +138,7 @@ export declare class EventsService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     remove(id: string): Promise<{
@@ -154,6 +158,7 @@ export declare class EventsService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     updateStatus(id: string, status: string, userId: string, hasGlobalPerm: boolean): Promise<{
@@ -173,6 +178,7 @@ export declare class EventsService {
         minTeamSize: number;
         maxTeamSize: number;
         isPublic: boolean;
+        registrationDeadline: Date | null;
         bannerUrl: string | null;
     }>;
     getOrganizers(id: string, userId: string, hasGlobalPerm: boolean): Promise<{

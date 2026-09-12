@@ -22,7 +22,9 @@ export declare class AttendanceService {
     checkIn(eventId: string, qrToken: string, actorId: string, hasGlobalPerm: boolean): Promise<{
         status: string;
         userName: string;
+        registrationNumber: string;
         eventName: string;
+        eventCategory: string;
         scannedAt: Date;
     }>;
     getEventAttendance(eventId: string, actorId: string, hasGlobalPerm: boolean): Promise<({

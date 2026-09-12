@@ -54,15 +54,18 @@ const bullmq_2 = require("bullmq");
 const config_1 = require("@nestjs/config");
 const admin = __importStar(require("firebase-admin"));
 const fs = __importStar(require("fs"));
+const event_emitter_1 = require("@nestjs/event-emitter");
 let NotificationsService = NotificationsService_1 = class NotificationsService {
     prisma;
     configService;
+    eventEmitter;
     notifQueue;
     logger = new common_1.Logger(NotificationsService_1.name);
     fcmInitialized = false;
-    constructor(prisma, configService, notifQueue) {
+    constructor(prisma, configService, eventEmitter, notifQueue) {
         this.prisma = prisma;
         this.configService = configService;
+        this.eventEmitter = eventEmitter;
         this.notifQueue = notifQueue;
     }
     onModuleInit() {
@@ -279,13 +282,134 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
             emailEnabled: pref?.emailEnabled ?? false,
         };
     }
+    async broadcast(actorId, dto) {
+        let targetEvents = [];
+        if (dto.eventId) {
+            const event = await this.prisma.event.findUnique({
+                where: { id: dto.eventId },
+                select: { id: true, name: true },
+            });
+            if (event)
+                targetEvents = [event];
+        }
+        else if (dto.category) {
+            targetEvents = await this.prisma.event.findMany({
+                where: { category: dto.category, deletedAt: null },
+                select: { id: true, name: true },
+            });
+        }
+        else {
+            targetEvents = await this.prisma.event.findMany({
+                where: {
+                    organizers: { some: { userId: actorId } },
+                    deletedAt: null,
+                },
+                select: { id: true, name: true },
+            });
+            if (targetEvents.length === 0) {
+                targetEvents = await this.prisma.event.findMany({
+                    where: { status: { in: ['PUBLISHED', 'REGISTRATION_OPEN', 'STARTED', 'ONGOING'] }, deletedAt: null },
+                    select: { id: true, name: true },
+                    take: 20,
+                });
+            }
+        }
+        if (targetEvents.length === 0) {
+            throw new common_1.NotFoundException('No target events found for broadcast');
+        }
+        const eventIds = targetEvents.map((e) => e.id);
+        const conversations = await this.prisma.conversation.findMany({
+            where: { eventId: { in: eventIds } },
+            select: { id: true, eventId: true },
+        });
+        for (const conv of conversations) {
+            try {
+                const msg = await this.prisma.message.create({
+                    data: {
+                        conversationId: conv.id,
+                        senderId: actorId,
+                        content: `📢 [BROADCAST: ${dto.priority || 'NORMAL'}]\n\n**${dto.title}**\n\n${dto.message}`,
+                        type: 'TEXT',
+                    },
+                });
+                this.eventEmitter.emit('chat.message.new', {
+                    conversationId: conv.id,
+                    message: msg,
+                });
+            }
+            catch (err) {
+                this.logger.warn(`Failed to inject broadcast message into conv ${conv.id}: ${err}`);
+            }
+        }
+        const registrations = await this.prisma.eventRegistration.findMany({
+            where: {
+                eventId: { in: eventIds },
+                status: { in: ['APPROVED', 'CHECKED_IN'] },
+            },
+            select: { userId: true },
+            distinct: ['userId'],
+        });
+        if (registrations.length > 0) {
+            await this.prisma.notification.createMany({
+                data: registrations.map((r) => ({
+                    userId: r.userId,
+                    type: 'ANNOUNCEMENT',
+                    title: `📢 ${dto.title}`,
+                    body: dto.message,
+                    data: {
+                        priority: dto.priority || 'NORMAL',
+                        eventIds,
+                    },
+                })),
+                skipDuplicates: true,
+            });
+            const userIds = registrations.map((r) => r.userId);
+            this.sendBatchPush(userIds, `📢 ${dto.title}`, dto.message, {
+                priority: dto.priority || 'NORMAL',
+            }).catch((e) => this.logger.error('Background batch push failed', e));
+        }
+        return {
+            success: true,
+            message: 'Broadcast sent successfully',
+            targetEventsCount: targetEvents.length,
+            notifiedUsersCount: registrations.length,
+            events: targetEvents,
+        };
+    }
+    async sendBatchPush(userIds, title, body, data) {
+        if (!this.fcmInitialized)
+            return;
+        const tokens = await this.prisma.deviceToken.findMany({
+            where: { userId: { in: userIds } },
+            select: { token: true, id: true },
+        });
+        if (tokens.length === 0)
+            return;
+        for (let i = 0; i < tokens.length; i += 500) {
+            const slice = tokens.slice(i, i + 500);
+            const messages = slice.map((t) => ({
+                token: t.token,
+                notification: { title, body },
+                data: data
+                    ? Object.fromEntries(Object.entries(data).map(([k, v]) => [k, String(v)]))
+                    : undefined,
+            }));
+            try {
+                await admin.messaging().sendEach(messages);
+            }
+            catch (e) {
+                this.logger.error('FCM chunk send error', e);
+            }
+        }
+    }
 };
 exports.NotificationsService = NotificationsService;
 exports.NotificationsService = NotificationsService = NotificationsService_1 = __decorate([
     (0, common_1.Injectable)(),
-    __param(2, (0, bullmq_1.InjectQueue)('notifications')),
+    __param(3, (0, bullmq_1.InjectQueue)('notifications')),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         config_1.ConfigService,
+        event_emitter_1.EventEmitter2,
         bullmq_2.Queue])
 ], NotificationsService);
 //# sourceMappingURL=notifications.service.js.map

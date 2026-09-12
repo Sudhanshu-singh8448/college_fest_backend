@@ -6,6 +6,8 @@ import { NotificationQueryDto } from './dto/notification-query.dto';
 import { MarkReadDto } from './dto/mark-read.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { RegisterDeviceTokenDto } from './dto/register-device-token.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { BroadcastDto } from './dto/broadcast.dto';
 export type NotificationType = 'REGISTRATION_APPROVED' | 'REGISTRATION_REJECTED' | 'EVENT_REMINDER' | 'EVENT_UPDATED' | 'EXPENSE_APPROVED' | 'EXPENSE_REJECTED' | 'ANNOUNCEMENT' | 'CHAT_MESSAGE' | 'BADGE_EARNED' | 'LEVEL_UP' | 'WORKFLOW_ACTION_REQUIRED' | 'TICKET_GENERATED';
 export interface SendNotificationPayload {
     userId: string;
@@ -17,10 +19,11 @@ export interface SendNotificationPayload {
 export declare class NotificationsService implements OnModuleInit {
     private readonly prisma;
     private readonly configService;
+    private readonly eventEmitter;
     private readonly notifQueue;
     private readonly logger;
     private fcmInitialized;
-    constructor(prisma: PrismaService, configService: ConfigService, notifQueue: Queue);
+    constructor(prisma: PrismaService, configService: ConfigService, eventEmitter: EventEmitter2, notifQueue: Queue);
     onModuleInit(): void;
     getNotifications(userId: string, query: NotificationQueryDto): Promise<{
         items: {
@@ -94,4 +97,15 @@ export declare class NotificationsService implements OnModuleInit {
         pushEnabled: boolean;
         emailEnabled: boolean;
     }>;
+    broadcast(actorId: string, dto: BroadcastDto): Promise<{
+        success: boolean;
+        message: string;
+        targetEventsCount: number;
+        notifiedUsersCount: number;
+        events: {
+            id: string;
+            name: string;
+        }[];
+    }>;
+    private sendBatchPush;
 }

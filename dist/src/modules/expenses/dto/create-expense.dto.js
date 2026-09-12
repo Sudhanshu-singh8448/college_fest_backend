@@ -19,6 +19,7 @@ class CreateExpenseDto {
     amount;
     description;
     receiptFileId;
+    receiptUrl;
     submit;
 }
 exports.CreateExpenseDto = CreateExpenseDto;
@@ -57,6 +58,14 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateExpenseDto.prototype, "receiptFileId", void 0);
+__decorate([
+    (0, swagger_1.ApiPropertyOptional)({
+        description: 'Direct receipt image URL or base64 data URI',
+    }),
+    (0, class_validator_1.IsString)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateExpenseDto.prototype, "receiptUrl", void 0);
 __decorate([
     (0, swagger_1.ApiPropertyOptional)({
         description: 'Submit immediately to PENDING (default: save as DRAFT)',

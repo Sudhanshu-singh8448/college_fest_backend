@@ -3,6 +3,7 @@ import { NotificationQueryDto } from './dto/notification-query.dto';
 import { MarkReadDto } from './dto/mark-read.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { RegisterDeviceTokenDto } from './dto/register-device-token.dto';
+import { BroadcastDto } from './dto/broadcast.dto';
 export declare class NotificationsController {
     private readonly notificationsService;
     constructor(notificationsService: NotificationsService);
@@ -27,6 +28,16 @@ export declare class NotificationsController {
     }>;
     markRead(dto: MarkReadDto, user: any): Promise<{
         markedRead: number;
+    }>;
+    broadcast(dto: BroadcastDto, user: any): Promise<{
+        success: boolean;
+        message: string;
+        targetEventsCount: number;
+        notifiedUsersCount: number;
+        events: {
+            id: string;
+            name: string;
+        }[];
     }>;
     getPreferences(user: any): Promise<({
         id: string;

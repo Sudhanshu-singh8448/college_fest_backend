@@ -18,34 +18,44 @@ let ExpensesService = class ExpensesService {
         this.prisma = prisma;
     }
     async createExpense(userId, dto) {
-        const category = await this.prisma.expenseCategory.findUnique({
-            where: { id: dto.categoryId },
+        let category = await this.prisma.expenseCategory.findFirst({
+            where: {
+                OR: [
+                    { id: dto.categoryId },
+                    { name: { equals: dto.categoryId, mode: 'insensitive' } },
+                ],
+            },
         });
-        if (!category)
-            throw new common_1.NotFoundException('Expense category not found');
-        if (dto.eventId) {
+        if (!category) {
+            category = await this.prisma.expenseCategory.findFirst();
+            if (!category) {
+                category = await this.prisma.expenseCategory.create({
+                    data: { name: dto.categoryId || 'General' },
+                });
+            }
+        }
+        let effectiveEventId = dto.eventId;
+        if (effectiveEventId) {
             const event = await this.prisma.event.findUnique({
-                where: { id: dto.eventId },
+                where: { id: effectiveEventId },
             });
             if (!event)
-                throw new common_1.NotFoundException('Event not found');
+                effectiveEventId = undefined;
         }
-        let receiptUrl;
+        let receiptUrl = dto.receiptUrl;
         if (dto.receiptFileId) {
             const file = await this.prisma.file.findUnique({
                 where: { id: dto.receiptFileId },
             });
-            if (!file || file.uploaderId !== userId)
-                throw new common_1.BadRequestException('Invalid receipt file');
-            if (file.status !== 'CONFIRMED')
-                throw new common_1.BadRequestException('Receipt file upload is not confirmed');
-            receiptUrl = file.url;
+            if (file && file.status === 'CONFIRMED') {
+                receiptUrl = file.url;
+            }
         }
         return this.prisma.expense.create({
             data: {
                 submitterId: userId,
-                categoryId: dto.categoryId,
-                eventId: dto.eventId,
+                categoryId: category.id,
+                eventId: effectiveEventId,
                 amount: dto.amount,
                 description: dto.description,
                 receiptUrl,

@@ -20,6 +20,7 @@ const notification_query_dto_1 = require("./dto/notification-query.dto");
 const mark_read_dto_1 = require("./dto/mark-read.dto");
 const update_preferences_dto_1 = require("./dto/update-preferences.dto");
 const register_device_token_dto_1 = require("./dto/register-device-token.dto");
+const broadcast_dto_1 = require("./dto/broadcast.dto");
 const current_user_decorator_1 = require("../../common/decorators/current-user.decorator");
 let NotificationsController = class NotificationsController {
     notificationsService;
@@ -31,6 +32,9 @@ let NotificationsController = class NotificationsController {
     }
     markRead(dto, user) {
         return this.notificationsService.markRead(user.id, dto);
+    }
+    broadcast(dto, user) {
+        return this.notificationsService.broadcast(user.id, dto);
     }
     getPreferences(user) {
         return this.notificationsService.getPreferences(user.id);
@@ -66,6 +70,15 @@ __decorate([
     __metadata("design:paramtypes", [mark_read_dto_1.MarkReadDto, Object]),
     __metadata("design:returntype", void 0)
 ], NotificationsController.prototype, "markRead", null);
+__decorate([
+    (0, common_1.Post)('notifications/broadcast'),
+    (0, swagger_1.ApiOperation)({ summary: 'Send broadcast announcement to club/event group chats and attendees' }),
+    __param(0, (0, common_1.Body)()),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [broadcast_dto_1.BroadcastDto, Object]),
+    __metadata("design:returntype", void 0)
+], NotificationsController.prototype, "broadcast", null);
 __decorate([
     (0, common_1.Get)('notifications/preferences'),
     (0, swagger_1.ApiOperation)({

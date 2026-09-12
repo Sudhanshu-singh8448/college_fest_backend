@@ -475,7 +475,289 @@ async function main() {
         update: {},
         create: { eventId: hackathon.id, userId: staffUser.id, role: 'SECONDARY' },
     });
-    console.log(`   ✅ 5 Events seeded with dynamic form schemas & organizer assignments`);
+    console.log(`   ✅ 5 Demo Events seeded with dynamic form schemas & organizer assignments`);
+    console.log('🏛️  Seeding S.I.T. Sitamarhi 10 Clubs, Coordinators & Official Events...');
+    const sitClubsData = [
+        {
+            name: 'Art & Craft Club',
+            category: 'CULTURAL',
+            coordinators: [
+                { name: 'Harsh Kumar', reg: '23119127028', isLead: true },
+                { name: 'Suman Kumar', reg: '23103127032', isLead: true },
+                { name: 'Neha Kumari', reg: '23101127033', isLead: true },
+                { name: 'Sachin Kumar Jha', reg: '23157127019', isLead: true },
+                { name: 'Shahzaib Zeya', reg: '24157127020', isLead: false },
+                { name: 'Shekhar Raj', reg: '24105127046', isLead: false },
+                { name: 'Shivani Kumari', reg: '24157127009', isLead: false },
+            ],
+            events: [
+                { id: 'sit-wall-painting', name: 'Wall Painting', category: 'CULTURAL', teamMin: 1, teamMax: 4 },
+                { id: 'sit-mehendi-comp', name: 'Mehendi Competition', category: 'CULTURAL', teamMin: 1, teamMax: 2 },
+                { id: 'sit-rangoli', name: 'Rangoli', category: 'CULTURAL', teamMin: 1, teamMax: 4 },
+                { id: 'sit-nail-art', name: 'Nail Art', category: 'CULTURAL', teamMin: 1, teamMax: 1 },
+                { id: 'sit-face-painting', name: 'Face Painting', category: 'CULTURAL', teamMin: 1, teamMax: 2 },
+                { id: 'sit-best-out-of-waste', name: 'Best Out Of Waste', category: 'CULTURAL', teamMin: 1, teamMax: 3 },
+                { id: 'sit-art-gallery', name: 'Art Gallery', category: 'EXHIBITION', teamMin: 1, teamMax: 1 },
+            ],
+        },
+        {
+            name: 'Social Media Club',
+            category: 'CULTURAL',
+            coordinators: [
+                { name: 'Kumar Vaibhav', reg: '23102127011', isLead: true },
+                { name: 'Aditya Kumar', reg: '24103127904', isLead: true },
+                { name: 'Dinbandhu Kumar', reg: '23119127015', isLead: true },
+                { name: 'Syed Adnan Iqbal', reg: '23105127035', isLead: true },
+                { name: 'Raushan Kumar', reg: '23103127034', isLead: true },
+                { name: 'Abhishek Kumar', reg: '24119127013', isLead: false },
+                { name: 'Khushboo Kumari', reg: '24157127024', isLead: false },
+                { name: 'Sanjukta Kumari', reg: '25103127914', isLead: false },
+                { name: 'Shruti Kumari', reg: '25103127906', isLead: false },
+                { name: 'Shivanshu Kumar', reg: '24103127017', isLead: false },
+            ],
+            events: [
+                { id: 'sit-dumb-charades', name: 'Dumb Charades', category: 'CULTURAL', teamMin: 2, teamMax: 4 },
+                { id: 'sit-musical-chair', name: 'Musical Chair', category: 'CULTURAL', teamMin: 1, teamMax: 1 },
+            ],
+        },
+        {
+            name: 'E-Sports Club',
+            category: 'GAMING',
+            coordinators: [
+                { name: 'Shani Kumar', reg: '23101127030', isLead: true },
+                { name: 'Priyanshu Kumar', reg: '23101127009', isLead: true },
+                { name: 'Rishu Raj', reg: '23103127017', isLead: true },
+                { name: 'Kumar Vishwajeet', reg: '25101127905', isLead: false },
+                { name: 'Aman Raj', reg: '25119127913', isLead: false },
+                { name: 'Rudra Pratap', reg: '24101127012', isLead: false },
+                { name: 'Anurag Kumar', reg: '25101127904', isLead: false },
+                { name: 'Shuaib Akhtar', reg: '24101127043', isLead: false },
+                { name: 'Navneet Singh', reg: '24103127005', isLead: false },
+                { name: 'Nikhil Kumar', reg: '24157127047', isLead: false },
+            ],
+            events: [
+                { id: 'sit-egaming-bgmi', name: 'E-Gaming (BGMI & Free Fire)', category: 'GAMING', teamMin: 4, teamMax: 4 },
+                { id: 'sit-cube-solving', name: 'Cube Solving', category: 'TECHNICAL', teamMin: 1, teamMax: 1 },
+                { id: 'sit-mini-militia', name: 'Mini Militia', category: 'GAMING', teamMin: 1, teamMax: 4 },
+            ],
+        },
+        {
+            name: 'Coding Club',
+            category: 'TECHNICAL',
+            coordinators: [
+                { name: 'Prashant Bhardwaj', reg: '23105127024', isLead: true },
+                { name: 'MD AKIB', reg: '23105127044', isLead: true },
+                { name: 'Nishant Kumar', reg: '23105127029', isLead: true },
+                { name: 'Ujjwal Kumar', reg: '24105127041', isLead: false },
+                { name: 'Ashish Anand', reg: '24105127047', isLead: false },
+                { name: 'Subham Kumar', reg: '24157127055', isLead: false },
+                { name: 'Shubhash Kumar Sah', reg: '24157127056', isLead: false },
+                { name: 'Shouarya Raj', reg: '24105127042', isLead: false },
+            ],
+            events: [
+                { id: 'sit-coding-comp', name: 'Coding Competition', category: 'TECHNICAL', teamMin: 1, teamMax: 2 },
+                { id: 'sit-ideathon', name: 'Ideathon', category: 'TECHNICAL', teamMin: 2, teamMax: 4 },
+                { id: 'sit-tech-quiz', name: 'Tech Quiz', category: 'TECHNICAL', teamMin: 1, teamMax: 2 },
+            ],
+        },
+        {
+            name: 'Literary Club',
+            category: 'CULTURAL',
+            coordinators: [
+                { name: 'Kumari Khushi Sinha', reg: '23105127011', isLead: true },
+                { name: 'Khushi Sharma', reg: '23105127001', isLead: true },
+                { name: 'Shivam Kumar', reg: '23101127027', isLead: true },
+                { name: 'Afjal Islam', reg: '23157127022', isLead: true },
+                { name: 'Piyush Jha', reg: '24157127050', isLead: false },
+                { name: 'Khushi Kumari', reg: '24105127088', isLead: false },
+                { name: 'Kritika', reg: '24157127005', isLead: false },
+            ],
+            events: [
+                { id: 'sit-handwriting', name: 'Handwriting Competition', category: 'CULTURAL', teamMin: 1, teamMax: 1 },
+                { id: 'sit-typing-comp', name: 'Typing Competition', category: 'TECHNICAL', teamMin: 1, teamMax: 1 },
+                { id: 'sit-prompt-challenge', name: 'Prompt Engineering', category: 'TECHNICAL', teamMin: 1, teamMax: 2 },
+            ],
+        },
+        {
+            name: 'Cultural Club',
+            category: 'CULTURAL',
+            coordinators: [
+                { name: 'Fahad Ahmad', reg: '23103127037', isLead: true },
+                { name: 'Ritesh Raushan', reg: '23157127020', isLead: true },
+                { name: 'Abhay Sharma', reg: '23103127013', isLead: true },
+                { name: 'Aditya Kumar', reg: '23105127056', isLead: true },
+                { name: 'Vinit Kumar Singh', reg: '23119127008', isLead: true },
+                { name: 'Harshali', reg: '24103127901', isLead: true },
+                { name: 'Niharika', reg: '23103127028', isLead: true },
+                { name: 'Lisha Kunal', reg: '23101127015', isLead: true },
+                { name: 'Rakesh Kumar', reg: '23103127021', isLead: true },
+                { name: 'Prince Kumar', reg: '23119127032', isLead: true },
+                { name: 'Vishal Kumar', reg: '23119127023', isLead: true },
+                { name: 'Shweta Singh', reg: '24103127020', isLead: false },
+                { name: 'Amit Kumar', reg: '24102127007', isLead: false },
+                { name: 'Swati Kumari', reg: '24157127005', isLead: false },
+                { name: 'Ashutosh Bhushan', reg: '24102127001', isLead: false },
+                { name: 'Amarnath Kumar', reg: '25102127911', isLead: false },
+            ],
+            events: [
+                { id: 'sit-treasure-hunt', name: 'Treasure Hunt', category: 'CULTURAL', teamMin: 3, teamMax: 5 },
+            ],
+        },
+        {
+            name: 'Photography Club',
+            category: 'EXHIBITION',
+            coordinators: [
+                { name: 'Ehasan Alam', reg: '23119127009', isLead: true },
+                { name: 'Uttam Kumar', reg: '23103127023', isLead: true },
+                { name: 'Monu Kumar', reg: '23103127002', isLead: true },
+                { name: 'Aditee Arya', reg: '24119127007', isLead: false },
+                { name: 'Ayush Kumar Gupta', reg: '24119127017', isLead: false },
+                { name: 'MD Ibrahim Nasar', reg: '24102127018', isLead: false },
+                { name: 'Md. Nauman', reg: '25102127904', isLead: false },
+                { name: 'Prabhakar Raj', reg: '24102127022', isLead: false },
+                { name: 'Aditya Raj', reg: '24102127010', isLead: false },
+            ],
+            events: [
+                { id: 'sit-photography', name: 'Photography Exhibition', category: 'EXHIBITION', teamMin: 1, teamMax: 1 },
+            ],
+        },
+        {
+            name: 'Robotics Club',
+            category: 'TECHNICAL',
+            coordinators: [
+                { name: 'Anshu Kumar', reg: '23103127033', isLead: true },
+                { name: 'Ujjwal Kumar Thakur', reg: '23157127037', isLead: true },
+                { name: 'Abhishek Kumar', reg: '23105127030', isLead: true },
+                { name: 'Kumari Sujan Singh', reg: '23157127033', isLead: true },
+                { name: 'Karan Rathore', reg: '23102127006', isLead: true },
+                { name: 'Sudhanshu Kumar', reg: '24157127054', isLead: false },
+                { name: 'Mahima Kumari', reg: '24157127013', isLead: false },
+                { name: 'Manikant Singh', reg: '24103127021', isLead: false },
+                { name: 'Khushbu Kumari', reg: '24157127027', isLead: false },
+                { name: 'Abhishek Kumar', reg: '24102127016', isLead: false },
+            ],
+            events: [
+                { id: 'sit-robotics-exhibition', name: 'Robotics Exhibition', category: 'TECHNICAL', teamMin: 1, teamMax: 4 },
+                { id: 'sit-sand-rover', name: 'Robotics (Sand Rover)', category: 'TECHNICAL', teamMin: 2, teamMax: 5 },
+                { id: 'sit-robo-war-sit', name: 'Robotics (ROBO War Challenge)', category: 'TECHNICAL', teamMin: 2, teamMax: 5 },
+            ],
+        },
+        {
+            name: 'Fitness Club',
+            category: 'SPORTS',
+            coordinators: [
+                { name: 'Aman Kumar', reg: '23157127050', isLead: true },
+                { name: 'Jharana Kumari', reg: '23157127008', isLead: true },
+                { name: 'Pooja Kumari', reg: '23157127032', isLead: true },
+                { name: 'Ayush Kumar Mishra', reg: '24102127021', isLead: false },
+                { name: 'Sonu Kumar', reg: '24102127025', isLead: false },
+            ],
+            events: [
+                { id: 'sit-yoga', name: 'Yoga Championship', category: 'SPORTS', teamMin: 1, teamMax: 1 },
+                { id: 'sit-fitness-comp', name: 'Fitness Competition', category: 'SPORTS', teamMin: 1, teamMax: 1 },
+            ],
+        },
+        {
+            name: 'Construction Club',
+            category: 'TECHNICAL',
+            coordinators: [
+                { name: 'Kumar Yash', reg: '23101127002', isLead: true },
+                { name: 'Aditya Kumar', reg: '23101127014', isLead: true },
+                { name: 'Avinash Kumar', reg: '24101127906', isLead: true },
+                { name: 'Amarjeet Kumar', reg: '25102127912', isLead: false },
+                { name: 'Kundan Kumar', reg: '24101127099', isLead: false },
+            ],
+            events: [
+                { id: 'sit-city-planning', name: 'City Planning', category: 'TECHNICAL', teamMin: 1, teamMax: 3 },
+                { id: 'sit-bridge-o-mania', name: 'Bridge-O-Mania', category: 'TECHNICAL', teamMin: 2, teamMax: 4 },
+                { id: 'sit-autocad-challenge', name: 'AutoCAD Modeling Challenge', category: 'TECHNICAL', teamMin: 1, teamMax: 2 },
+            ],
+        },
+    ];
+    for (const club of sitClubsData) {
+        const clubGroupId = `group-club-${club.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}`;
+        const clubGroup = await prisma.group.upsert({
+            where: { id: clubGroupId },
+            update: { name: club.name },
+            create: {
+                id: clubGroupId,
+                name: club.name,
+                type: 'COMMITTEE',
+            },
+        });
+        const coordinatorUserIds = [];
+        for (const c of club.coordinators) {
+            const parts = c.name.split(' ');
+            const firstName = parts[0] || 'Member';
+            const lastName = parts.slice(1).join(' ') || 'SIT';
+            const user = await upsertDemoUser({
+                reg: c.reg,
+                email: `${c.reg}@sit.ac.in`,
+                passwordHash: orgHash,
+                firstName,
+                lastName,
+                roleName: 'organizer',
+                bio: `${club.name} ${c.isLead ? 'Coordinator' : 'Co-coordinator'} - SIT Sitamarhi`,
+            });
+            coordinatorUserIds.push(user.id);
+            await prisma.groupMember.upsert({
+                where: { groupId_userId: { groupId: clubGroup.id, userId: user.id } },
+                update: {},
+                create: { groupId: clubGroup.id, userId: user.id },
+            });
+        }
+        for (const ev of club.events) {
+            const event = await prisma.event.upsert({
+                where: { id: ev.id },
+                update: {
+                    name: ev.name,
+                    category: ev.category,
+                    registrationDeadline: new Date('2026-09-14T23:59:59Z'),
+                },
+                create: {
+                    id: ev.id,
+                    festId: fest.id,
+                    name: ev.name,
+                    description: `Official ${ev.name} event organized by ${club.name} at S.I.T. Sitamarhi Fest 2026.`,
+                    category: ev.category,
+                    status: 'REGISTRATION_OPEN',
+                    startDate: new Date('2026-09-15T10:00:00Z'),
+                    endDate: new Date('2026-09-16T18:00:00Z'),
+                    registrationDeadline: new Date('2026-09-14T23:59:59Z'),
+                    venue: 'Campus Grounds / Labs',
+                    maxParticipants: 100,
+                    minTeamSize: ev.teamMin,
+                    maxTeamSize: ev.teamMax,
+                    isPublic: true,
+                    bannerUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+                },
+            });
+            for (const uid of coordinatorUserIds) {
+                await prisma.eventOrganizer.upsert({
+                    where: { eventId_userId: { eventId: event.id, userId: uid } },
+                    update: {},
+                    create: { eventId: event.id, userId: uid, role: 'PRIMARY' },
+                });
+            }
+            const conv = await prisma.conversation.upsert({
+                where: { eventId: event.id },
+                update: { name: `Event: ${event.name}` },
+                create: {
+                    type: 'EVENT',
+                    name: `Event: ${event.name}`,
+                    eventId: event.id,
+                },
+            });
+            for (const uid of coordinatorUserIds) {
+                await prisma.conversationMember.upsert({
+                    where: { conversationId_userId: { conversationId: conv.id, userId: uid } },
+                    update: { role: 'ADMIN' },
+                    create: { conversationId: conv.id, userId: uid, role: 'ADMIN' },
+                });
+            }
+        }
+    }
+    console.log(`   ✅ S.I.T. Sitamarhi: 10 Clubs, 74 Coordinators/Co-coordinators, and 26 Events seeded`);
     console.log('6️⃣  Seeding Fest Registrations & Digital QR Tickets...');
     const allDemoUsers = [
         { user: adminUser, num: '0001', secret: 'SEC_ADMIN_TG2026_0001' },
@@ -547,11 +829,11 @@ async function main() {
     });
     await prisma.eventRegistration.upsert({
         where: { eventId_userId: { eventId: roboWars.id, userId: participant1.id } },
-        update: { status: 'PENDING' },
+        update: { status: 'APPROVED' },
         create: {
             eventId: roboWars.id,
             userId: participant1.id,
-            status: 'PENDING',
+            status: 'APPROVED',
         },
     });
     await prisma.eventRegistration.upsert({

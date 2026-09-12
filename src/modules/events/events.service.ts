@@ -14,8 +14,8 @@ export class EventsService {
   constructor(private readonly prisma: PrismaService) {}
 
   // ── GET /events ───────────────────────────────
-  async findAll(query: EventQueryDto) {
-    const { page = 1, limit = 10, search, category, status, festId } = query;
+  async findAll(query: EventQueryDto, currentUserId?: string) {
+    const { page = 1, limit = 10, search, category, status, festId, organizerId, myEvents } = query;
     const skip = (page - 1) * limit;
 
     const where: any = { deletedAt: null };
@@ -29,6 +29,13 @@ export class EventsService {
     if (category) where.category = category;
     if (status) where.status = status;
     if (festId) where.festId = festId;
+
+    const targetOrgId = organizerId || ((myEvents === true || myEvents === 'true') ? currentUserId : undefined);
+    if (targetOrgId) {
+      where.organizers = {
+        some: { userId: targetOrgId },
+      };
+    }
 
     const [events, total] = await Promise.all([
       this.prisma.event.findMany({
@@ -97,6 +104,7 @@ export class EventsService {
         category: dto.category,
         startDate: new Date(dto.startDate),
         endDate: new Date(dto.endDate),
+        registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
         venue: dto.venue,
         maxParticipants: dto.maxParticipants,
         minTeamSize: dto.minTeamSize,
@@ -177,6 +185,9 @@ export class EventsService {
           startDate: new Date(dto.startDate),
         }),
         ...(dto.endDate !== undefined && { endDate: new Date(dto.endDate) }),
+        ...(dto.registrationDeadline !== undefined && {
+          registrationDeadline: dto.registrationDeadline ? new Date(dto.registrationDeadline) : null,
+        }),
         ...(dto.venue !== undefined && { venue: dto.venue }),
         ...(dto.maxParticipants !== undefined && {
           maxParticipants: dto.maxParticipants,

@@ -14,6 +14,7 @@ import { NotificationQueryDto } from './dto/notification-query.dto';
 import { MarkReadDto } from './dto/mark-read.dto';
 import { UpdatePreferencesDto } from './dto/update-preferences.dto';
 import { RegisterDeviceTokenDto } from './dto/register-device-token.dto';
+import { BroadcastDto } from './dto/broadcast.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 
 @ApiTags('Notifications')
@@ -39,6 +40,12 @@ export class NotificationsController {
   @ApiOperation({ summary: 'Mark specific or all notifications as read' })
   markRead(@Body() dto: MarkReadDto, @CurrentUser() user: any) {
     return this.notificationsService.markRead(user.id, dto);
+  }
+
+  @Post('notifications/broadcast')
+  @ApiOperation({ summary: 'Send broadcast announcement to club/event group chats and attendees' })
+  broadcast(@Body() dto: BroadcastDto, @CurrentUser() user: any) {
+    return this.notificationsService.broadcast(user.id, dto);
   }
 
   // ── Preferences ────────────────────────────────────

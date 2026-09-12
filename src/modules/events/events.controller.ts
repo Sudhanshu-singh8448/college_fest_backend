@@ -28,8 +28,8 @@ export class EventsController {
 
   @Get()
   @ApiOperation({ summary: 'List events with filters and pagination' })
-  async findAll(@Query() query: EventQueryDto) {
-    return this.eventsService.findAll(query);
+  async findAll(@Query() query: EventQueryDto, @CurrentUser() user?: any) {
+    return this.eventsService.findAll(query, user?.id);
   }
 
   @Get(':id')

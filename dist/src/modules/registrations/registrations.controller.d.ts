@@ -124,6 +124,7 @@ export declare class RegistrationsController {
             minTeamSize: number;
             maxTeamSize: number;
             isPublic: boolean;
+            registrationDeadline: Date | null;
             bannerUrl: string | null;
         };
         submission: {
